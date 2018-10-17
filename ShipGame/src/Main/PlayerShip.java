@@ -10,10 +10,11 @@ import javax.swing.JPanel;
 public class PlayerShip extends JPanel implements KeyListener, Runnable{
 
 	private static final long serialVersionUID = 1L;
-	//Ship position and size.
+	//Ship position, speed and size.
 	Point2D.Double shipCenterPoint = new Point2D.Double(200,100);
 	int shipSize[] = {80,60};
-	double speed = 1.5;
+	double topSpeed = 20, deltaSpeed = 0.01;
+	double linearVel = 0, rotationVel = 0;
 	//Ship points respect the ship center point.
 	Point2D.Double firstPoint = new Point2D.Double(shipCenterPoint.x,                shipCenterPoint.y-shipSize[0]/2);
 	Point2D.Double secondPoint = new Point2D.Double(shipCenterPoint.x-shipSize[1]/2, shipCenterPoint.y+shipSize[0]/2);
@@ -24,8 +25,6 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	Thread thread = new Thread(this);
 	
 	double velx=0, vely=0;
-	double x, y, x1, y1, x2, y2, x3, y3;
-
 	
 	public PlayerShip() {
 		thread.start();
@@ -36,8 +35,8 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	
 	public void paintComponent(Graphics g) 
 	{
-		double xpoints[] = {x,x1,x2,x3};
-		double ypoints[] = {y,y1,y2,y3};
+		double xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};
+		double ypoints[] = {firstPoint.y,secondPoint.y,thirdPoint.y,fourthPoint.y};
 		Path2D polygon = new Path2D.Double();
 		polygon.moveTo(xpoints[0], ypoints[0]);
 		for(int i = 1; i < xpoints.length; ++i) {
@@ -86,42 +85,42 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	public void keyTyped(KeyEvent e) {}
 	//TODO improve the movement logic
 	public void up() {
-		shipCenterPoint = movePoint(speed,shipCenterPoint);
-		firstPoint = movePoint(speed,firstPoint);
-		secondPoint = movePoint(speed,secondPoint);
-		thirdPoint = movePoint(speed,thirdPoint);
-		fourthPoint = movePoint(speed,fourthPoint);
-		//velx = 0;
+		linearVel += deltaSpeed;
+		if (linearVel >= topSpeed) {
+			linearVel = topSpeed;
+		}
+
 	}
 	public void down() {
-		shipCenterPoint = movePoint(-speed,shipCenterPoint);
-		firstPoint = movePoint(-speed,firstPoint);
-		secondPoint = movePoint(-speed,secondPoint);
-		thirdPoint = movePoint(-speed,thirdPoint);
-		fourthPoint = movePoint(-speed,fourthPoint);
-		//velx = 0;
+		linearVel += -deltaSpeed;
+		if (linearVel <= -topSpeed) {
+			linearVel = -topSpeed;
+		}
 	}
 	public void right() {
-		velx += 0.1;
-		if (velx >= 0.3 ) {
-			velx = 0.3;
+		rotationVel += deltaSpeed;
+		if (rotationVel >= topSpeed/1000) {
+			rotationVel = topSpeed/1000;
 		}
-		//vely = 0;
 	}
 	public void left() {
-		velx += -0.1;
-		if (velx <= -0.3 ) {
-			velx = -0.3;
+		rotationVel += -deltaSpeed;
+		if (rotationVel <= -topSpeed/1000) {
+			rotationVel = -topSpeed/1000;
 		}
-		//vely = 0;
 	}
 	public void rightReleased() {
-		velx = 0;
-		vely = 0;
+		while(rotationVel != 0)
+		{
+			rotationVel -= 0.01;
+			if (rotationVel <= 0 ) {
+				rotationVel = 0;
+				break;
+			}
+		}
 	}
 	public void leftReleased() {
-		velx = 0;
-		vely = 0;
+		rotationVel = 0;
 	}
 	
 	private Point2D.Double movePoint(double speed, Point2D.Double point) {
@@ -133,14 +132,12 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	}
 		
 	private Point2D.Double rotatePoint(Point2D.Double center, double angle, Point2D.Double point) {
-		double s = Math.sin(angle);
-		double c = Math.cos(angle);
-		
+
 		point.x -= center.x;
 		point.y -= center.y;
 		
-		double xnew = point.x * c -point.y * s;
-		double ynew = point.x * s +point.y * c;
+		double xnew = point.x * Math.cos(angle) -point.y * Math.sin(angle);
+		double ynew = point.x * Math.sin(angle) +point.y * Math.cos(angle);
 		
 		point.x = xnew + center.x;
 		point.y = ynew + center.y;
@@ -152,21 +149,21 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 		while(true)
 		{
 			try 
-			{			
-				x = rotatePoint(shipCenterPoint, velx, firstPoint).x;
-				y = rotatePoint(shipCenterPoint, vely, firstPoint).y;
-				
-				x1 = rotatePoint(shipCenterPoint, velx, secondPoint).x;
-				y1 = rotatePoint(shipCenterPoint, vely, secondPoint).y;
-		
-				x2 = rotatePoint(shipCenterPoint, velx, thirdPoint).x;
-				y2 = rotatePoint(shipCenterPoint, vely, thirdPoint).y;
-					
-				x3 = rotatePoint(shipCenterPoint, velx, fourthPoint).x;
-				y3 = rotatePoint(shipCenterPoint, vely, fourthPoint).y;
+			{	
+				//Move forward and backwards
+				shipCenterPoint = movePoint(linearVel,shipCenterPoint);
+				firstPoint = movePoint(linearVel,firstPoint);
+				secondPoint = movePoint(linearVel,secondPoint);
+				thirdPoint = movePoint(linearVel,thirdPoint);
+				fourthPoint = movePoint(linearVel,fourthPoint);
+				//Rotate left and right
+				firstPoint = rotatePoint(shipCenterPoint, rotationVel, firstPoint);
+				secondPoint = rotatePoint(shipCenterPoint, rotationVel, secondPoint);
+				thirdPoint = rotatePoint(shipCenterPoint, rotationVel, thirdPoint);
+				fourthPoint = rotatePoint(shipCenterPoint, rotationVel, fourthPoint);
 						
 				repaint();
-				Thread.sleep(50);
+				Thread.sleep(5);
 			
 			} 
 			catch (InterruptedException e) 
