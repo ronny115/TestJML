@@ -1,7 +1,5 @@
 package Main;
 
-import java.awt.Dimension;
-
 import javax.swing.*;
 
 public class MainClass {
