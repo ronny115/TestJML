@@ -13,7 +13,7 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	//Ship position, speed and size.
 	Point2D.Double shipCenterPoint = new Point2D.Double(200,100);
 	int shipSize[] = {80,60};
-	double topSpeed = 20, deltaSpeed = 0.01;
+	double topSpeed = 5, deltaSpeed = 0.1;
 	double linearVel = 0, rotationVel = 0;
 	//Ship points respect the ship center point.
 	Point2D.Double firstPoint = new Point2D.Double(shipCenterPoint.x,                shipCenterPoint.y-shipSize[0]/2);
@@ -22,9 +22,8 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	Point2D.Double fourthPoint = new Point2D.Double(shipCenterPoint.x+shipSize[1]/2, shipCenterPoint.y+shipSize[0]/2);
 	
 	int keyCode;
+	boolean keyR;
 	Thread thread = new Thread(this);
-	
-	double velx=0, vely=0;
 	
 	public PlayerShip() {
 		thread.start();
@@ -46,6 +45,9 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 		//TODO draw a better ship
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
+		//Enable AA
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		//g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		
 		g2.setColor(Color.BLACK);
 		//g2.setStroke(new BasicStroke(3.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
@@ -83,7 +85,7 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 		}
 	}
 	public void keyTyped(KeyEvent e) {}
-	//TODO improve the movement logic
+	
 	public void up() {
 		linearVel += deltaSpeed;
 		if (linearVel >= topSpeed) {
@@ -99,25 +101,18 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 	}
 	public void right() {
 		rotationVel += deltaSpeed;
-		if (rotationVel >= topSpeed/1000) {
-			rotationVel = topSpeed/1000;
+		if (rotationVel >= topSpeed/100) {
+			rotationVel = topSpeed/100;
 		}
 	}
 	public void left() {
 		rotationVel += -deltaSpeed;
-		if (rotationVel <= -topSpeed/1000) {
-			rotationVel = -topSpeed/1000;
+		if (rotationVel <= -topSpeed/100) {
+			rotationVel = -topSpeed/100;
 		}
-	}
+	}	
 	public void rightReleased() {
-		while(rotationVel != 0)
-		{
-			rotationVel -= 0.01;
-			if (rotationVel <= 0 ) {
-				rotationVel = 0;
-				break;
-			}
-		}
+		rotationVel = 0;
 	}
 	public void leftReleased() {
 		rotationVel = 0;
@@ -144,32 +139,52 @@ public class PlayerShip extends JPanel implements KeyListener, Runnable{
 		
 		return new Point2D.Double(point.x,point.y);
 	}
-
+	
+	private boolean isRunning = true;
+	int fpsCounter;
+	
 	public void run() {
-		while(true)
+		
+		double deltaT = 0;
+		long initialTime = System.nanoTime();
+		final int target_fps = 60;
+		final double optimal_time_frame = 1000000000 / target_fps;
+	
+		int frames = 0;
+		while(isRunning)
 		{
-			try 
-			{	
-				//Move forward and backwards
-				shipCenterPoint = movePoint(linearVel,shipCenterPoint);
-				firstPoint = movePoint(linearVel,firstPoint);
-				secondPoint = movePoint(linearVel,secondPoint);
-				thirdPoint = movePoint(linearVel,thirdPoint);
-				fourthPoint = movePoint(linearVel,fourthPoint);
-				//Rotate left and right
-				firstPoint = rotatePoint(shipCenterPoint, rotationVel, firstPoint);
-				secondPoint = rotatePoint(shipCenterPoint, rotationVel, secondPoint);
-				thirdPoint = rotatePoint(shipCenterPoint, rotationVel, thirdPoint);
-				fourthPoint = rotatePoint(shipCenterPoint, rotationVel, fourthPoint);
-						
-				repaint();
-				Thread.sleep(5);
+			long currentTime = System.nanoTime();
+			double frameTime = currentTime - initialTime;
+			deltaT += frameTime / optimal_time_frame;
+			initialTime = currentTime;
 			
-			} 
-			catch (InterruptedException e) 
-			{
-				e.printStackTrace();
+			if(deltaT>=1) {
+				update();
+				paintImmediately(0, 0,1420, 900);
+				frames++;
+				deltaT--;
 			}
+
+			fpsCounter += frameTime;
+			if (fpsCounter >= 1000000000) {
+				System.out.println("(FPS: "+frames+")");
+				fpsCounter = 0;
+			    frames = 0;
+				}
 		}
+	}
+	
+	public void update() {
+		//Move forward and backwards
+		shipCenterPoint = movePoint(linearVel,shipCenterPoint);
+		firstPoint = movePoint(linearVel,firstPoint);
+		secondPoint = movePoint(linearVel,secondPoint);
+		thirdPoint = movePoint(linearVel,thirdPoint);
+		fourthPoint = movePoint(linearVel,fourthPoint);
+		//Rotate left and right
+		firstPoint = rotatePoint(shipCenterPoint, rotationVel, firstPoint);
+		secondPoint = rotatePoint(shipCenterPoint, rotationVel, secondPoint);
+		thirdPoint = rotatePoint(shipCenterPoint, rotationVel, thirdPoint);
+		fourthPoint = rotatePoint(shipCenterPoint, rotationVel, fourthPoint);
 	}
 }
