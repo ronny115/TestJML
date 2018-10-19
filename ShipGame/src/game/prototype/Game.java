@@ -1,0 +1,107 @@
+package game.prototype;
+
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferStrategy;
+
+import game.prototype.framework.KeyInput;
+import game.prototype.framework.ObjectId;
+import game.prototype.objects.PlayerShip;
+
+public class Game extends Canvas implements Runnable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private Thread thread;
+	Color backgroundColor = new Color(238,238,238);
+	//Object
+	Handler handler;
+	private void init() {
+		handler = new Handler();
+		//Args: Position, size
+		handler.addObject(new PlayerShip(500,500, 40,30, ObjectId.PlayerShip));
+		//Args: Max speed, speed increments
+		this.addKeyListener(new KeyInput(handler, 5f, 0.1f));
+		this.setFocusable(true);
+		this.setFocusTraversalKeysEnabled(false);
+	}
+	
+	public boolean isRunning = false;
+	int fpsCounter;
+	
+	public synchronized void start() {
+		if(isRunning) {
+			return;
+		}
+		isRunning = true;
+		thread = new Thread(this);
+		thread.start();
+	}
+	
+	public void run() {
+		init();
+		double deltaT = 0;
+		long initialTime = System.nanoTime();
+		final int target_fps = 60;
+		final double optimal_time_frame = 1000000000 / target_fps;
+		
+		int ticks = 0, frames = 0;
+		while(isRunning)
+		{
+			long currentTime = System.nanoTime();
+			double frameTime = currentTime - initialTime;
+			deltaT += frameTime / optimal_time_frame;
+			initialTime = currentTime;
+				
+			if(deltaT>=1) 
+			{
+				update();
+				ticks++;
+				deltaT--;
+			}
+			render();
+			fpsCounter += frameTime;
+			frames++;
+			if (fpsCounter >= 1000000000) 
+			{
+				System.out.println("(ticks: "+ticks+") FPS: "+frames );
+				fpsCounter = 0;
+				ticks = 0;
+				frames = 0;
+			}
+		}
+	}
+	
+	private void render() {
+		BufferStrategy bStrategy = this.getBufferStrategy();
+		if(bStrategy == null)
+		{
+			this.createBufferStrategy(2);
+			return;
+		}
+		 Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
+		 //Clear the screen
+		 g2.setColor(backgroundColor);
+		 g2.fillRect(0,0,getWidth(),getHeight());
+		 //////////////////////
+		 //////Draw Here///////
+		 //////////////////////
+		 handler.render(g2);
+		 
+		 g2.dispose();
+		 bStrategy.show();
+	}
+	
+	private void update() {
+		handler.update();
+	}
+	
+
+	public static void main(String args[]) {
+		new Window(1420, 800, "Game Prototype", new Game());
+		
+	}
+}
