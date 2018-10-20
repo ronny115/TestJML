@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
-import game.prototype.framework.KeyInput;
 import game.prototype.framework.ObjectId;
 import game.prototype.objects.PlayerShip;
 
@@ -21,10 +20,11 @@ public class Game extends Canvas implements Runnable{
 	Handler handler;
 	private void init() {
 		handler = new Handler();
-		//Args: Position, size
-		handler.addObject(new PlayerShip(500,500, 40,30, ObjectId.PlayerShip));
-		//Args: Max speed, speed increments
-		this.addKeyListener(new KeyInput(handler, 5f, 0.1f));
+		//Arguments: Position, size
+		handler.addObject(new PlayerShip(500,500, 80,60, ObjectId.PlayerShip));
+		//Arguments: Max speed, speed increments
+		handler.setSpeed(5f, 0.1f);
+		this.addKeyListener(handler);
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
 	}
@@ -45,10 +45,10 @@ public class Game extends Canvas implements Runnable{
 		init();
 		double deltaT = 0;
 		long initialTime = System.nanoTime();
-		final int target_fps = 60;
-		final double optimal_time_frame = 1000000000 / target_fps;
-		
+		final int target_ticks = 60;
+		final double optimal_time_frame = 1000000000 / target_ticks;	
 		int ticks = 0, frames = 0;
+		
 		while(isRunning)
 		{
 			long currentTime = System.nanoTime();
@@ -86,22 +86,19 @@ public class Game extends Canvas implements Runnable{
 		 //Clear the screen
 		 g2.setColor(backgroundColor);
 		 g2.fillRect(0,0,getWidth(),getHeight());
-		 //////////////////////
-		 //////Draw Here///////
-		 //////////////////////
+		 //Draw Here
 		 handler.render(g2);
-		 
+		 //Show
 		 g2.dispose();
 		 bStrategy.show();
 	}
 	
 	private void update() {
 		handler.update();
+		handler.updateInput();
 	}
 	
-
 	public static void main(String args[]) {
-		new Window(1420, 800, "Game Prototype", new Game());
-		
+		new Window(1420, 800, "Game Prototype", new Game());	
 	}
 }

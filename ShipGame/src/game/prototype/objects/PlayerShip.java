@@ -16,9 +16,7 @@ public class PlayerShip extends GameObject {
 		super(x, y, w, h, id);
 	}
 	//Ship points respect the ship center point.
-	boolean upK = false, leftK = false, rightK = false, downK = false;
-	double topSpeed = 5, deltaSpeed = 0.1;
-	Point2D.Double shipCenterPoint = new Point2D.Double(x,y);
+	Point2D.Double center = new Point2D.Double(x,y);
 	Point2D.Double firstPoint = new Point2D.Double(x,          y-sizeX/2);
 	Point2D.Double secondPoint = new Point2D.Double(x-sizeY/2, y+sizeX/2);
 	Point2D.Double thirdPoint = new Point2D.Double(x,          y+sizeY/3);
@@ -26,16 +24,16 @@ public class PlayerShip extends GameObject {
 	
 	public void update(LinkedList<GameObject> object) {
 		//Move forward and backwards
-		shipCenterPoint = movePoint(velY,shipCenterPoint);
-		firstPoint = movePoint(velY,firstPoint);
-		secondPoint = movePoint(velY,secondPoint);
-		thirdPoint = movePoint(velY,thirdPoint);
-		fourthPoint = movePoint(velY,fourthPoint);
+		center = movePoint(velY, center, center);
+		firstPoint = movePoint(velY, center, firstPoint);
+		secondPoint = movePoint(velY, center, secondPoint);
+		thirdPoint = movePoint(velY, center, thirdPoint);
+		fourthPoint = movePoint(velY, center, fourthPoint);
 		//Rotate left and right
-		firstPoint = rotatePoint(shipCenterPoint, velX, firstPoint);
-		secondPoint = rotatePoint(shipCenterPoint, velX, secondPoint);
-		thirdPoint = rotatePoint(shipCenterPoint, velX, thirdPoint);
-		fourthPoint = rotatePoint(shipCenterPoint, velX, fourthPoint);
+		firstPoint = rotatePoint(velX, center, firstPoint);
+		secondPoint = rotatePoint(velX, center, secondPoint);
+		thirdPoint = rotatePoint(velX, center, thirdPoint);
+		fourthPoint = rotatePoint(velX, center, fourthPoint);
 	}
 
 	public void render(Graphics2D g2) {
@@ -57,16 +55,16 @@ public class PlayerShip extends GameObject {
 		g2.draw(polygon);
 		//g2.fill(polygon);
 		g2.setColor(Color.RED);
-		g2.drawOval((int)shipCenterPoint.getX(), (int)shipCenterPoint.getY(), 1, 1);
+		g2.drawOval((int)center.x, (int)center.y, 1, 1);
 	}
 
-	private Point2D.Double movePoint(double speed, Point2D.Double point) {
+	private Point2D.Double movePoint(double speed, Point2D.Double center, Point2D.Double point) {
 		double xnew = point.x, ynew = point.y;
-		xnew += speed * Math.sin(Math.atan2(firstPoint.x - shipCenterPoint.x, firstPoint.y - shipCenterPoint.y));
-		ynew += speed * Math.cos(Math.atan2(firstPoint.x - shipCenterPoint.x, firstPoint.y - shipCenterPoint.y));
+		xnew += speed * Math.sin(Math.atan2(firstPoint.x - center.x, firstPoint.y - center.y));
+		ynew += speed * Math.cos(Math.atan2(firstPoint.x - center.x, firstPoint.y - center.y));
 		return new Point2D.Double(xnew,ynew);	
 }
-	private Point2D.Double rotatePoint(Point2D.Double center, double angle, Point2D.Double point) {
+	private Point2D.Double rotatePoint(double angle, Point2D.Double center, Point2D.Double point) {
 		point.x -= center.x;
 		point.y -= center.y;
 		double xnew = point.x * Math.cos(angle) -point.y * Math.sin(angle);
