@@ -35,43 +35,43 @@ public class Handler extends KeyAdapter{
 	public void updateInput() {
 		//Pressed
 		if(upKeyPressed == true) {
-			movement('u');
+			movement("up");
 			if(upKeyPressed == true && leftKeyPressed == true) {
-				movement('u');
-				movement('l');
+				movement("up");
+				movement("left");
 			}
 			else if(upKeyPressed == true && rightKeyPressed == true) {
-				movement('u');
-				movement('r');
+				movement("up");
+				movement("right");
 			}
 			else if(leftKeyReleased == true) {
-				desacelerate('l');
+				movement("decelerateLeft");
 			}
 			else if(rightKeyReleased == true) {
-				desacelerate('r');
+				movement("decelerateRight");
 			}
 		}			
 		if (downKeyPressed == true) {
-			movement('d');
+			movement("down");
 		}
 		if (leftKeyPressed == true) {
-			movement('l');
+			movement("left");
 		}
 		if (rightKeyPressed == true) {
-			movement('r');
+			movement("right");
 		}
 		//Released
 		if (upKeyReleased == true) {
-			desacelerate('u');		
+			movement("decelerateUp");		
 		}
 		if (downKeyReleased == true) {
-			desacelerate('d');		
+			movement("decelerateDown");		
 		}
 		if (leftKeyReleased == true && leftKeyPressed == false && rightKeyPressed == false) {	
-			desacelerate('l');
+			movement("decelerateLeft");
 		}
 		if (rightKeyReleased == true && rightKeyPressed == false && leftKeyPressed == false) {	
-			desacelerate('r');
+			movement("decelerateRight");
 		}
 		
 	}
@@ -138,10 +138,10 @@ public class Handler extends KeyAdapter{
 			}
 		}
 	}
-	private void movement(char move) {
+	private void movement(String move) {
 		switch(move) 
 		{
-		case 'u':
+		case "up":
 			vely += deltaSpeed;
 			tempObject.setVelY(vely);
 			if (vely >= topSpeed) {
@@ -149,7 +149,7 @@ public class Handler extends KeyAdapter{
 				tempObject.setVelY(vely);
 			}
 			break;
-		case 'd':
+		case "down":
 			vely += -deltaSpeed*2;
 			tempObject.setVelY(vely);
 			if (vely <= -topSpeed/10) {
@@ -157,7 +157,7 @@ public class Handler extends KeyAdapter{
 				tempObject.setVelY(vely);
 			}
 			break;
-		case 'l':
+		case "left":
 			velx -= deltaSpeed;
 			tempObject.setVelX(velx);
 			if (velx <= -topSpeed/100) {
@@ -165,7 +165,7 @@ public class Handler extends KeyAdapter{
 				tempObject.setVelX(velx);
 			}	
 			break;
-		case 'r':
+		case "right":
 			velx += deltaSpeed;
 			tempObject.setVelX(velx);
 			if (velx >= topSpeed/100) {
@@ -173,12 +173,7 @@ public class Handler extends KeyAdapter{
 				tempObject.setVelX(velx);
 			}
 			break;
-		}
-	}
-	private void desacelerate(char direction) {	
-		switch(direction)
-		{
-		case 'u':	
+		case "decelerateUp":	
 			vely -= deltaSpeed/5;
 			tempObject.setVelY(vely);
 			if (vely < 0) {
@@ -187,7 +182,7 @@ public class Handler extends KeyAdapter{
 				upKeyReleased = false; 
 			}
 			break;
-		case 'd':
+		case "decelerateDown":
 			vely += deltaSpeed/5;
 			tempObject.setVelY(vely);
 			if (vely > 0) {
@@ -196,7 +191,7 @@ public class Handler extends KeyAdapter{
 				downKeyReleased = false;
 			}
 			break;
-		case 'l':
+		case "decelerateLeft":
 			velx += deltaSpeed/50;
 			tempObject.setVelX(velx);
 			if(velx > 0) {
@@ -205,7 +200,7 @@ public class Handler extends KeyAdapter{
 				leftKeyReleased = false;
 			}
 			break;
-		case 'r':
+		case "decelerateRight":
 			velx -= deltaSpeed/50;
 			tempObject.setVelX(velx);
 			if(velx < 0) {
@@ -213,6 +208,7 @@ public class Handler extends KeyAdapter{
 				tempObject.setVelX(velx);
 				rightKeyReleased = false;
 			}
+			break;
 		}
 	}
 }
