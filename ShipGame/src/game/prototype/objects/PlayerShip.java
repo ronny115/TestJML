@@ -6,7 +6,6 @@ import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 import game.prototype.Game;
@@ -40,13 +39,8 @@ public class PlayerShip extends GameObject {
 		//Move forward and backwards
 		if (CollisionVsScreen(object) == false) {
 			shipMovement();
-		}
-		else {
-			//TODO implements collision physics
-			velY -=5;
-			//velX -=0.1;
+		}else{
 			shipMovement();
-	
 		}
 	}
 
@@ -81,30 +75,83 @@ public class PlayerShip extends GameObject {
 			
 			if(tempObject.getId() == ObjectId.PlayerShip) {
 				double r = ellipse/2;
-				//TODO implement loop for each bound ball
 				//collide vs. x-bounds
-				double dx = 0 - (boundTopCenter.x - r);
-				if (0<dx) {
-					System.out.println("collide");
+				double top_dx = 0 - (boundTopCenter.x - r);
+				double left_dx = 0 - (boundLeftCenter.x - r);
+				double right_dx = 0 - (boundRightCenter.x - r);
+				if (0<top_dx) {
+					//TODO Physics HERE
+					velY -=5;
 					return true;
+				}else{
+					top_dx = (boundTopCenter.x + r)-Game.WIDTH;
+					if(0<top_dx) {
+						//TODO Physics HERE
+						velY -=5;
+						return true;
+					}
 				}
-				else {
-					dx = (boundTopCenter.x + r)-Game.WIDTH;
-					if(0<dx) {
-						System.out.println("collide");
+				if(0<left_dx) {
+					//TODO Physics HERE
+					velX -= 0.15;
+					return true;
+				}else{
+					left_dx = (boundLeftCenter.x + r)-Game.WIDTH;
+					if(0<left_dx) {
+						//TODO Physics HERE
+						velX -= 0.15;
+						return true;
+					}
+				}
+				if(0<right_dx) {
+					//TODO Physics HERE
+					velX += 0.15;
+					return true;
+				}else{
+					right_dx = (boundRightCenter.x + r)-Game.WIDTH;
+					if(0<right_dx) {
+						//TODO Physics HERE
+						velX += 0.15;
 						return true;
 					}
 				}
 				//collide vs. y-bounds
-				double dy = 0 - (boundTopCenter.y - r);
-				if (0<dy) {
-					System.out.println("collide");
+				double top_dy = 0 - (boundTopCenter.y - r);
+				double left_dy = 0 - (boundLeftCenter.y - r);
+				double right_dy = 0 - (boundRightCenter.y - r);
+				if (0<top_dy) {
+					//TODO Physics HERE
+					velY -=5;
 					return true;
+				}else{
+					top_dy = (boundTopCenter.y + r)-Game.HEIGHT;
+					if(0<top_dy) {
+						//TODO Physics HERE
+						velY -=5;
+						return true;
+					}
 				}
-				else {
-					dy = (boundTopCenter.y + r)-Game.HEIGHT;
-					if(0<dy) {
-						System.out.println("collide");
+				if (0<left_dy) {
+					//TODO Physics HERE
+					velX -= 0.15;
+					return true;
+				}else{
+					left_dy = (boundLeftCenter.y + r)-Game.HEIGHT;
+					if(0<left_dy) {
+						//TODO Physics HERE
+						velX -= 0.15;
+						return true;
+					}
+				}
+				if (0<right_dy) {
+					//TODO Physics HERE
+					velX += 0.15;
+					return true;
+				}else{
+					right_dy = (boundRightCenter.y + r)-Game.HEIGHT;
+					if(0<right_dy) {
+						//TODO Physics HERE
+						velX += 0.15;
 						return true;
 					}
 				}
@@ -142,8 +189,7 @@ public class PlayerShip extends GameObject {
 		
 		boundTopCenter = rotatePoint(velX,center, boundTopCenter);
 		boundLeftCenter = rotatePoint(velX,center, boundLeftCenter);
-		boundRightCenter = rotatePoint(velX,center, boundRightCenter);
-		
+		boundRightCenter = rotatePoint(velX,center, boundRightCenter);		
 	}
 	private Point2D.Double movePoint(double speed, Point2D.Double center, Point2D.Double point) {
 		double xnew = point.x, ynew = point.y;
