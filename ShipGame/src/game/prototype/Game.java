@@ -16,12 +16,19 @@ public class Game extends Canvas implements Runnable{
 
 	private Thread thread;
 	Color backgroundColor = new Color(238,238,238);
+	public static int WIDTH, HEIGHT;
 	//Object
 	Handler handler;
 	private void init() {
+		WIDTH = getWidth();
+		HEIGHT = getHeight();
 		handler = new Handler();
+		
+		handler.createScreenBounds();
+		//handler.addObject(new ScreenBounds(0,0,WIDTH,HEIGHT,ObjectId.ScreenBounds));
 		//Arguments: Position, size
-		handler.addObject(new PlayerShip(500,500, 80,60, ObjectId.PlayerShip));
+		handler.addObject(new PlayerShip(500,500, 60,80, handler, ObjectId.PlayerShip));
+		//handler.addObject(new ScreenBounds(0,0,1420,800, BojectId.));
 		//Arguments: Max speed, speed increments
 		handler.setSpeed(5f, 0.1f);
 		this.addKeyListener(handler);

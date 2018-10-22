@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
+import game.prototype.objects.ScreenBounds;
 
 public class Handler extends KeyAdapter{
 
@@ -35,43 +36,43 @@ public class Handler extends KeyAdapter{
 	public void updateInput() {
 		//Pressed
 		if(upKeyPressed == true) {
-			movement("up");
+			move("up");
 			if(upKeyPressed == true && leftKeyPressed == true) {
-				movement("up");
-				movement("left");
+				move("up");
+				move("left");
 			}
 			else if(upKeyPressed == true && rightKeyPressed == true) {
-				movement("up");
-				movement("right");
+				move("up");
+				move("right");
 			}
 			else if(leftKeyReleased == true) {
-				movement("decelerateLeft");
+				move("decelerateLeft");
 			}
 			else if(rightKeyReleased == true) {
-				movement("decelerateRight");
+				move("decelerateRight");
 			}
 		}			
 		if (downKeyPressed == true) {
-			movement("down");
+			move("down");
 		}
 		if (leftKeyPressed == true) {
-			movement("left");
+			move("left");
 		}
 		if (rightKeyPressed == true) {
-			movement("right");
+			move("right");
 		}
 		//Released
 		if (upKeyReleased == true) {
-			movement("decelerateUp");		
+			move("decelerateUp");		
 		}
 		if (downKeyReleased == true) {
-			movement("decelerateDown");		
+			move("decelerateDown");		
 		}
 		if (leftKeyReleased == true && leftKeyPressed == false && rightKeyPressed == false) {	
-			movement("decelerateLeft");
+			move("decelerateLeft");
 		}
 		if (rightKeyReleased == true && rightKeyPressed == false && leftKeyPressed == false) {	
-			movement("decelerateRight");
+			move("decelerateRight");
 		}
 		
 	}
@@ -85,6 +86,10 @@ public class Handler extends KeyAdapter{
 	}
 	public void removeObject(GameObject object) {
 		this.object.remove(object);
+	}
+	
+	public void createScreenBounds() {
+		addObject(new ScreenBounds(0,0,Game.WIDTH,Game.HEIGHT,ObjectId.ScreenBounds));
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -138,7 +143,7 @@ public class Handler extends KeyAdapter{
 			}
 		}
 	}
-	private void movement(String move) {
+	private void move(String move) {
 		switch(move) 
 		{
 		case "up":
