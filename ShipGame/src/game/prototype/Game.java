@@ -7,6 +7,7 @@ import java.awt.image.BufferStrategy;
 
 import game.prototype.framework.ObjectId;
 import game.prototype.objects.PlayerShip;
+import game.prototype.objects.Tile;
 
 public class Game extends Canvas implements Runnable{
 	/**
@@ -23,12 +24,12 @@ public class Game extends Canvas implements Runnable{
 		WIDTH = getWidth();
 		HEIGHT = getHeight();
 		handler = new Handler();
-		
-		handler.createScreenBounds();
+		//screen bounds width
+		handler.createScreenBounds(10);
 		//handler.addObject(new ScreenBounds(0,0,WIDTH,HEIGHT,ObjectId.ScreenBounds));
 		//Arguments: Position, size
-		handler.addObject(new PlayerShip(500,500, 60,80, handler, ObjectId.PlayerShip));
-		//handler.addObject(new ScreenBounds(0,0,1420,800, BojectId.));
+		handler.addObject(new Tile(700,700, 40, 40,handler, ObjectId.Tile));
+		handler.addObject(new PlayerShip(850,250, 60,80, handler, ObjectId.PlayerShip));
 		//Arguments: Max speed, speed increments
 		handler.setSpeed(5f, 0.1f);
 		this.addKeyListener(handler);

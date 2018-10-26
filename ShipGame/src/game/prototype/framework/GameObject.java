@@ -10,13 +10,13 @@ public abstract class GameObject {
 	protected float x,y;
 	protected ObjectId id;
 	protected float velX = 0, velY = 0;
-	protected float sizeX = 0, sizeY = 0;
+	protected float w = 0, h = 0;
 	
 	public GameObject(float x, float y, float w, float h, ObjectId id) {
 		this.x = x;
 		this.y = y;
-		this.sizeX = w;
-		this.sizeY = h;
+		this.w = w;
+		this.h = h;
 		this.id = id;
 	}
 	
@@ -49,16 +49,16 @@ public abstract class GameObject {
 		this.velY = velY;
 	}	
 	public float getSizeX() {
-		return sizeX;
+		return w;
 	}
 	public float getSizeY() {
-		return sizeY;
+		return h;
 	}
 	public void setSizeX(float sizeX) {
-		this.sizeX = sizeX;
+		this.w = sizeX;
 	}
 	public void setSizeY(float sizeY) {
-		this.sizeY = sizeY;
+		this.h = sizeY;
 	}
 	public ObjectId getId() {
 		return id;
