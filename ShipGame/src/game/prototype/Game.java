@@ -16,7 +16,7 @@ public class Game extends Canvas implements Runnable{
 	private static final long serialVersionUID = 1L;
 
 	private Thread thread;
-	Color backgroundColor = new Color(238,238,238);
+	Color backgroundColor = new Color(238, 238, 238);
 	public static int WIDTH, HEIGHT;
 	//Object
 	Handler handler;
@@ -24,17 +24,20 @@ public class Game extends Canvas implements Runnable{
 		WIDTH = getWidth();
 		HEIGHT = getHeight();
 		handler = new Handler();
-		//screen bounds width
-		handler.createScreenBounds(10);
-		//handler.addObject(new ScreenBounds(0,0,WIDTH,HEIGHT,ObjectId.ScreenBounds));
-		//Arguments: Position, size
-		handler.addObject(new Tile(700,700, 40, 40,handler, ObjectId.Tile));
-		handler.addObject(new PlayerShip(850,250, 60,80, handler, ObjectId.PlayerShip));
-		//Arguments: Max speed, speed increments
-		handler.setSpeed(5f, 0.1f);
 		this.addKeyListener(handler);
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
+		//Arguments: Screen bounds width
+		handler.createScreenBounds(10);
+		//Arguments: Position, size
+		handler.addObject(new Tile(700, 700, 40, 40, handler, ObjectId.Tile));
+		handler.addObject(new PlayerShip(850, 250, 60, 80, handler, ObjectId.PlayerShip));
+		
+		//Arguments: Max speed, speed increments
+		handler.setSpeed(5f, 0.1f);
+		
+
+		
 	}
 	
 	public boolean isRunning = false;

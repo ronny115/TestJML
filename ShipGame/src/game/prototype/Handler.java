@@ -229,7 +229,6 @@ public class Handler extends KeyAdapter{
 		vector.y = (pointB.y - pointA.y);
 		return vector;	
 	}
-	
 	public float dotProduct(Point2D.Float vec1, Point2D.Float vec2) {
 		float dp = ((vec1.x * vec2.x) + (vec1.y * vec2.y));
 		return dp;

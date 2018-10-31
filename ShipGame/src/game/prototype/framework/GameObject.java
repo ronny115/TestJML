@@ -1,8 +1,6 @@
 package game.prototype.framework;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 public abstract class GameObject {
@@ -22,7 +20,10 @@ public abstract class GameObject {
 	
 	public abstract void update(LinkedList<GameObject> object);
 	public abstract void render(Graphics2D g2);
-	public abstract Ellipse2D getBounds();
+
+	public abstract float[] getxPoints();
+	public abstract float[] getyPoints();
+	public abstract boolean getCollision();
 	
 	public float getX() {
 		return x;

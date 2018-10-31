@@ -3,7 +3,6 @@ package game.prototype.objects;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 
 import game.prototype.Game;
@@ -43,8 +42,8 @@ public class ScreenBounds extends GameObject {
 	private Rectangle getScreenBoundRight() {
 		return new Rectangle(Game.WIDTH-width,width,width,Game.HEIGHT-(width*2));
 	}
-	public Ellipse2D getBounds() {
-		return null;
-	}
 
+	public float[] getxPoints() {return null;}
+	public float[] getyPoints() {return null;}
+	public boolean getCollision() {return false;}
 }
