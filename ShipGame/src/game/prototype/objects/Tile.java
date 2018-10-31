@@ -54,18 +54,10 @@ public class Tile extends GameObject {
 		//AC
 		//angle(A.x,A.y,B.x,B.y);
 		g2.drawLine((int)A.x,(int)A.y,(int)(X.x), (int)(X.y));
-		g2.setColor(Color.green);
-		//AD
-		g2.drawLine((int)A.x,(int)A.y, (int)(D.x), (int)(D.y));
-		g2.drawLine((int)A.x,(int)A.y, (int)(E.x), (int)(E.y));
-		
 		g2.setColor(Color.orange);
-		//CD
-		//g2.drawLine((int)C.x,(int)C.y, (int)(D.x), (int)(D.y));
+
 		CollisionVsTileDetection(g2);
-		//g2.fill(ship());
-		//g2.drawLine((int)xpoints[3],(int)ypoints[3], (int)(E.x), (int)(E.y));
-		//prueba(g2);
+
 		g2.setColor(Color.BLACK);
 		
 	}
@@ -109,7 +101,8 @@ public class Tile extends GameObject {
 					ship_points_x[j] = C.x;
 					ship_points_y[j] = C.y;
 					
-					g2.drawLine((int)C.x,(int)C.y, (int)(E.x), (int)(E.y));
+					//g2.drawLine((int)C.x,(int)C.y, (int)(E.x), (int)(E.y));
+					//System.out.println(E.x);
 					
 				}
 				
@@ -155,11 +148,31 @@ public class Tile extends GameObject {
 						min_ship_value_y = ship_points_y[j];
 					}
 				}
-				
-
 				g2.drawLine((int)(max_ship_value_x),(int)(max_ship_value_y), (int)(max_projectionAB_value_x), (int)(max_projectionAB_value_y));
 				g2.drawLine((int)(min_ship_value_x),(int)(min_ship_value_y), (int)(min_projectionAB_value_x), (int)(min_projectionAB_value_y));
-						
+				
+				for(int j = 0; j<projectionOnAB_points_x.length;j++) {
+					if(projectionOnAX_points_x[j] > max_projectionAX_value_x) {
+						max_projectionAX_value_x = projectionOnAX_points_x[j];
+						max_ship_value_x_AX = ship_points_x[j];
+					}
+					if(projectionOnAX_points_y[j] < max_projectionAX_value_y) {
+						max_projectionAX_value_y = projectionOnAX_points_y[j];
+						max_ship_value_y_AX = ship_points_y[j];
+					}		
+					if(projectionOnAX_points_x[j] < min_projectionAX_value_x) {
+						min_projectionAX_value_x = projectionOnAX_points_x[j];
+						min_ship_value_x_AX = ship_points_x[j];
+					}
+					if(projectionOnAX_points_y[j] > min_projectionAX_value_y) {
+						min_projectionAX_value_y = projectionOnAX_points_y[j];
+						min_ship_value_y_AX = ship_points_y[j];
+					}
+				}
+				
+				g2.drawLine((int)(max_ship_value_x_AX),(int)(max_ship_value_y_AX), (int)(max_projectionAX_value_x), (int)(max_projectionAX_value_y));
+				g2.drawLine((int)(min_ship_value_x_AX),(int)(min_ship_value_y_AX), (int)(min_projectionAX_value_x), (int)(min_projectionAX_value_y));
+				
 			}
 		}
 	}
