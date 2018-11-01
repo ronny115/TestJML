@@ -31,8 +31,8 @@ public class PlayerShip extends GameObject {
 	//Projection on screen bounds variables.
 	private float projectionXmin, projectionXmax, projectionYmin, projectionYmax;
 	private boolean collide;
-	float newxpoints[];
-	float newypoints[];
+	float newpx;
+	float newpy;
 
 	public void update(LinkedList<GameObject> object) {	
 		CollisionVsScreenDetection();
@@ -113,12 +113,12 @@ public class PlayerShip extends GameObject {
 			//Collide vs. Tile bound box
 
 			if(tempObject.getId() == ObjectId.Tile) {
-				newxpoints = tempObject.getxPoints();
-				newypoints =tempObject.getyPoints();
+				newpx = tempObject.getxPoints()[0];
+				newpy = tempObject.getyPoints()[0];
 				collide = tempObject.getCollision();
 				if (collide == true) {
 					System.out.println(projectionXmin);
-					CollisionVsTileReaction(newxpoints, newypoints);
+					CollisionVsTileReaction(newpx, newpy);
 				}
 			}
 		}
@@ -142,25 +142,21 @@ public class PlayerShip extends GameObject {
 		fourthPoint.y += py;
 	}
 	
-	private void CollisionVsTileReaction(float x[], float y[]) {
-		center.x += x[0]-newxpoints[0];
-		center.y += y[0]-center.y;
+	private void CollisionVsTileReaction(float px, float py) {
+		center.x -= px;
+		center.y -= py;
 		 
-		firstPoint.x += x[1]-firstPoint.x;
-		firstPoint.y += y[1]-firstPoint.y;
+		firstPoint.x -= px;
+		firstPoint.y -= py;
 		
-		secondPoint.x += x[2]-secondPoint.x;
-		secondPoint.y += y[2]-secondPoint.y;
+		secondPoint.x -= px;
+		secondPoint.y -= py;
 		
-		thirdPoint.x += x[3]-thirdPoint.x;
-		thirdPoint.y += y[3]-thirdPoint.y;
+		thirdPoint.x -= px;
+		thirdPoint.y -= py;
 		
-		fourthPoint.x += x[4]-fourthPoint.x;
-		fourthPoint.y += y[4]-fourthPoint.y;
-//		if (collide == true) {
-//			velY=0;
-//		}
-		
+		fourthPoint.x -= px;
+		fourthPoint.y -= py;
 	}
 	private Path2D ship() {
 		float xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};

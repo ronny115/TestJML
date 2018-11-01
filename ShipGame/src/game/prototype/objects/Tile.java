@@ -22,14 +22,18 @@ public class Tile extends GameObject {
 	Handler handler;
 	
 	private float[] xpoints, ypoints;
+	private Point2D.Float minProjected = new Point2D.Float();
+	private Point2D.Float maxProjected = new Point2D.Float();
+	private Point2D.Float minProjectedAB = new Point2D.Float();
+	private Point2D.Float maxProjectedAB = new Point2D.Float();
 	private Point2D.Float A = new Point2D.Float(400,400);
 	private Point2D.Float B = new Point2D.Float(600,600);
 	private Point2D.Float C = new Point2D.Float();
+	private Point2D.Float D = new Point2D.Float();
 	private Point2D.Float E = new Point2D.Float();
 	private Point2D.Float X = new Point2D.Float((float)(-300* Math.cos(angle(A.x,A.y,B.x,B.y))+A.x),(float)(300* Math.sin(angle(A.x,A.y,B.x,B.y)))+A.y);
-	private Point2D.Float vecXA = new Point2D.Float();
-	private Point2D.Float vecXC = new Point2D.Float();
-	private boolean collide = false;
+
+	private boolean isColliding = false;
 
 	public void update(LinkedList<GameObject> object) {
 		
@@ -61,40 +65,61 @@ public class Tile extends GameObject {
 				
 				xpoints = tempObject.getxPoints();
 				ypoints = tempObject.getyPoints();
-				//px and py are the arrays of ship points projected on the perpendicular line AX
+				//px and py are the arrays of ship points projected
 				float px[] = new float[xpoints.length], py[] = new float[xpoints.length];
+				float px1[] = new float[xpoints.length], py1[] = new float[xpoints.length];
 				//sx and sy are the arrays of ship points
 				float sx[] = new float[xpoints.length], sy[] = new float[xpoints.length]; 
 				
 				for(int j = 0; j<xpoints.length;j++) {
 					C.x = xpoints[j];
 					C.y = ypoints[j];
+					
+					D = projection(A,B,C);
+					D.x = D.x + A.x;
+					D.y = D.y + A.y;		
 
-					vecXA = handler.vectorize(X, A);
-					vecXC = handler.vectorize(X, C);
-					E = projection(vecXA, vecXC);
+					E = projection(X,A,C);
 					E.x = E.x + X.x;
 					E.y = E.y + X.y;				
+					
+					px1[j] = D.x;
+					py1[j] = D.y;
 					
 					px[j] = E.x;
 					py[j] = E.y;
 										
 					sx[j] = C.x;
 					sy[j] = C.y;
+					
 				}
 
-				Point2D.Float maxProjected = getMaxValue(px, py, sx, sy)[0];
+				maxProjected = getMaxValue(px, py, sx, sy)[0];
 				Point2D.Float maxShip = getMaxValue(px, py, sx, sy)[1];
 				
-				Point2D.Float minProjected = getMinValue(px, py, sx, sy)[0];
+				minProjected = getMinValue(px, py, sx, sy)[0];
+				minProjectedAB = getMinValue(px1, py1, sx, sy)[0];
+				maxProjectedAB = getMaxValue(px1, py1, sx, sy)[0];
 				Point2D.Float minShip = getMinValue(px, py, sx, sy)[1];
-		
+				
+				//TODO Adjust the collision boundaries
+				
+				if(minProjected.x < A.x && minProjectedAB.y > A.y && maxProjectedAB.y < B.y) {
+					isColliding = true;	
+				}else {
+					isColliding = false;
+				}
+				if (maxProjected.x < A.x){
+					isColliding = false;
+				}
+
 				g2.drawLine((int)(maxShip.x),(int)(maxShip.y), (int)(maxProjected.x), (int)(maxProjected.y));
 				g2.drawLine((int)(minShip.x),(int)(minShip.y), (int)(minProjected.x), (int)(minProjected.y));
-				
+					
 			}
 		}
 	}
+	
 	
 	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x, float[] shipPoints_y) {
 
@@ -149,12 +174,14 @@ public class Tile extends GameObject {
 		return atan;
 	}
 	
-	private Float projection(Point2D.Float vec1, Point2D.Float vec2) {	
-		float d = handler.dotProduct(vec1, vec1);
-		float dp = handler.dotProduct(vec1, vec2);
+	private Float projection(Point2D.Float A, Point2D.Float B, Point2D.Float C) {
+		Point2D.Float vector1 = handler.vectorize(A,B);
+		Point2D.Float vector2 = handler.vectorize(A,C);
+		float d = handler.dotProduct(vector1, vector1);
+		float dp = handler.dotProduct(vector1, vector2);
 		float multiplier = dp/d;	
-		float Dx = vec1.x * multiplier;
-		float Dy = vec1.y * multiplier;		
+		float Dx = vector1.x * multiplier;
+		float Dy = vector1.y * multiplier;		
 		return new Point2D.Float(Dx,Dy);		
 	}
 	
@@ -176,7 +203,15 @@ public class Tile extends GameObject {
 		return polygon;
 	}
 
-	public float[] getxPoints() {return xpoints;}
-	public float[] getyPoints() {return ypoints;}
-	public boolean getCollision() {return collide;}
+	public float[] getxPoints() {
+		float[] px = new float[1];
+		px[0] = minProjected.x-A.x;
+		return px;
+		}
+	public float[] getyPoints() {
+		float[] py = new float[1];
+		py[0] = minProjected.y-A.y;
+		return py;
+		}
+	public boolean getCollision() {return isColliding;}
 }
