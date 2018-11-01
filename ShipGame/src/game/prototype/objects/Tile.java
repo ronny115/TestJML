@@ -102,7 +102,9 @@ public class Tile extends GameObject {
 				maxProjectedAB = getMaxValue(px1, py1, sx, sy)[0];
 				Point2D.Float minShip = getMinValue(px, py, sx, sy)[1];
 				
+				//
 				//TODO Adjust the collision boundaries
+				//
 				
 				if(minProjected.x < A.x && minProjectedAB.y > A.y && maxProjectedAB.y < B.y) {
 					isColliding = true;	
