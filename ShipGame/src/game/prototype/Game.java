@@ -30,11 +30,11 @@ public class Game extends Canvas implements Runnable{
 		//Arguments: Screen bounds width
 		handler.createScreenBounds(10);
 		//Arguments: Position, size
-		handler.addObject(new Tile(700, 700, 40, 40, handler, ObjectId.Tile));
-		handler.addObject(new PlayerShip(850, 250, 60, 80, handler, ObjectId.PlayerShip));
+		handler.addObject(new Tile(700, 500, 100, 100, handler, ObjectId.Tile));
+		handler.addObject(new PlayerShip(850, 250, 30, 40, handler, ObjectId.PlayerShip));
 		
 		//Arguments: Max speed, speed increments
-		handler.setSpeed(5f, 0.1f);
+		handler.setSpeed(3.5f, 0.1f);
 		
 
 		

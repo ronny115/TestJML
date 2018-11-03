@@ -117,7 +117,6 @@ public class PlayerShip extends GameObject {
 				newpy = tempObject.getyPoints()[0];
 				collide = tempObject.getCollision();
 				if (collide == true) {
-					System.out.println(projectionXmin);
 					CollisionVsTileReaction(newpx, newpy);
 				}
 			}
@@ -143,20 +142,20 @@ public class PlayerShip extends GameObject {
 	}
 	
 	private void CollisionVsTileReaction(float px, float py) {
-		center.x -= px;
-		center.y -= py;
+		center.x += px;
+		center.y += py;
 		 
-		firstPoint.x -= px;
-		firstPoint.y -= py;
+		firstPoint.x += px;
+		firstPoint.y += py;
 		
-		secondPoint.x -= px;
-		secondPoint.y -= py;
+		secondPoint.x += px;
+		secondPoint.y += py;
 		
-		thirdPoint.x -= px;
-		thirdPoint.y -= py;
+		thirdPoint.x += px;
+		thirdPoint.y += py;
 		
-		fourthPoint.x -= px;
-		fourthPoint.y -= py;
+		fourthPoint.x += px;
+		fourthPoint.y += py;
 	}
 	private Path2D ship() {
 		float xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};
