@@ -19,16 +19,14 @@ public class Handler extends KeyAdapter{
 	private boolean upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed;
 	private boolean upKeyReleased, downKeyReleased, leftKeyReleased, rightKeyReleased;
 	
-	public void update()
-	{
+	public void update() {
 		for(int i =0; i < object.size(); i++) {
 			tempObject = object.get(i);
 			tempObject.update(object);
 		}
 	}
 	
-	public void render(Graphics2D g2)
-	{
+	public void render(Graphics2D g2) {
 		for(int i =0; i < object.size(); i++) {
 			tempObject = object.get(i);
 			tempObject.render(g2);
@@ -150,8 +148,7 @@ public class Handler extends KeyAdapter{
 		}
 	}
 	private void move(String move) {
-		switch(move) 
-		{
+		switch(move) {
 		case "up":
 			vely += deltaSpeed;
 			tempObject.setVelY(vely);

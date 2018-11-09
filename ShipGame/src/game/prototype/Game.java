@@ -32,12 +32,8 @@ public class Game extends Canvas implements Runnable{
 		//Arguments: Position, size
 		handler.addObject(new Tile(700, 500, 100, 100, handler, ObjectId.Tile));
 		handler.addObject(new PlayerShip(850, 250, 30, 40, handler, ObjectId.PlayerShip));
-		
 		//Arguments: Max speed, speed increments
-		handler.setSpeed(3.5f, 0.1f);
-		
-
-		
+		handler.setSpeed(3.5f, 0.1f);		
 	}
 	
 	public boolean isRunning = false;
@@ -60,15 +56,13 @@ public class Game extends Canvas implements Runnable{
 		final double optimal_time_frame = 1000000000 / target_ticks;	
 		int ticks = 0, frames = 0;
 		
-		while(isRunning)
-		{
+		while(isRunning) {
 			long currentTime = System.nanoTime();
 			double frameTime = currentTime - initialTime;
 			deltaT += frameTime / optimal_time_frame;
 			initialTime = currentTime;
 				
-			if(deltaT>=1) 
-			{
+			if(deltaT>=1) {
 				update();
 				ticks++;
 				deltaT--;
@@ -76,8 +70,7 @@ public class Game extends Canvas implements Runnable{
 			render();
 			fpsCounter += frameTime;
 			frames++;
-			if (fpsCounter >= 1000000000) 
-			{
+			if (fpsCounter >= 1000000000) {
 				System.out.println("(ticks: "+ticks+") FPS: "+frames );
 				fpsCounter = 0;
 				ticks = 0;
