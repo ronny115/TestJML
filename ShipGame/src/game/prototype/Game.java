@@ -31,6 +31,8 @@ public class Game extends Canvas implements Runnable{
 		handler.createScreenBounds(10);
 		//Arguments: Position, size
 		handler.addObject(new Tile(700, 500, 100, 100, handler, ObjectId.Tile));
+		handler.addObject(new Tile(500, 500, 100, 100, handler, ObjectId.Tile));
+		handler.addObject(new Tile(1000, 500, 50, 50, handler, ObjectId.Tile));
 		handler.addObject(new PlayerShip(850, 250, 30, 40, handler, ObjectId.PlayerShip));
 		//Arguments: Max speed, speed increments
 		handler.setSpeed(3.5f, 0.1f);		

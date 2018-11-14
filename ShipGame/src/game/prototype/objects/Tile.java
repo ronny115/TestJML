@@ -54,156 +54,159 @@ public class Tile extends GameObject {
 		//TODO Proximity activation
 		float segmentDist;
 		float projDist;
+		boolean insideBB = false;
 		for(int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);			
-			if(tempObject.getId() == ObjectId.PlayerShip) {	
+			if(tempObject.getId() == ObjectId.PlayerShip) {
 				for(int j = 0; j<tempObject.getxPoints().length; j++) {
-					//Segment 0-1
-					if(tempObject.getxPoints()[j] > bound_x[1] && tempObject.getyPoints()[j] > bound_y[0] && tempObject.getyPoints()[j] < bound_y[1]) {
-						segmentPointA.x = bound_x[0]; segmentPointA.y = bound_y[0];
-						segmentPointB.x = bound_x[1]; segmentPointB.y = bound_y[1];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X1, "right", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(minShip,minProjected);
-						//Collision goes here
-						if(minProjected.x < segmentPointA.x) {
-							isColliding = true;
-							if(minShip.y < segmentPointA.y || segmentDist+tempObject.getSizeX()/2 < projDist) {
-								isColliding = false;
-							}
-						}
-						if (minProjected.x > segmentPointA.x || segmentDist+(tempObject.getSizeX()/2) < projDist) {
-							isColliding = false;
-						}
-						px[0] = segmentPointA.x - minProjected.x;
-						py[0] = segmentPointA.y - minProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X1.x), (int)(X1.y));
-					}
-					//Segment 1-2
-					if(tempObject.getxPoints()[j] < bound_x[1] && tempObject.getyPoints()[j] > bound_y[1] && tempObject.getxPoints()[j] > bound_x[2]) {
-						segmentPointA.x = bound_x[1]; segmentPointA.y = bound_y[1];
-						segmentPointB.x = bound_x[2]; segmentPointB.y = bound_y[2];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X2, "right", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(minShip,minProjected);
-						//Collision goes here
-						if(minProjected.y < segmentPointA.y) {
-							isColliding = true;
-							if(minShip.x > segmentPointA.x + tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-							if(minShip.x < segmentPointB.x - tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-						}
-						if (minProjected.y > segmentPointA.y) {
-							isColliding = false;
-						} 
-						px[0] = segmentPointA.x - minProjected.x;
-						py[0] = segmentPointA.y - minProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X2.x), (int)(X2.y));
-					}
-					//Segment 2-3
-					if(tempObject.getxPoints()[j] < bound_x[2] && tempObject.getyPoints()[j] < bound_y[2] && tempObject.getyPoints()[j] > bound_y[3]) {
-						segmentPointA.x = bound_x[2]; segmentPointA.y = bound_y[2];
-						segmentPointB.x = bound_x[3]; segmentPointB.y = bound_y[3];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X3, "reverse", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(maxShip,maxProjected);
-						//Collision goes here
-						if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
-							isColliding = false;
-						}
-						if (maxProjected.x > segmentPointA.x) {
-							isColliding = true;
-							if(maxShip.y > segmentPointA.y || segmentDist+tempObject.getSizeX()/2 < projDist) {
-								isColliding = false;
-							}
-						} 
-						px[0] = segmentPointA.x - maxProjected.x;
-						py[0] = segmentPointA.y - maxProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X3.x), (int)(X3.y));	
-					}
-					//Segment 3-4
-					if(tempObject.getxPoints()[j] < bound_x[4] && tempObject.getyPoints()[j] < bound_y[3] && tempObject.getyPoints()[j] > bound_y[4]) {
-						segmentPointA.x = bound_x[3]; segmentPointA.y = bound_y[3];	
-						segmentPointB.x = bound_x[4]; segmentPointB.y = bound_y[4];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X4, "right", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(maxShip,maxProjected);
-						//Collision goes here
-						if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
-							isColliding = false;
-						}
-						if (maxProjected.x > segmentPointA.x) {
-							isColliding = true;
-							if(maxShip.y > segmentPointA.y + tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-						} 
-						px[0] = segmentPointA.x - maxProjected.x;
-						py[0] = segmentPointA.y - maxProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X4.x), (int)(X4.y));			
-					}
-					//Segment 4-5
-					if(tempObject.getyPoints()[j] < bound_y[4] && tempObject.getxPoints()[j] < bound_x[5] && tempObject.getxPoints()[j] > bound_x[4]) {
-						segmentPointA.x = bound_x[4]; segmentPointA.y = bound_y[4];	
-						segmentPointB.x = bound_x[5]; segmentPointB.y = bound_y[5];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X5, "reverse", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(minShip,minProjected);
-						//Collision goes here
-						if(minProjected.y < segmentPointA.y) {
-							isColliding = false;
-						}
-						if (minProjected.y > segmentPointA.y) {
-							isColliding = true;
-							if(minShip.x < segmentPointA.x - tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-							if(minShip.x > segmentPointB.x + tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-						}
-						px[0] = segmentPointA.x - minProjected.x;
-						py[0] = segmentPointA.y - minProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X5.x), (int)(X5.y));
-						
-					}
-					//Segment 5-0
-					if(tempObject.getxPoints()[j] > bound_x[5] && tempObject.getyPoints()[j] > bound_y[5] && tempObject.getyPoints()[j] < bound_y[0] ) {
-						segmentPointA.x = bound_x[5]; segmentPointA.y = bound_y[5];
-						segmentPointB.x = bound_x[0]; segmentPointB.y = bound_y[0];
-						
-						getProjectionPoints(segmentPointA, segmentPointB, X6, "reverse", tempObject);
-						segmentDist = distance(segmentPointA,segmentPointB);
-						projDist = distance(minShip,minProjected);
-						//Collision goes here
-						if(minProjected.x < segmentPointA.x) {
-							isColliding = true;
-							if(minShip.y < segmentPointA.y - tempObject.getSizeX()/2) {
-								isColliding = false;
-							}
-						}
-						if (minProjected.x > segmentPointA.x || segmentDist+(tempObject.getSizeX()/2) < projDist) {
-							isColliding = false;
-						}
-						px[0] = segmentPointA.x - minProjected.x; 
-						py[0] = segmentPointA.y - minProjected.y;
-						g2.drawLine((int)(segmentPointA.x),(int)(segmentPointA.y), (int)(X6.x), (int)(X6.y));	
+					//Check if any point of the ship is inside the tile box
+					if(tempObject.getxPoints()[j] > (x-w-(tempObject.getSizeX()/2)) && tempObject.getxPoints()[j] < (x+w+(tempObject.getSizeX()/2)) &&
+					   tempObject.getyPoints()[j] > (y-h) && tempObject.getyPoints()[j] < (y+h)) {
+						insideBB = true;
+						break;
+					} else {
+						insideBB = false;
 					}
 				}
-				
-				g2.setColor(Color.orange);
-				g2.drawLine((int)(minShip.x),(int)(minShip.y), (int)(minProjected.x), (int)(minProjected.y));
-				g2.setColor(Color.CYAN);
-				g2.drawLine((int)(maxShip.x),(int)(maxShip.y), (int)(maxProjected.x), (int)(maxProjected.y));
-
+				for(int j = 0; j<tempObject.getxPoints().length; j++) {
+					//Check if any point of the ship is inside the tile box
+					if(insideBB == true) {
+						//Segment 0-1
+						if(tempObject.getxPoints()[j] > bound_x[1] && tempObject.getyPoints()[j] > bound_y[0] && tempObject.getyPoints()[j] < bound_y[1]) {
+							segmentPointA.x = bound_x[0]; segmentPointA.y = bound_y[0];
+							segmentPointB.x = bound_x[1]; segmentPointB.y = bound_y[1];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X1, "right", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(minShip,minProjected);
+							//Collision goes here
+							if(minProjected.x < segmentPointA.x) {
+								isColliding = true;
+								if(minShip.y < segmentPointA.y - tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							}
+							if (minProjected.x > segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
+								isColliding = false;
+							}
+							px[0] = segmentPointA.x - minProjected.x;
+							py[0] = segmentPointA.y - minProjected.y;
+						}
+						//Segment 1-2
+						if(tempObject.getxPoints()[j] < bound_x[1] && tempObject.getyPoints()[j] > bound_y[1] && tempObject.getxPoints()[j] > bound_x[2]) {
+							segmentPointA.x = bound_x[1]; segmentPointA.y = bound_y[1];
+							segmentPointB.x = bound_x[2]; segmentPointB.y = bound_y[2];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X2, "right", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(minShip,minProjected);
+							//Collision goes here
+							if(minProjected.y < segmentPointA.y) {
+								isColliding = true;
+								if(minShip.x > segmentPointA.x + tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+								if(minShip.x < segmentPointB.x - tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							}
+							if (minProjected.y > segmentPointA.y) {
+								isColliding = false;
+							} 
+							px[0] = segmentPointA.x - minProjected.x;
+							py[0] = segmentPointA.y - minProjected.y;
+						}
+						//Segment 2-3
+						if(tempObject.getxPoints()[j] < bound_x[2] && tempObject.getyPoints()[j] < bound_y[2] && tempObject.getyPoints()[j] > bound_y[3]) {
+							segmentPointA.x = bound_x[2]; segmentPointA.y = bound_y[2];
+							segmentPointB.x = bound_x[3]; segmentPointB.y = bound_y[3];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X3, "reverse", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(maxShip,maxProjected);
+							//Collision goes here
+							if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
+								isColliding = false;
+							}
+							if (maxProjected.x > segmentPointA.x) {
+								isColliding = true;
+								if(maxShip.y > segmentPointA.y || segmentDist+tempObject.getSizeX()/2 < projDist) {
+									isColliding = false;
+								}
+							} 
+							px[0] = segmentPointA.x - maxProjected.x;
+							py[0] = segmentPointA.y - maxProjected.y;
+						}
+						//Segment 3-4
+						if(tempObject.getxPoints()[j] < bound_x[4] && tempObject.getyPoints()[j] < bound_y[3] && tempObject.getyPoints()[j] > bound_y[4]) {
+							segmentPointA.x = bound_x[3]; segmentPointA.y = bound_y[3];	
+							segmentPointB.x = bound_x[4]; segmentPointB.y = bound_y[4];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X4, "right", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(maxShip,maxProjected);
+							//Collision goes here
+							if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
+								isColliding = false;
+							}
+							if (maxProjected.x > segmentPointA.x) {
+								isColliding = true;
+								if(maxShip.y > segmentPointA.y + tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							} 
+							px[0] = segmentPointA.x - maxProjected.x;
+							py[0] = segmentPointA.y - maxProjected.y;		
+						}
+						//Segment 4-5
+						if(tempObject.getyPoints()[j] < bound_y[4] && tempObject.getxPoints()[j] < bound_x[5] && tempObject.getxPoints()[j] > bound_x[4]) {
+							segmentPointA.x = bound_x[4]; segmentPointA.y = bound_y[4];	
+							segmentPointB.x = bound_x[5]; segmentPointB.y = bound_y[5];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X5, "reverse", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(minShip,minProjected);
+							//Collision goes here
+							if(minProjected.y < segmentPointA.y) {
+								isColliding = false;
+							}
+							if (minProjected.y > segmentPointA.y) {
+								isColliding = true;
+								if(minShip.x < segmentPointA.x - tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+								if(minShip.x > segmentPointB.x + tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							}
+							px[0] = segmentPointA.x - minProjected.x;
+							py[0] = segmentPointA.y - minProjected.y;				
+						}
+						//Segment 5-0
+						if(tempObject.getxPoints()[j] > bound_x[5] && tempObject.getyPoints()[j] > bound_y[5] && tempObject.getyPoints()[j] < bound_y[0] ) {
+							segmentPointA.x = bound_x[5]; segmentPointA.y = bound_y[5];
+							segmentPointB.x = bound_x[0]; segmentPointB.y = bound_y[0];
+							
+							getProjectionPoints(segmentPointA, segmentPointB, X6, "reverse", tempObject);
+							segmentDist = distance(segmentPointA,segmentPointB);
+							projDist = distance(minShip,minProjected);
+							//Collision goes here
+							if(minProjected.x < segmentPointA.x) {
+								isColliding = true;
+								if(minShip.y < segmentPointA.y - tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							}
+							if (minProjected.x > segmentPointA.x || segmentDist+(tempObject.getSizeX()/2) < projDist) {
+								isColliding = false;
+							}
+							px[0] = segmentPointA.x - minProjected.x; 
+							py[0] = segmentPointA.y - minProjected.y;
+						}
+					} else {
+						isColliding = false;
+					}
+				}
 			}
 		}
 	}
@@ -212,7 +215,6 @@ public class Tile extends GameObject {
 	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X, String dir, GameObject ship) {
 		Point2D.Float shipPointsC = new Point2D.Float();
 		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();
-
 		float[]	px = {0,0,0,0};  float[] py = {0,0,0,0};
 		float[]	sx = {0,0,0,0};  float[] sy = {0,0,0,0};
 		
@@ -229,11 +231,9 @@ public class Tile extends GameObject {
 								
 			sx[j] = ship.getxPoints()[j];
 			sy[j] = ship.getyPoints()[j];
-		}
-		
+		}		
 		maxProjected = getMaxValue(px,py,sx,sy,dir)[0];
-		maxShip = getMaxValue(px,py,sx,sy,dir)[1];
-		
+		maxShip = getMaxValue(px,py,sx,sy,dir)[1];	
 		minProjected = getMinValue(px,py,sx,sy,dir)[0];
 		minShip = getMinValue(px,py,sx,sy,dir)[1];
 	}
@@ -242,19 +242,18 @@ public class Tile extends GameObject {
 		X1=X2=X3=X4=X5=X6 = new Point2D.Float();
 		ArrayList<float[]> points = new ArrayList<float[]>();
 		float[] coords = new float[6];
+		//for drawing purposes
 		float len = 0.5f;
 		
 		for(PathIterator path = tile().getPathIterator(null); !path.isDone(); path.next()) {	
 			path.currentSegment(coords);
 			float[] pathpoints = {coords[0], coords[1]};
 			points.add(pathpoints);		
-		}
-		
+		}	
 		for(int i = 0; i < 6; i++) {
 			bound_x[i] = points.get(i)[0];
 			bound_y[i] = points.get(i)[1];
-		}
-		
+		}		
 		X1 = getPerpendicular(bound_x[0],bound_y[0],bound_x[1],bound_y[1], len);
 		X2 = getPerpendicular(bound_x[1],bound_y[1],bound_x[2],bound_y[2], len);
 		X3 = getPerpendicular(bound_x[2],bound_y[2],bound_x[3],bound_y[3], len);
@@ -377,7 +376,7 @@ public class Tile extends GameObject {
 		polygon.closePath();
 		return polygon;
 	}
-
+	
 	public float[] getxPoints() {return px;}
 	public float[] getyPoints() {return py;}
 	public boolean getCollision() {return isColliding;}

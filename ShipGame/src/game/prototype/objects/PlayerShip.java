@@ -26,35 +26,21 @@ public class PlayerShip extends GameObject {
 	private Point2D.Float secondPoint = new Point2D.Float(center.x-(w/2), center.y+(h/2));
 	private Point2D.Float thirdPoint = new Point2D.Float(center.x,        center.y+(h/3));
 	private Point2D.Float fourthPoint = new Point2D.Float(center.x+(w/2), center.y+(h/2));
-	//Velocity Components
-	//private Point2D.Float velocityComponent = new Point2D.Float(), oldPos = new Point2D.Float(), newPos = new Point2D.Float();
 	//Projection on screen bounds variables.
 	private float projectionXmin, projectionXmax, projectionYmin, projectionYmax;
-	private boolean collide;
-	float newpx;
-	float newpy;
+	private boolean isColliding;
+	float newpx, newpy;
 
 	public void update(LinkedList<GameObject> object) {	
 		CollisionVsScreenDetection();
-		//oldPos = firstPoint;
 		shipMovement();
-		//newPos = firstPoint;
-		//velocityComponent.x = newPos.x-oldPos.x;
-		//velocityComponent.y = newPos.y-oldPos.y;
-
 	}
 
 	public void render(Graphics2D g2) {
-		//Enable AA
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		//g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);	
 		g2.setColor(Color.BLACK);
-		//g2.setStroke(new BasicStroke(3.7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 		g2.draw(ship());
-		//g2.fill(ship());
 		g2.drawOval((int)center.x-3, (int)center.y-3, 6, 6);
-		g2.setColor(Color.RED);
-		g2.draw(ship().getBounds2D());
 	}
 	
 	private boolean CollisionVsScreenDetection() {
@@ -64,17 +50,17 @@ public class PlayerShip extends GameObject {
 			if(tempObject.getId() == ObjectId.PlayerShip) {
 				//Collide vs. x-bounds	
 				if ((projectionXmin - screenBoundwidth) < 0) {
-					CollisionVsScreenReaction(-projectionXmin + screenBoundwidth, 0, 1, 0);
+					CollisionVsScreenReaction(-projectionXmin + screenBoundwidth, 0);
 					//Check if reach upper left corner
 					if(projectionYmin - screenBoundwidth < 0) {
 						
-						CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth, 0, 1);
+						CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
 						return true;
 					}else{
 						//Check if reach upper right corner
 						projectionYmax = projectionYmax-Game.HEIGHT;
 						if(projectionYmax + screenBoundwidth > 0) {
-							CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth, 0, -1);
+							CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
 							return true;
 						}	
 					}
@@ -82,16 +68,16 @@ public class PlayerShip extends GameObject {
 				}else{
 					projectionXmax = projectionXmax-Game.WIDTH;
 					if(projectionXmax + screenBoundwidth > 0) {
-						CollisionVsScreenReaction(-projectionXmax - screenBoundwidth, 0 , -1, 0);
+						CollisionVsScreenReaction(-projectionXmax - screenBoundwidth, 0);
 						//Check if reach lower left corner
 						if(projectionYmin - screenBoundwidth < 0) {
-							CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth, 0, 1);
+							CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
 							return true;
 						}else{
 							//Check if reach lower right corner
 							projectionYmax = projectionYmax-Game.HEIGHT;
 							if(projectionYmax + screenBoundwidth > 0) {
-								CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth, 0, -1);
+								CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
 								return true;
 							}	
 						}
@@ -100,23 +86,22 @@ public class PlayerShip extends GameObject {
 				}
 				//Collide vs. y-bounds
 				if (projectionYmin - screenBoundwidth < 0) {
-					CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth, 0, 1);
+					CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
 					return true;
 				}else{
 					projectionYmax = projectionYmax-Game.HEIGHT;
 					if(projectionYmax + screenBoundwidth > 0) {
-						CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth, 0, -1);
+						CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
 						return true;
 					}
 				}
 			}
 			//Collide vs. Tile bound box
-
 			if(tempObject.getId() == ObjectId.Tile) {
 				newpx = tempObject.getxPoints()[0];
 				newpy = tempObject.getyPoints()[0];
-				collide = tempObject.getCollision();
-				if (collide == true) {
+				isColliding = tempObject.getCollision();
+				if (isColliding == true) {
 					CollisionVsTileReaction(newpx, newpy);
 				}
 			}
@@ -124,7 +109,7 @@ public class PlayerShip extends GameObject {
 		return false;
 	}
 
-	private void CollisionVsScreenReaction(float px, float py, float dx, float dy) {	
+	private void CollisionVsScreenReaction(float px, float py) {	
 		center.x += px;
 		center.y += py;
 		 
@@ -189,7 +174,6 @@ public class PlayerShip extends GameObject {
 		secondPoint = direction(velX, center, secondPoint);
 		thirdPoint = direction(velX, center, thirdPoint);
 		fourthPoint = direction(velX, center, fourthPoint);
-
 	}
 	
 	public float[] getxPoints() {
