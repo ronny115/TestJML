@@ -4,10 +4,12 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 import game.prototype.framework.ObjectId;
 import game.prototype.objects.PlayerShip;
-import game.prototype.objects.Tile;
+import game.prototype.objects.Block;
+import game.prototype.objects.CollisionBlock;
 
 public class Game extends Canvas implements Runnable{
 	/**
@@ -18,24 +20,28 @@ public class Game extends Canvas implements Runnable{
 	private Thread thread;
 	Color backgroundColor = new Color(238, 238, 238);
 	public static int WIDTH, HEIGHT;
+	private BufferedImage level = null;
+	private int initPosX, initPosY;
 	//Object
 	Handler handler;
-	private void init() {
+	private void init() {	
 		WIDTH = getWidth();
 		HEIGHT = getHeight();
+
 		handler = new Handler();
 		this.addKeyListener(handler);
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
+		
+		BufferedImageLoader loader = new BufferedImageLoader();
+		level = loader.loadImage("/lvl.png"); //load level
+		loadImageLevel(level);
 		//Arguments: Screen bounds width
 		handler.createScreenBounds(10);
 		//Arguments: Position, size
-		handler.addObject(new Tile(700, 500, 100, 100, handler, ObjectId.Tile));
-		handler.addObject(new Tile(500, 500, 100, 100, handler, ObjectId.Tile));
-		handler.addObject(new Tile(1000, 500, 50, 50, handler, ObjectId.Tile));
-		handler.addObject(new PlayerShip(850, 250, 30, 40, handler, ObjectId.PlayerShip));
+		handler.addObject(new PlayerShip(initPosX, initPosY, 30, 40, handler, ObjectId.PlayerShip));
 		//Arguments: Max speed, speed increments
-		handler.setSpeed(3.5f, 0.1f);		
+		handler.setSpeed(3.5f, 0.1f);	
 	}
 	
 	public boolean isRunning = false;
@@ -102,6 +108,31 @@ public class Game extends Canvas implements Runnable{
 	private void update() {
 		handler.update();
 		handler.updateInput();
+	}
+	
+	private void loadImageLevel(BufferedImage image) {
+		int w = image.getWidth();
+		int h = image.getHeight();
+		
+		for (int xx = 0; xx < h; xx++) {
+			for (int yy = 0; yy < w; yy++) {
+				int pixel = image.getRGB(xx, yy);
+				int red = (pixel >> 16) & 0xff;
+				int green = (pixel >> 8) & 0xff;
+				int blue = (pixel) & 0xff;
+				
+				if (red == 255 && green == 255 && blue == 255) {
+					handler.addObject(new Block(xx*75, yy*44, 50, 50, ObjectId.Block));
+				}
+				if (red == 255 && green == 0 && blue == 0) {
+					handler.addObject(new CollisionBlock(xx*75, yy*44, 50, 50, handler, ObjectId.CollisionBlock));
+				}
+				if (red == 0 && green == 0 && blue == 255) {
+					initPosX = xx*75;
+					initPosY = yy*44;
+				}
+			}
+		}
 	}
 	
 	public static void main(String args[]) {

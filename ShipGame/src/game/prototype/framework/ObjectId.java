@@ -4,6 +4,7 @@ public enum ObjectId {
 	
 	PlayerShip(), 
 	ScreenBounds(),
-	Tile();
+	Block(),
+	CollisionBlock();
 
 }

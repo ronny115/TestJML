@@ -14,9 +14,9 @@ import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
 
-public class Tile extends GameObject {
+public class CollisionBlock extends GameObject {
 
-	public Tile(float x, float y, float w, float h,Handler handler, ObjectId id) {
+	public CollisionBlock(float x, float y, float w, float h, Handler handler, ObjectId id) {
 		super(x, y, w, h, id);
 		this.handler = handler;
 		buildHexagonBB();
@@ -39,21 +39,17 @@ public class Tile extends GameObject {
 	private boolean isColliding = false;
 	
 	public void update(LinkedList<GameObject> object) {
+		CollisionVsTile();
 	}
 	
 	public void render(Graphics2D g2) {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);	
 		g2.setColor(Color.BLACK);
 		g2.draw(tile());
-		g2.setColor(Color.red);
-		CollisionVsTile(g2);
-		g2.setColor(Color.BLACK);
 	}
 	
-	private void CollisionVsTile(Graphics2D g2) {
-		//TODO Proximity activation
-		float segmentDist;
-		float projDist;
+	private void CollisionVsTile() {
+		float segmentDist, projDist;
 		boolean insideBB = false;
 		for(int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);			
@@ -69,7 +65,7 @@ public class Tile extends GameObject {
 					}
 				}
 				for(int j = 0; j<tempObject.getxPoints().length; j++) {
-					//Check if any point of the ship is inside the tile box
+					//If any point of the ship is inside the tile box, then set the collisions
 					if(insideBB == true) {
 						//Segment 0-1
 						if(tempObject.getxPoints()[j] > bound_x[1] && tempObject.getyPoints()[j] > bound_y[0] && tempObject.getyPoints()[j] < bound_y[1]) {
@@ -98,15 +94,14 @@ public class Tile extends GameObject {
 							segmentPointB.x = bound_x[2]; segmentPointB.y = bound_y[2];
 							
 							getProjectionPoints(segmentPointA, segmentPointB, X2, "right", tempObject);
-							segmentDist = distance(segmentPointA,segmentPointB);
 							projDist = distance(minShip,minProjected);
 							//Collision goes here
 							if(minProjected.y < segmentPointA.y) {
 								isColliding = true;
-								if(minShip.x > segmentPointA.x + tempObject.getSizeX()/2) {
+								if(maxShip.x > segmentPointA.x + tempObject.getSizeX()/2) {
 									isColliding = false;
 								}
-								if(minShip.x < segmentPointB.x - tempObject.getSizeX()/2) {
+								if(maxShip.x < segmentPointB.x - tempObject.getSizeX()/2) {
 									isColliding = false;
 								}
 							}
@@ -125,15 +120,15 @@ public class Tile extends GameObject {
 							segmentDist = distance(segmentPointA,segmentPointB);
 							projDist = distance(maxShip,maxProjected);
 							//Collision goes here
+							if (maxProjected.x > segmentPointA.x) {
+								isColliding = true;
+								if(maxShip.y > segmentPointA.y + tempObject.getSizeX()/2) {
+									isColliding = false;
+								}
+							}
 							if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
 								isColliding = false;
 							}
-							if (maxProjected.x > segmentPointA.x) {
-								isColliding = true;
-								if(maxShip.y > segmentPointA.y || segmentDist+tempObject.getSizeX()/2 < projDist) {
-									isColliding = false;
-								}
-							} 
 							px[0] = segmentPointA.x - maxProjected.x;
 							py[0] = segmentPointA.y - maxProjected.y;
 						}
@@ -146,15 +141,15 @@ public class Tile extends GameObject {
 							segmentDist = distance(segmentPointA,segmentPointB);
 							projDist = distance(maxShip,maxProjected);
 							//Collision goes here
-							if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
-								isColliding = false;
-							}
 							if (maxProjected.x > segmentPointA.x) {
 								isColliding = true;
 								if(maxShip.y > segmentPointA.y + tempObject.getSizeX()/2) {
 									isColliding = false;
 								}
 							} 
+							if(maxProjected.x < segmentPointA.x || segmentDist+tempObject.getSizeX()/2 < projDist) {
+								isColliding = false;
+							}
 							px[0] = segmentPointA.x - maxProjected.x;
 							py[0] = segmentPointA.y - maxProjected.y;		
 						}
@@ -164,12 +159,8 @@ public class Tile extends GameObject {
 							segmentPointB.x = bound_x[5]; segmentPointB.y = bound_y[5];
 							
 							getProjectionPoints(segmentPointA, segmentPointB, X5, "reverse", tempObject);
-							segmentDist = distance(segmentPointA,segmentPointB);
 							projDist = distance(minShip,minProjected);
 							//Collision goes here
-							if(minProjected.y < segmentPointA.y) {
-								isColliding = false;
-							}
 							if (minProjected.y > segmentPointA.y) {
 								isColliding = true;
 								if(minShip.x < segmentPointA.x - tempObject.getSizeX()/2) {
@@ -178,6 +169,9 @@ public class Tile extends GameObject {
 								if(minShip.x > segmentPointB.x + tempObject.getSizeX()/2) {
 									isColliding = false;
 								}
+							}
+							if(minProjected.y < segmentPointA.y) {
+								isColliding = false;
 							}
 							px[0] = segmentPointA.x - minProjected.x;
 							py[0] = segmentPointA.y - minProjected.y;				
@@ -211,7 +205,6 @@ public class Tile extends GameObject {
 		}
 	}
 	
-
 	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X, String dir, GameObject ship) {
 		Point2D.Float shipPointsC = new Point2D.Float();
 		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();

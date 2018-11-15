@@ -97,7 +97,7 @@ public class PlayerShip extends GameObject {
 				}
 			}
 			//Collide vs. Tile bound box
-			if(tempObject.getId() == ObjectId.Tile) {
+			if(tempObject.getId() == ObjectId.CollisionBlock) {
 				newpx = tempObject.getxPoints()[0];
 				newpy = tempObject.getyPoints()[0];
 				isColliding = tempObject.getCollision();
