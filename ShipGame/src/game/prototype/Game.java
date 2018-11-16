@@ -3,6 +3,7 @@ package game.prototype;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -35,9 +36,9 @@ public class Game extends Canvas implements Runnable{
 		
 		BufferedImageLoader loader = new BufferedImageLoader();
 		level = loader.loadImage("/lvl.png"); //load level
-		loadImageLevel(level);
+		LoadLevel(level);
 		//Arguments: Screen bounds width
-		handler.createScreenBounds(10);
+		handler.createScreenBounds(5);
 		//Arguments: Position, size
 		handler.addObject(new PlayerShip(initPosX, initPosY, 30, 40, handler, ObjectId.PlayerShip));
 		//Arguments: Max speed, speed increments
@@ -110,7 +111,7 @@ public class Game extends Canvas implements Runnable{
 		handler.updateInput();
 	}
 	
-	private void loadImageLevel(BufferedImage image) {
+	private void LoadLevel(BufferedImage image) {
 		int w = image.getWidth();
 		int h = image.getHeight();
 		
@@ -120,17 +121,10 @@ public class Game extends Canvas implements Runnable{
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
-				
-				if (red == 255 && green == 255 && blue == 255) {
-					handler.addObject(new Block(xx*75, yy*44, 50, 50, ObjectId.Block));
-				}
-				if (red == 255 && green == 0 && blue == 0) {
-					handler.addObject(new CollisionBlock(xx*75, yy*44, 50, 50, handler, ObjectId.CollisionBlock));
-				}
-				if (red == 0 && green == 0 && blue == 255) {
-					initPosX = xx*75;
-					initPosY = yy*44;
-				}
+				//Arguments: Position, size
+				if (red == 255 && green == 255 && blue == 255) handler.addObject(new Block(xx*82, yy*47, 55, 55, ObjectId.Block));
+				if (red == 255 && green ==   0 && blue ==   0) handler.addObject(new CollisionBlock(xx*82, yy*47, 55, 55, handler, ObjectId.CollisionBlock));
+				if (red == 0 && green == 0 && blue == 255) {initPosX = xx*75; initPosY = yy*43;}
 			}
 		}
 	}

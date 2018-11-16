@@ -21,7 +21,9 @@ public class Block extends GameObject {
 	}
 
 	public void render(Graphics2D g2) {
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);	
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		
 		g2.setColor(Color.BLACK);
 		g2.draw(tile());
 	}
@@ -33,8 +35,8 @@ public class Block extends GameObject {
 		double ypoints[] = new double[6];
 		Path2D polygon= new Path2D.Double();
 		for (int i = 0; i < 6; i++) {
-			xpoints[i] = center.x + radius.x * Math.cos(i*2*Math.PI/6);
-			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6);
+			xpoints[i] = center.x + radius.x * Math.cos(i*2*Math.PI/6D);
+			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6D);
 		}
 		polygon.moveTo(xpoints[0], ypoints[0]);
 		for(int i = 1; i < xpoints.length; ++i) {

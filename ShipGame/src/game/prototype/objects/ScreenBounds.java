@@ -17,18 +17,15 @@ public class ScreenBounds extends GameObject {
 		width = boundWidth;
 	}
 
-	public void update(LinkedList<GameObject> object) {
-		// TODO Auto-generated method stub
-		
+	public void update(LinkedList<GameObject> object) {	
 	}
 
 	public void render(Graphics2D g2) {
-		// TODO Auto-generated method stub
-		g2.setColor(Color.RED);
-		g2.draw(getScreenBoundTop());
-		g2.draw(getScreenBoundBottom());
-		g2.draw(getScreenBoundLeft());
-		g2.draw(getScreenBoundRight());
+		//g2.setColor(Color.RED);
+		//g2.draw(getScreenBoundTop());
+		//g2.draw(getScreenBoundBottom());
+		//g2.draw(getScreenBoundLeft());
+		//g2.draw(getScreenBoundRight());
 	}
 	private Rectangle getScreenBoundTop() {
 		return new Rectangle(0,0,Game.WIDTH,+width);

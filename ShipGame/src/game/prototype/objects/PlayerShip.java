@@ -37,7 +37,6 @@ public class PlayerShip extends GameObject {
 	}
 
 	public void render(Graphics2D g2) {
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setColor(Color.BLACK);
 		g2.draw(ship());
 		g2.drawOval((int)center.x-3, (int)center.y-3, 6, 6);
