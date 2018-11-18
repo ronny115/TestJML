@@ -2,12 +2,10 @@ package game.prototype.objects;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
-import game.prototype.Game;
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
@@ -26,13 +24,12 @@ public class PlayerShip extends GameObject {
 	private Point2D.Float secondPoint = new Point2D.Float(center.x-(w/2), center.y+(h/2));
 	private Point2D.Float thirdPoint = new Point2D.Float(center.x,        center.y+(h/3));
 	private Point2D.Float fourthPoint = new Point2D.Float(center.x+(w/2), center.y+(h/2));
-	//Projection on screen bounds variables.
-	private float projectionXmin, projectionXmax, projectionYmin, projectionYmax;
+
 	private boolean isColliding;
 	float newpx, newpy;
 
 	public void update(LinkedList<GameObject> object) {	
-		CollisionVsScreenDetection();
+		CollisionVsTile();
 		shipMovement();
 	}
 
@@ -42,60 +39,9 @@ public class PlayerShip extends GameObject {
 		g2.drawOval((int)center.x-3, (int)center.y-3, 6, 6);
 	}
 	
-	private boolean CollisionVsScreenDetection() {
-		int screenBoundwidth = handler.getScreenBoundsWidth();
+	private void CollisionVsTile() {
 		for(int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);		
-			if(tempObject.getId() == ObjectId.PlayerShip) {
-				//Collide vs. x-bounds	
-				if ((projectionXmin - screenBoundwidth) < 0) {
-					CollisionVsScreenReaction(-projectionXmin + screenBoundwidth, 0);
-					//Check if reach upper left corner
-					if(projectionYmin - screenBoundwidth < 0) {
-						
-						CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
-						return true;
-					}else{
-						//Check if reach upper right corner
-						projectionYmax = projectionYmax-Game.HEIGHT;
-						if(projectionYmax + screenBoundwidth > 0) {
-							CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
-							return true;
-						}	
-					}
-					return true;
-				}else{
-					projectionXmax = projectionXmax-Game.WIDTH;
-					if(projectionXmax + screenBoundwidth > 0) {
-						CollisionVsScreenReaction(-projectionXmax - screenBoundwidth, 0);
-						//Check if reach lower left corner
-						if(projectionYmin - screenBoundwidth < 0) {
-							CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
-							return true;
-						}else{
-							//Check if reach lower right corner
-							projectionYmax = projectionYmax-Game.HEIGHT;
-							if(projectionYmax + screenBoundwidth > 0) {
-								CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
-								return true;
-							}	
-						}
-						return true;
-					}
-				}
-				//Collide vs. y-bounds
-				if (projectionYmin - screenBoundwidth < 0) {
-					CollisionVsScreenReaction(0, -projectionYmin + screenBoundwidth);
-					return true;
-				}else{
-					projectionYmax = projectionYmax-Game.HEIGHT;
-					if(projectionYmax + screenBoundwidth > 0) {
-						CollisionVsScreenReaction(0, -projectionYmax - screenBoundwidth);
-						return true;
-					}
-				}
-			}
-			//Collide vs. Tile bound box
 			if(tempObject.getId() == ObjectId.CollisionBlock) {
 				newpx = tempObject.getxPoints()[0];
 				newpy = tempObject.getyPoints()[0];
@@ -104,25 +50,7 @@ public class PlayerShip extends GameObject {
 					CollisionVsTileReaction(newpx, newpy);
 				}
 			}
-		}
-		return false;
-	}
-
-	private void CollisionVsScreenReaction(float px, float py) {	
-		center.x += px;
-		center.y += py;
-		 
-		firstPoint.x += px;
-		firstPoint.y += py;
-		
-		secondPoint.x += px;
-		secondPoint.y += py;
-		
-		thirdPoint.x += px;
-		thirdPoint.y += py;
-		
-		fourthPoint.x += px;
-		fourthPoint.y += py;
+		}		
 	}
 	
 	private void CollisionVsTileReaction(float px, float py) {
@@ -141,6 +69,7 @@ public class PlayerShip extends GameObject {
 		fourthPoint.x += px;
 		fourthPoint.y += py;
 	}
+	
 	private Path2D ship() {
 		float xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};
 		float ypoints[] = {firstPoint.y,secondPoint.y,thirdPoint.y,fourthPoint.y};
@@ -151,11 +80,6 @@ public class PlayerShip extends GameObject {
 			polygon.lineTo(xpoints[i], ypoints[i]);
 		}
 		polygon.closePath();
-		//Get the min and max X and Y values for the projections on the screen bounds
-		projectionXmin = (float) polygon.getBounds2D().getMinX();
-		projectionXmax = (float) polygon.getBounds2D().getMaxX();
-		projectionYmin = (float) polygon.getBounds2D().getMinY();
-		projectionYmax = (float) polygon.getBounds2D().getMaxY();
 		return polygon;
 	}
 	
@@ -173,6 +97,9 @@ public class PlayerShip extends GameObject {
 		secondPoint = direction(velX, center, secondPoint);
 		thirdPoint = direction(velX, center, thirdPoint);
 		fourthPoint = direction(velX, center, fourthPoint);
+		
+		//Update ship position
+		x = center.x; y = center.y;
 	}
 	
 	public float[] getxPoints() {

@@ -8,13 +8,11 @@ import java.util.LinkedList;
 
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
-import game.prototype.objects.ScreenBounds;
 
 public class Handler extends KeyAdapter{
 
 	public LinkedList<GameObject> object = new LinkedList <GameObject>();
 	private GameObject tempObject;
-	private int screenBoundsWidth;
 	private float topSpeed = 0, deltaSpeed = 0, vely = 0, velx =0;
 	private boolean upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed;
 	private boolean upKeyReleased, downKeyReleased, leftKeyReleased, rightKeyReleased;
@@ -86,14 +84,6 @@ public class Handler extends KeyAdapter{
 	}
 	public void removeObject(GameObject object) {
 		this.object.remove(object);
-	}
-	
-	public void createScreenBounds(int width) {
-		screenBoundsWidth = width;
-		addObject(new ScreenBounds(0,0,Game.WIDTH,Game.HEIGHT,width,ObjectId.ScreenBounds));
-	}
-	public int getScreenBoundsWidth() {
-		return screenBoundsWidth;
 	}
 	
 	public void keyPressed(KeyEvent e) {

@@ -3,7 +3,6 @@ package game.prototype;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -25,10 +24,12 @@ public class Game extends Canvas implements Runnable{
 	private int initPosX, initPosY;
 	//Object
 	Handler handler;
+	Camera camera;
 	private void init() {	
 		WIDTH = getWidth();
 		HEIGHT = getHeight();
-
+		
+		camera = new Camera(0, 0);
 		handler = new Handler();
 		this.addKeyListener(handler);
 		this.setFocusable(true);
@@ -37,8 +38,6 @@ public class Game extends Canvas implements Runnable{
 		BufferedImageLoader loader = new BufferedImageLoader();
 		level = loader.loadImage("/lvl.png"); //load level
 		LoadLevel(level);
-		//Arguments: Screen bounds width
-		handler.createScreenBounds(5);
 		//Arguments: Position, size
 		handler.addObject(new PlayerShip(initPosX, initPosY, 30, 40, handler, ObjectId.PlayerShip));
 		//Arguments: Max speed, speed increments
@@ -100,7 +99,9 @@ public class Game extends Canvas implements Runnable{
 		 g2.setColor(backgroundColor);
 		 g2.fillRect(0,0,getWidth(),getHeight());
 		 //Draw Here
+		 g2.translate(camera.getX(), camera.getY());
 		 handler.render(g2);
+		 g2.translate(-camera.getX(), -camera.getY());
 		 //Show
 		 g2.dispose();
 		 bStrategy.show();
@@ -109,6 +110,11 @@ public class Game extends Canvas implements Runnable{
 	private void update() {
 		handler.update();
 		handler.updateInput();
+		for (int i = 0 ; i < handler.object.size(); i++) {
+			if(handler.object.get(i).getId() == ObjectId.PlayerShip) {
+				camera.update(handler.object.get(i));
+			}
+		}
 	}
 	
 	private void LoadLevel(BufferedImage image) {
