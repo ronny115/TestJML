@@ -12,17 +12,20 @@ import java.util.LinkedList;
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
+import game.prototype.framework.PlayerId;
+import game.prototype.framework.PlayerObject;
 
 public class CollisionBlock extends GameObject {
 
+	private Handler handler;
+	private Path2D poly = new Path2D.Double();
 	public CollisionBlock(float x, float y, float w, float h, Handler handler, ObjectId id) {
 		super(x, y, w, h, id);
 		this.handler = handler;
 		buildHexagonBB();
+		poly=tile();
 	}
-
-	Handler handler;
-		
+	
 	float[] bound_x = new float[6];
 	float[] bound_y = new float[6];
 	float[] px = new float[1];
@@ -43,15 +46,15 @@ public class CollisionBlock extends GameObject {
 	
 	public void render(Graphics2D g2) {
 		g2.setColor(Color.RED);
-		g2.draw(tile());
+		g2.draw(poly);
 	}
 	
 	private void CollisionVsTile() {
 		float segmentDist, projDist;
 		boolean insideBB = false;
-		for(int i = 0; i < handler.object.size(); i++) {
-			GameObject tempObject = handler.object.get(i);			
-			if(tempObject.getId() == ObjectId.PlayerShip) {
+		for(int i = 0; i < handler.player.size(); i++) {
+			PlayerObject tempObject = handler.player.get(i);			
+			if(tempObject.getId() == PlayerId.PlayerShip) {
 				for(int j = 0; j<tempObject.getxPoints().length; j++) {
 					//Check if any point of the ship is inside the tile box
 					if(tempObject.getxPoints()[j] > (x-w-(tempObject.getSizeX()/2)) && tempObject.getxPoints()[j] < (x+w+(tempObject.getSizeX()/2)) &&
@@ -203,30 +206,22 @@ public class CollisionBlock extends GameObject {
 		}
 	}
 	
-	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X, String dir, GameObject ship) {
-		Point2D.Float shipPointsC = new Point2D.Float();
-		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();
-		float[]	px = {0,0,0,0};  float[] py = {0,0,0,0};
-		float[]	sx = {0,0,0,0};  float[] sy = {0,0,0,0};
-		
-		for(int j = 0; j<ship.getxPoints().length;j++) {
-			shipPointsC.x = ship.getxPoints()[j];
-			shipPointsC.y = ship.getyPoints()[j];
-			
-			projectionOnPerpendicularE = projection(X,A,shipPointsC);
-			projectionOnPerpendicularE.x = projectionOnPerpendicularE.x + X.x;
-			projectionOnPerpendicularE.y = projectionOnPerpendicularE.y + X.y;				
-			
-			px[j] = projectionOnPerpendicularE.x;
-			py[j] = projectionOnPerpendicularE.y;
-								
-			sx[j] = ship.getxPoints()[j];
-			sy[j] = ship.getyPoints()[j];
-		}		
-		maxProjected = getMaxValue(px,py,sx,sy,dir)[0];
-		maxShip = getMaxValue(px,py,sx,sy,dir)[1];	
-		minProjected = getMinValue(px,py,sx,sy,dir)[0];
-		minShip = getMinValue(px,py,sx,sy,dir)[1];
+	private Path2D tile() {
+		Point2D.Double center = new Point2D.Double(x,y);
+		Point2D.Double radius = new Point2D.Double(w,h);
+		double xpoints[] = new double[6];
+		double ypoints[] = new double[6];
+		Path2D polygon= new Path2D.Double();
+		for (int i = 0; i < 6; i++) {
+			xpoints[i] = center.x + radius.x * Math.cos(i*2*Math.PI/6);
+			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6);
+		}
+		polygon.moveTo(xpoints[0], ypoints[0]);
+		for(int i = 1; i < xpoints.length; ++i) {
+			polygon.lineTo(xpoints[i], ypoints[i]);
+		}
+		polygon.closePath();
+		return polygon;
 	}
 	
 	private void buildHexagonBB() {
@@ -251,6 +246,32 @@ public class CollisionBlock extends GameObject {
 		X4 = getPerpendicular(bound_x[3],bound_y[3],bound_x[4],bound_y[4], len);
 		X5 = getPerpendicular(bound_x[4],bound_y[4],bound_x[5],bound_y[5], len);
 		X6 = getPerpendicular(bound_x[5],bound_y[5],bound_x[0],bound_y[0], len);	
+	}
+	
+	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X, String dir, PlayerObject ship) {
+		Point2D.Float shipPointsC = new Point2D.Float();
+		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();
+		float[]	px = {0,0,0,0};  float[] py = {0,0,0,0};
+		float[]	sx = {0,0,0,0};  float[] sy = {0,0,0,0};
+		
+		for(int j = 0; j<ship.getxPoints().length;j++) {
+			shipPointsC.x = ship.getxPoints()[j];
+			shipPointsC.y = ship.getyPoints()[j];
+			
+			projectionOnPerpendicularE = projection(X,A,shipPointsC);
+			projectionOnPerpendicularE.x = projectionOnPerpendicularE.x + X.x;
+			projectionOnPerpendicularE.y = projectionOnPerpendicularE.y + X.y;				
+			
+			px[j] = projectionOnPerpendicularE.x;
+			py[j] = projectionOnPerpendicularE.y;
+								
+			sx[j] = ship.getxPoints()[j];
+			sy[j] = ship.getyPoints()[j];
+		}		
+		maxProjected = getMaxValue(px,py,sx,sy,dir)[0];
+		maxShip = getMaxValue(px,py,sx,sy,dir)[1];	
+		minProjected = getMinValue(px,py,sx,sy,dir)[0];
+		minShip = getMinValue(px,py,sx,sy,dir)[1];
 	}
 	
 	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x, float[] shipPoints_y, String dir) {
@@ -349,25 +370,7 @@ public class CollisionBlock extends GameObject {
 		float d = (float) Math.sqrt(((b.x-a.x)*(b.x-a.x))+((b.y-a.y)*(b.y-a.y)));
 		return  d;
 	}
-	
-	private Path2D tile() {
-		Point2D.Double center = new Point2D.Double(x,y);
-		Point2D.Double radius = new Point2D.Double(w,h);
-		double xpoints[] = new double[6];
-		double ypoints[] = new double[6];
-		Path2D polygon= new Path2D.Double();
-		for (int i = 0; i < 6; i++) {
-			xpoints[i] = center.x + radius.x * Math.cos(i*2*Math.PI/6);
-			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6);
-		}
-		polygon.moveTo(xpoints[0], ypoints[0]);
-		for(int i = 1; i < xpoints.length; ++i) {
-			polygon.lineTo(xpoints[i], ypoints[i]);
-		}
-		polygon.closePath();
-		return polygon;
-	}
-	
+		
 	public float[] getxPoints() {return px;}
 	public float[] getyPoints() {return py;}
 	public boolean getCollision() {return isColliding;}

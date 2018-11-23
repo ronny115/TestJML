@@ -3,13 +3,14 @@ package game.prototype;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
-import game.prototype.framework.ObjectId;
+import game.prototype.framework.PlayerId;
 import game.prototype.objects.PlayerShip;
-import game.prototype.objects.Block;
-import game.prototype.objects.CollisionBlock;
 
 public class Game extends Canvas implements Runnable{
 	/**
@@ -18,35 +19,39 @@ public class Game extends Canvas implements Runnable{
 	private static final long serialVersionUID = 1L;
 
 	private Thread thread;
-	Color backgroundColor = new Color(238, 238, 238);
-	public static int WIDTH, HEIGHT;
+	public static int WIDTH = 1280, HEIGHT = WIDTH / 16 * 9;
+	private boolean isRunning = false;
+	private int fpsCounter;
 	private BufferedImage level = null;
-	private int initPosX, initPosY;
 	//Object
-	Handler handler;
-	Camera camera;
-	private void init() {	
-		WIDTH = getWidth();
-		HEIGHT = getHeight();
+	private Handler handler;
+	private Camera camera;
+	private KeyInput keyinput;
+	private HUD hud;
+	private DynamicLoading dynamicLoading;
+	
+	private ArrayList<int[]> colorRGB = new ArrayList<int[]>();
+	private ArrayList<float[]> coords = new ArrayList<float[]>();
+	private float size;
+	private Point2D.Float playerPos = new Point2D.Float();
+	private Point2D.Float initPlayerPos = new Point2D.Float();
 		
+	private void init() {	
 		camera = new Camera(0, 0);
-		handler = new Handler();
-		this.addKeyListener(handler);
+		handler = new Handler();	
+		keyinput = new KeyInput(handler);
+		this.addKeyListener(keyinput);
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
-		
-		BufferedImageLoader loader = new BufferedImageLoader();
-		level = loader.loadImage("/lvl.png"); //load level
-		LoadLevel(level);
-		//Arguments: Position, size
-		handler.addObject(new PlayerShip(initPosX, initPosY, 30, 40, handler, ObjectId.PlayerShip));
-		//Arguments: Max speed, speed increments
-		handler.setSpeed(3.5f, 0.1f);	
+		keyinput.setSpeed(3.5f, 0.1f);//Max speed, speed increments
+		hud = new HUD();			
+		BufferedImageLoader loader = new BufferedImageLoader();	
+		level = loader.loadImage("/lvl.png"); //Load level
+		loadData(level, 55);//Level, block size
+		dynamicLoading = new DynamicLoading(handler);
+		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)
 	}
-	
-	public boolean isRunning = false;
-	int fpsCounter;
-	
+		
 	public synchronized void start() {
 		if(isRunning) {
 			return;
@@ -69,7 +74,6 @@ public class Game extends Canvas implements Runnable{
 			double frameTime = currentTime - initialTime;
 			deltaT += frameTime / optimal_time_frame;
 			initialTime = currentTime;
-				
 			if(deltaT>=1) {
 				update();
 				ticks++;
@@ -94,48 +98,80 @@ public class Game extends Canvas implements Runnable{
 			this.createBufferStrategy(2);
 			return;
 		}
-		 Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
-		 //Clear the screen
-		 g2.setColor(backgroundColor);
-		 g2.fillRect(0,0,getWidth(),getHeight());
-		 //Draw Here
-		 g2.translate(camera.getX(), camera.getY());
-		 handler.render(g2);
-		 g2.translate(-camera.getX(), -camera.getY());
-		 //Show
-		 g2.dispose();
-		 bStrategy.show();
+		Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
+	
+		//Clear the screen
+		g2.setColor(new Color(238, 238, 238));
+		g2.fillRect(0,0,getWidth(),getHeight());
+		
+		//Quality options
+		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+		//Draw Here
+		g2.translate(camera.getX(), camera.getY());
+		handler.render(g2);
+		g2.translate(-camera.getX(), -camera.getY());
+				
+		hud.render(g2);
+		
+		//Show
+		g2.dispose();
+		bStrategy.show();
 	}
 	
 	private void update() {
 		handler.update();
-		handler.updateInput();
-		for (int i = 0 ; i < handler.object.size(); i++) {
-			if(handler.object.get(i).getId() == ObjectId.PlayerShip) {
-				camera.update(handler.object.get(i));
+		keyinput.updateInput();
+		hud.update();
+		for (int i = 0 ; i < handler.player.size(); i++) {
+			if(handler.player.get(i).getId() == PlayerId.PlayerShip) {
+				camera.update(handler.player.get(i));
+				playerPos.x = handler.player.get(i).getX();
+				playerPos.y = handler.player.get(i).getY();
 			}
 		}
+		dynamicLoading.update(playerPos, coords, colorRGB, size);		
 	}
-	
-	private void LoadLevel(BufferedImage image) {
+
+	private void loadData(BufferedImage image, float size) {
+		Point2D.Float scale = new Point2D.Float();
 		int w = image.getWidth();
 		int h = image.getHeight();
+		this.size = size;
 		
-		for (int xx = 0; xx < h; xx++) {
-			for (int yy = 0; yy < w; yy++) {
+		scale.x = (size*2 - (size/2));
+		scale.y = (float) (Math.sqrt(3) * size)/2;
+
+		for (int yy = 0; yy < h; yy++) {
+			for (int xx = 0; xx < w; xx++) {
 				int pixel = image.getRGB(xx, yy);
 				int red = (pixel >> 16) & 0xff;
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
-				//Arguments: Position, size
-				if (red == 255 && green == 255 && blue == 255) handler.addObject(new Block(xx*82, yy*47, 55, 55, ObjectId.Block));
-				if (red == 255 && green ==   0 && blue ==   0) handler.addObject(new CollisionBlock(xx*82, yy*47, 55, 55, handler, ObjectId.CollisionBlock));
-				if (red == 0 && green == 0 && blue == 255) {initPosX = xx*75; initPosY = yy*43;}
+
+				int[] rgb = {red, blue, green};
+				colorRGB.add(rgb); //4096 pixels
+
+				if ((xx % 2) != 0) { //odd
+					//calculate the coords
+					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)+scale.y};
+					coords.add(pixelCoords);
+				} else { // even	
+					//calculate the coords
+					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)};
+					coords.add(pixelCoords);
+				}
+				//Player location coords				
+				if (red ==   0 && green ==   0 && blue == 255) {
+					initPlayerPos.x = (xx*scale.x); initPlayerPos.y = (yy*scale.y*2)+scale.y;
+				}
 			}
 		}
+
 	}
 	
 	public static void main(String args[]) {
-		new Window(1420, 800, "Game Prototype", new Game());	
+		new Window(Game.WIDTH, Game.HEIGHT, "Game Prototype", new Game());
 	}
 }

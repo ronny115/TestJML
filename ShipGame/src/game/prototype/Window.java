@@ -18,7 +18,6 @@ public class Window {
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		game.start();
-		frame.setVisible(true);		
+		frame.setVisible(true);
 	}
-
 }

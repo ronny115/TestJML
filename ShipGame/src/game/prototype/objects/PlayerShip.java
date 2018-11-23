@@ -9,13 +9,12 @@ import java.util.LinkedList;
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
+import game.prototype.framework.PlayerId;
+import game.prototype.framework.PlayerObject;
 
-public class PlayerShip extends GameObject {
+public class PlayerShip extends PlayerObject {
 
-	public PlayerShip(float x, float y, float w, float h, Handler handler, ObjectId id) {
-		super(x, y, w, h, id);
-		this.handler = handler;
-	}
+	
 	
 	private Handler handler;
 	//Ship points respect the ship center point.
@@ -27,16 +26,22 @@ public class PlayerShip extends GameObject {
 
 	private boolean isColliding;
 	float newpx, newpy;
-
-	public void update(LinkedList<GameObject> object) {	
+	
+	public PlayerShip(float x, float y, float w, float h, Handler handler, PlayerId id) {
+		super(x, y, w, h, id);
+		this.handler = handler;
+	}
+	
+	public void updatePlayer(LinkedList<PlayerObject> object) {	
 		CollisionVsTile();
 		shipMovement();
 	}
 
-	public void render(Graphics2D g2) {
+	public void renderPlayer(Graphics2D g2) {
 		g2.setColor(Color.BLACK);
 		g2.draw(ship());
 		g2.drawOval((int)center.x-3, (int)center.y-3, 6, 6);
+
 	}
 	
 	private void CollisionVsTile() {
@@ -128,5 +133,5 @@ public class PlayerShip extends GameObject {
 		point.y = ynew + center.y;	
 		return new Point2D.Float(point.x,point.y);
 	}
-	public boolean getCollision() {return false;}
+
 }

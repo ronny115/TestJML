@@ -1,6 +1,6 @@
 package game.prototype;
 
-import game.prototype.framework.GameObject;
+import game.prototype.framework.PlayerObject;
 
 public class Camera {
 	private float x, y;
@@ -10,7 +10,7 @@ public class Camera {
 		this.y = y;
 	}
 	
-	public void update(GameObject player) {
+	public void update(PlayerObject player) {
 		x = -player.getX() + Game.WIDTH/2;
 		y = -player.getY() + Game.HEIGHT/2;
 	}

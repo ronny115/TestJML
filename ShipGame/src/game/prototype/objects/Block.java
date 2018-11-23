@@ -2,7 +2,6 @@ package game.prototype.objects;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
@@ -11,21 +10,20 @@ import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
 
 public class Block extends GameObject {
+	private Path2D poly = new Path2D.Double();
 
 	public Block(float x, float y, float w, float h, ObjectId id) {
 		super(x, y, w, h, id);
+		poly = tile();
 	}
 
 	public void update(LinkedList<GameObject> object) {
 
 	}
 
-	public void render(Graphics2D g2) {
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-		
+	public void render(Graphics2D g2) {	
 		g2.setColor(Color.BLACK);
-		g2.draw(tile());
+		g2.draw(poly);
 	}
 	
 	private Path2D tile() {
