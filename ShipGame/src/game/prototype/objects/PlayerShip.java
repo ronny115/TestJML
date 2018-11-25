@@ -6,6 +6,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
+import game.prototype.HUD;
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
@@ -52,6 +53,7 @@ public class PlayerShip extends PlayerObject {
 				newpy = tempObject.getyPoints()[0];
 				isColliding = tempObject.getCollision();
 				if (isColliding == true) {
+					HUD.HEALTH -= 1;
 					CollisionVsTileReaction(newpx, newpy);
 				}
 			}

@@ -23,7 +23,7 @@ public class Game extends Canvas implements Runnable{
 	private boolean isRunning = false;
 	private int fpsCounter;
 	private BufferedImage level = null;
-	//Object
+	//Objects
 	private Handler handler;
 	private Camera camera;
 	private KeyInput keyinput;
@@ -48,7 +48,7 @@ public class Game extends Canvas implements Runnable{
 		BufferedImageLoader loader = new BufferedImageLoader();	
 		level = loader.loadImage("/lvl.png"); //Load level
 		loadData(level, 55);//Level, block size
-		dynamicLoading = new DynamicLoading(handler);
+		dynamicLoading = new DynamicLoading(handler, level.getWidth(), level.getHeight());
 		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)
 	}
 		
@@ -151,8 +151,7 @@ public class Game extends Canvas implements Runnable{
 				int blue = (pixel) & 0xff;
 
 				int[] rgb = {red, blue, green};
-				colorRGB.add(rgb); //4096 pixels
-
+				colorRGB.add(rgb);
 				if ((xx % 2) != 0) { //odd
 					//calculate the coords
 					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)+scale.y};
@@ -163,7 +162,7 @@ public class Game extends Canvas implements Runnable{
 					coords.add(pixelCoords);
 				}
 				//Player location coords				
-				if (red ==   0 && green ==   0 && blue == 255) {
+				if (red == 0 && green == 0 && blue == 255) {
 					initPlayerPos.x = (xx*scale.x); initPlayerPos.y = (yy*scale.y*2)+scale.y;
 				}
 			}

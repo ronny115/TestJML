@@ -9,10 +9,11 @@ import game.prototype.objects.CollisionBlock;
 
 public class DynamicLoading {
 	private Handler handler;
-	private int[] isLoaded = new int[4096];
+	private int[] isLoaded;
 	
-	public DynamicLoading(Handler handler) {
+	public DynamicLoading(Handler handler, int width, int height) {
 		this.handler = handler;
+		isLoaded = new int [width * height];
 	}
 	
 	public void update(Point2D.Float playerPos, ArrayList<float[]> coords, ArrayList<int[]> colorRGB, float size) {

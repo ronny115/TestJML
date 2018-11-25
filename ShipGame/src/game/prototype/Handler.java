@@ -62,4 +62,14 @@ public class Handler {
 		float dp = ((vec1.x * vec2.x) + (vec1.y * vec2.y));
 		return dp;
 	}
+	
+	public static int clamp(int var, int min, int max) {
+		if(var >= max) {
+			return var = max;
+		} else if (var <= min) {
+			return var = min;
+		} else {
+			return var;
+		}
+	}
 }
