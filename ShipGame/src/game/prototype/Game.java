@@ -46,8 +46,8 @@ public class Game extends Canvas implements Runnable{
 		keyinput.setSpeed(3.5f, 0.1f);//Max speed, speed increments
 		hud = new HUD();			
 		BufferedImageLoader loader = new BufferedImageLoader();	
-		level = loader.loadImage("/lvl.png"); //Load level
-		loadData(level, 55);//Level, block size
+		level = loader.loadImage("/lvl.bmp"); //Load level
+		loadData(level, 50);//Level, block size
 		dynamicLoading = new DynamicLoading(handler, level.getWidth(), level.getHeight());
 		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)
 	}

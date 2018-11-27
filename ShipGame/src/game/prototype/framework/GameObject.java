@@ -1,6 +1,7 @@
 package game.prototype.framework;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
 public abstract class GameObject {
@@ -21,8 +22,7 @@ public abstract class GameObject {
 	public abstract void update(LinkedList<GameObject> object);
 	public abstract void render(Graphics2D g2);
 
-	public abstract float[] getxPoints();
-	public abstract float[] getyPoints();
+	public abstract Point2D.Float getP();
 	public abstract boolean getCollision();
 	
 	public float getX() {

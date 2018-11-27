@@ -15,22 +15,21 @@ import game.prototype.framework.PlayerObject;
 
 public class PlayerShip extends PlayerObject {
 
-	
-	
 	private Handler handler;
 	//Ship points respect the ship center point.
-	private Point2D.Float center = new Point2D.Float(x, y);
-	private Point2D.Float firstPoint = new Point2D.Float(center.x,        center.y-(h/2));
-	private Point2D.Float secondPoint = new Point2D.Float(center.x-(w/2), center.y+(h/2));
-	private Point2D.Float thirdPoint = new Point2D.Float(center.x,        center.y+(h/3));
-	private Point2D.Float fourthPoint = new Point2D.Float(center.x+(w/2), center.y+(h/2));
-
+	private Point2D.Float[] shipPoints = new Point2D.Float[5];
+	private Point2D.Float newP = new Point2D.Float();
 	private boolean isColliding;
-	float newpx, newpy;
+
 	
 	public PlayerShip(float x, float y, float w, float h, Handler handler, PlayerId id) {
 		super(x, y, w, h, id);
 		this.handler = handler;
+		shipPoints[0] = new Point2D.Float(x, y);
+		shipPoints[1] = new Point2D.Float(x,       y-(h/2));
+		shipPoints[2] = new Point2D.Float(x-(w/2), y+(h/2));
+		shipPoints[3] = new Point2D.Float(x,       y+(h/3));
+		shipPoints[4] = new Point2D.Float(x+(w/2), y+(h/2));
 	}
 	
 	public void updatePlayer(LinkedList<PlayerObject> object) {	
@@ -39,9 +38,10 @@ public class PlayerShip extends PlayerObject {
 	}
 
 	public void renderPlayer(Graphics2D g2) {
+		g2.setColor(Color.RED);
 		g2.setColor(Color.BLACK);
 		g2.draw(ship());
-		g2.drawOval((int)center.x-3, (int)center.y-3, 6, 6);
+		g2.drawOval((int)shipPoints[0].x-3, (int)shipPoints[0].y-3, 6, 6);
 
 	}
 	
@@ -49,38 +49,42 @@ public class PlayerShip extends PlayerObject {
 		for(int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);		
 			if(tempObject.getId() == ObjectId.CollisionBlock) {
-				newpx = tempObject.getxPoints()[0];
-				newpy = tempObject.getyPoints()[0];
+				newP = tempObject.getP();
 				isColliding = tempObject.getCollision();
 				if (isColliding == true) {
 					HUD.HEALTH -= 1;
-					CollisionVsTileReaction(newpx, newpy);
+					CollisionVsTileReaction(newP);
 				}
 			}
 		}		
 	}
 	
-	private void CollisionVsTileReaction(float px, float py) {
-		center.x += px;
-		center.y += py;
+	private void CollisionVsTileReaction(Point2D.Float p) {
+		shipPoints[0].x += p.x;
+		shipPoints[0].y += p.y;
 		 
-		firstPoint.x += px;
-		firstPoint.y += py;
+		shipPoints[1].x += p.x;
+		shipPoints[1].y += p.y;
 		
-		secondPoint.x += px;
-		secondPoint.y += py;
+		shipPoints[2].x += p.x;
+		shipPoints[2].y += p.y;
 		
-		thirdPoint.x += px;
-		thirdPoint.y += py;
+		shipPoints[3].x += p.x;
+		shipPoints[3].y += p.y;
 		
-		fourthPoint.x += px;
-		fourthPoint.y += py;
+		shipPoints[4].x += p.x;
+		shipPoints[4].y += p.y;
 	}
 	
 	private Path2D ship() {
-		float xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};
-		float ypoints[] = {firstPoint.y,secondPoint.y,thirdPoint.y,fourthPoint.y};
 		Path2D polygon = new Path2D.Double();
+		float xpoints[] = new float[4];
+		float ypoints[] = new float[4];	
+		
+		for (int i = 0; i < xpoints.length; i++) {
+			xpoints[i] = shipPoints[i+1].x;
+			ypoints[i] = shipPoints[i+1].y;
+		}
 		
 		polygon.moveTo(xpoints[0], ypoints[0]);
 		for(int i = 0; i < xpoints.length; ++i) {
@@ -92,37 +96,34 @@ public class PlayerShip extends PlayerObject {
 	
 	private void shipMovement() {
 		//Move forward and backward
-		center = movement(velY, center, center);
-		
-		firstPoint = movement(velY, center, firstPoint);
-		secondPoint = movement(velY, center, secondPoint);
-		thirdPoint = movement(velY, center, thirdPoint);
-		fourthPoint = movement(velY, center, fourthPoint);
+		shipPoints[0] = movement(velY, shipPoints[0], shipPoints[0]);	
+		shipPoints[1] = movement(velY, shipPoints[0], shipPoints[1]);
+		shipPoints[2] = movement(velY, shipPoints[0], shipPoints[2]);
+		shipPoints[3] = movement(velY, shipPoints[0], shipPoints[3]);
+		shipPoints[4] = movement(velY, shipPoints[0], shipPoints[4]);
 
 		//Rotate left and right from center
-		firstPoint = direction(velX, center, firstPoint);
-		secondPoint = direction(velX, center, secondPoint);
-		thirdPoint = direction(velX, center, thirdPoint);
-		fourthPoint = direction(velX, center, fourthPoint);
-		
+		shipPoints[1] = direction(velX, shipPoints[0], shipPoints[1]);
+		shipPoints[2] = direction(velX, shipPoints[0], shipPoints[2]);
+		shipPoints[3] = direction(velX, shipPoints[0], shipPoints[3]);
+		shipPoints[4] = direction(velX, shipPoints[0], shipPoints[4]);
+
 		//Update ship position
-		x = center.x; y = center.y;
+		x = shipPoints[0].x; y = shipPoints[0].y;		
 	}
 	
-	public float[] getxPoints() {
-		float xpoints[] = {firstPoint.x,secondPoint.x,thirdPoint.x,fourthPoint.x};
-		return xpoints;
+	public Point2D.Float[] getPoints() {
+		Point2D.Float[] points = new Point2D.Float[4];
+		for (int i = 0; i < points.length; i++) {
+			points[i] = shipPoints[i+1];
+			}
+		return points;
 	}
-	
-	public float[] getyPoints() {
-		float ypoints[] = {firstPoint.y,secondPoint.y,thirdPoint.y,fourthPoint.y};
-		return ypoints;
-	}
-	
+		
 	private Point2D.Float movement(float speed, Point2D.Float center, Point2D.Float point) {
 		float xnew = point.x, ynew = point.y;
-		xnew += speed * Math.sin(Math.atan2(firstPoint.x - center.x, firstPoint.y - center.y));
-		ynew += speed * Math.cos(Math.atan2(firstPoint.x - center.x, firstPoint.y - center.y));
+		xnew += speed * Math.sin(Math.atan2(shipPoints[1].x - center.x, shipPoints[1].y - center.y));
+		ynew += speed * Math.cos(Math.atan2(shipPoints[1].x - center.x, shipPoints[1].y - center.y));
 		return new Point2D.Float(xnew,ynew);	
 	}
 	

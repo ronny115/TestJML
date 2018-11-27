@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.util.LinkedList;
 
 import game.prototype.framework.GameObject;
@@ -44,7 +45,6 @@ public class Block extends GameObject {
 		return polygon;
 	}
 
-	public float[] getxPoints() {return null;}
-	public float[] getyPoints() {return null;}
+	public Point2D.Float getP() {return null;}
 	public boolean getCollision() {return false;}
 }
