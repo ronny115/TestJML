@@ -1,24 +1,30 @@
-package game.prototype;
+package game.prototype.framework;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 
-import game.prototype.framework.PlayerId;
-import game.prototype.framework.PlayerObject;
+import game.prototype.Handler;
+import game.prototype.objects.Projectile;
 
 public class KeyInput extends KeyAdapter {
 	
 	private PlayerObject tempPlayer;
 	private Handler handler;
 	private float topSpeed = 0, deltaSpeed = 0, vely = 0, velx =0;
+	//Movement
 	private boolean upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed;
 	private boolean upKeyReleased, downKeyReleased, leftKeyReleased, rightKeyReleased;
+	//Shooting
+	private boolean spaceKeyPressed;
+	private Point2D.Float[] firePos = new Point2D.Float[5];
 	
 	public KeyInput(Handler handler) {
 		this.handler = handler;
 	}
 	
 	public void updateInput() {
+	//Movement
 		//Pressed
 		if(upKeyPressed == true) {
 			move("up");
@@ -59,6 +65,11 @@ public class KeyInput extends KeyAdapter {
 		if (rightKeyReleased == true && rightKeyPressed == false && leftKeyPressed == false) {	
 			move("decelerateRight");
 		}
+	//Shooting
+		if (spaceKeyPressed == true) {
+			handler.addObject(new Projectile(firePos[1].x, firePos[1].y, 5, 20, 20, projectileAngle(), ObjectId.Projectile));
+			spaceKeyPressed = false;
+		}
 		
 	}
 	
@@ -81,10 +92,13 @@ public class KeyInput extends KeyAdapter {
 				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					rightKeyPressed = true;
 					rightKeyReleased = false;
-					
 				}
 				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					System.exit(1);
+				}
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					firePos = tempPlayer.getPoints();
+					spaceKeyPressed = true;	
 				}
 			}
 		}			
@@ -110,6 +124,9 @@ public class KeyInput extends KeyAdapter {
 					rightKeyPressed = false;
 					rightKeyReleased = true;		
 				}
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					spaceKeyPressed = false;			
+				}
 			}
 		}
 	}
@@ -117,6 +134,11 @@ public class KeyInput extends KeyAdapter {
 	public void setSpeed(float topSpeed, float deltaSpeed) {
 		this.topSpeed = topSpeed;
 		this.deltaSpeed = deltaSpeed;
+	}
+	
+	private float projectileAngle() {
+		Point2D.Float[] points = handler.player.get(0).getPoints();
+		return (float) Math.toRadians((Helper.getAngle(points[1], points[0]))-90);
 	}
 	
 	private void move(String move) {
@@ -138,7 +160,7 @@ public class KeyInput extends KeyAdapter {
 			}
 			break;
 		case "left":
-			velx -= deltaSpeed;
+			velx -= deltaSpeed/50;
 			tempPlayer.setVelX(velx);
 			if (velx <= -topSpeed/100) {
 				velx = (float) (-topSpeed/100);
@@ -146,7 +168,7 @@ public class KeyInput extends KeyAdapter {
 			}	
 			break;
 		case "right":
-			velx += deltaSpeed;
+			velx += deltaSpeed/50;
 			tempPlayer.setVelX(velx);
 			if (velx >= topSpeed/100) {
 				velx = (float) (topSpeed/100);
@@ -191,5 +213,4 @@ public class KeyInput extends KeyAdapter {
 			break;
 		}
 	}
-
 }

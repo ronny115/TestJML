@@ -1,7 +1,6 @@
 package game.prototype;
 
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
 import game.prototype.framework.GameObject;
@@ -51,25 +50,5 @@ public class Handler {
 		this.object.remove(object);
 	}
 	
-	public Point2D.Float vectorize(Point2D.Float pointA, Point2D.Float pointB) {
-		Point2D.Float vector = new Point2D.Float();
-		vector.x = (pointB.x - pointA.x);
-		vector.y = (pointB.y - pointA.y);
-		return vector;	
-	}
 	
-	public float dotProduct(Point2D.Float vec1, Point2D.Float vec2) {
-		float dp = ((vec1.x * vec2.x) + (vec1.y * vec2.y));
-		return dp;
-	}
-	
-	public static int clamp(int var, int min, int max) {
-		if(var >= max) {
-			return var = max;
-		} else if (var <= min) {
-			return var = min;
-		} else {
-			return var;
-		}
-	}
 }

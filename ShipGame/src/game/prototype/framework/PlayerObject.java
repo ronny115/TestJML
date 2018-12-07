@@ -10,6 +10,7 @@ public abstract class PlayerObject {
 	protected PlayerId id;
 	protected float velX = 0, velY = 0;
 	protected float w = 0, h = 0;
+	protected boolean isOut = false;
 	
 	public PlayerObject(float x, float y, float w, float h, PlayerId id) {
 		this.x = x;

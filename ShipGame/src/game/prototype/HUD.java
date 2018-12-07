@@ -5,13 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import game.prototype.framework.Helper;
+
 public class HUD {
 	
 	public static int HEALTH = 100;
 	private Point2D.Float healthBarPos = new Point2D.Float(1025,660);
 	
 	public void update() {
-	HEALTH = Handler.clamp(HEALTH, 0, 100);
+	HEALTH = Helper.clamp(HEALTH, 0, 100);
 	}
 	
 	public void render(Graphics2D g2) {

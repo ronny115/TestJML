@@ -3,6 +3,9 @@ package game.prototype.framework;
 public enum ObjectId {
 	
 	Block(),
-	CollisionBlock();
+	CollisionBlock(),
+	TrailFx(),
+	EnemyType1(),
+	Projectile();
 
 }

@@ -9,7 +9,11 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import game.prototype.framework.KeyInput;
+import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
+import game.prototype.framework.TextureManager;
+import game.prototype.objects.ExplosiveMine;
 import game.prototype.objects.PlayerShip;
 
 public class Game extends Canvas implements Runnable{
@@ -29,6 +33,7 @@ public class Game extends Canvas implements Runnable{
 	private KeyInput keyinput;
 	private HUD hud;
 	private DynamicLoading dynamicLoading;
+	private static TextureManager tex;
 	
 	private ArrayList<int[]> colorRGB = new ArrayList<int[]>();
 	private ArrayList<float[]> coords = new ArrayList<float[]>();
@@ -44,12 +49,15 @@ public class Game extends Canvas implements Runnable{
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
 		keyinput.setSpeed(3.5f, 0.1f);//Max speed, speed increments
-		hud = new HUD();			
+		hud = new HUD();
+		tex = new TextureManager();
+		
 		BufferedImageLoader loader = new BufferedImageLoader();	
-		level = loader.loadImage("/lvl.bmp"); //Load level
+		level = loader.loadImage("/lvl_full.png"); //Load level
 		loadData(level, 50);//Level, block size
-		dynamicLoading = new DynamicLoading(handler, level.getWidth(), level.getHeight());
-		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)
+		dynamicLoading = new DynamicLoading(handler);
+		
+		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)		
 	}
 		
 	public synchronized void start() {
@@ -74,12 +82,12 @@ public class Game extends Canvas implements Runnable{
 			double frameTime = currentTime - initialTime;
 			deltaT += frameTime / optimal_time_frame;
 			initialTime = currentTime;
+			render();
 			if(deltaT>=1) {
 				update();
 				ticks++;
 				deltaT--;
 			}
-			render();
 			fpsCounter += frameTime;
 			frames++;
 			if (fpsCounter >= 1000000000) {
@@ -95,26 +103,21 @@ public class Game extends Canvas implements Runnable{
 		BufferStrategy bStrategy = this.getBufferStrategy();
 		if(bStrategy == null)
 		{
-			this.createBufferStrategy(2);
+			this.createBufferStrategy(3);
 			return;
 		}
 		Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
-	
 		//Clear the screen
 		g2.setColor(new Color(238, 238, 238));
-		g2.fillRect(0,0,getWidth(),getHeight());
-		
+		g2.fillRect(0,0,getWidth(),getHeight());	
 		//Quality options
 		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
 		//Draw Here
 		g2.translate(camera.getX(), camera.getY());
 		handler.render(g2);
-		g2.translate(-camera.getX(), -camera.getY());
-				
-		hud.render(g2);
-		
+		g2.translate(-camera.getX(), -camera.getY());			
+		hud.render(g2);	
 		//Show
 		g2.dispose();
 		bStrategy.show();
@@ -150,26 +153,31 @@ public class Game extends Canvas implements Runnable{
 				int green = (pixel >> 8) & 0xff;
 				int blue = (pixel) & 0xff;
 
-				int[] rgb = {red, blue, green};
+				int[] rgb = {red, green, blue};
 				colorRGB.add(rgb);
-				if ((xx % 2) != 0) { //odd
-					//calculate the coords
-					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)+scale.y};
+				
+				if ((xx % 2) != 0) {//Odd
+					//Calculate the coords and load state: 0 not loaded 1 loaded
+					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)+scale.y, 0};
 					coords.add(pixelCoords);
-				} else { // even	
-					//calculate the coords
-					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)};
+				} else {//Even	
+					//Calculate the coords and load state: 0 not loaded 1 loaded
+					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2), 0};
 					coords.add(pixelCoords);
 				}
 				//Player location coords				
 				if (red == 0 && green == 0 && blue == 255) {
 					initPlayerPos.x = (xx*scale.x); initPlayerPos.y = (yy*scale.y*2)+scale.y;
 				}
+
 			}
 		}
 
 	}
 	
+	public static TextureManager getTexInstance(){
+		return tex;
+	}
 	public static void main(String args[]) {
 		new Window(Game.WIDTH, Game.HEIGHT, "Game Prototype", new Game());
 	}
