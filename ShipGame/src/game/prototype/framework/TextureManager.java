@@ -2,21 +2,24 @@ package game.prototype.framework;
 
 import java.awt.image.BufferedImage;
 
-import game.prototype.BufferedImageLoader;
+import game.prototype.ResourceLoader;
 
 public class TextureManager {
 	
 	private SpriteSheet pS, eS, explS;
+	
 	private BufferedImage player_sheet = null;
 	private BufferedImage enemy_sheet = null;
 	private BufferedImage explosion_sheet = null;
+	
 	public BufferedImage[] player = new BufferedImage[1];
-	public BufferedImage[] enemyType1 = new BufferedImage[1];
-	public BufferedImage bullet;
-	public BufferedImage[] explosion = new BufferedImage[74];
+	public BufferedImage[] explosiveMine = new BufferedImage[1];
+	public BufferedImage[] ghostIdle = new BufferedImage[15];
+	public BufferedImage[] bullet = new BufferedImage[3];
+	public BufferedImage[] explosion = new BufferedImage[7];
 	
 	public TextureManager() {
-		BufferedImageLoader loader = new BufferedImageLoader();
+		ResourceLoader loader = new ResourceLoader();
 		try {
 			player_sheet = loader.loadImage("/player_sheet.png");
 			enemy_sheet = loader.loadImage("/mine.png");
@@ -34,17 +37,26 @@ public class TextureManager {
 	private void getTextures() {
 		int count = 0;
 		player[0] = pS.grabImage(1, 1, 30, 40); //player ship
-		bullet = pS.grabImage(1, 4, 30, 40);//Bullet
-		enemyType1[0] = eS.grabImage(1, 1, 50, 50); //player ship
-		for(int i = 0; i < 8; i++) {
-			for(int j = 0; j < 9; j++) {
-				explosion[count] = explS.grabImage(j+1, i+1, 100, 100);
-				count++;	
+		bullet[0] = pS.grabImage(1, 4, 30, 40);//GreenBullet
+		bullet[1] = pS.grabImage(2, 4, 30, 40);//RedBullet
+		//Enemy
+		for (int i = 0; i < 10; i++) {
+			ghostIdle[i] = eS.grabImage(i+1, 2, 50, 50);
+		}
+		for (int i = 0; i < 5; i++) {
+			ghostIdle[10+i] = eS.grabImage(i+1, 3, 50, 50);
+		}
+		
+		explosiveMine[0] = eS.grabImage(1, 1, 50, 50); //player ship
+		
+		for (int i = 0; i < 2; i++) { //explosion
+			for (int j = 0; j < 4; j++) {
+				if (count == 7)break;// 7 frames
+				explosion[count] = explS.grabImage(j+1, i+1, 60, 60);
+				count++;
 			}
 		}
 		count = 0;
-		explosion[72] = explS.grabImage(1, 9, 100, 100);
-		explosion[73] = explS.grabImage(2, 9, 100, 100);
 	}
 	
 }

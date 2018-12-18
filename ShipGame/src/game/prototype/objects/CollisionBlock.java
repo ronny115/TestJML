@@ -51,23 +51,23 @@ public class CollisionBlock extends GameObject {
 		shipPoints = new Point2D.Float[5];
 		boolean insideBB = false;
 		
-		for(int i = 0; i < handler.player.size(); i++) {
+		for (int i = 0; i < handler.player.size(); i++) {
 			PlayerObject tempObject = handler.player.get(i);			
-			if(tempObject.getId() == PlayerId.PlayerShip) {
+			if (tempObject.getId() == PlayerId.PlayerShip) {
 				shipPoints = tempObject.getPoints();
 				
-				for(int j = 0; j < shipPoints.length-1; j++) {
-					if(shipPoints[j+1].x > (x-w-(tempObject.getSizeX()/2)) && shipPoints[j+1].x < (x+w+(tempObject.getSizeX()/2)) &&
+				for (int j = 0; j < shipPoints.length-1; j++) {
+					if (shipPoints[j+1].x > (x-w-(tempObject.getSizeX()/2)) && shipPoints[j+1].x < (x+w+(tempObject.getSizeX()/2)) &&
 							shipPoints[j+1].y > (y-h) && shipPoints[j+1].y < (y+h)) {
 						insideBB = true;
 						break;
 					} else insideBB = false;	
 				}
 				
-				for(int j = 0; j < shipPoints.length-1; j++) {
-					if(insideBB == true) {
+				for (int j = 0; j < shipPoints.length-1; j++) {
+					if (insideBB == true) {
 					//Segment 0-1			
-						if(shipPoints[j+1].y > bounds[0].y && shipPoints[j+1].x > bounds[1].x && shipPoints[j+1].y < bounds[1].y) {
+						if (shipPoints[j+1].y > bounds[0].y && shipPoints[j+1].x > bounds[1].x && shipPoints[j+1].y < bounds[1].y) {
 							getProjectionPoints(bounds[0], bounds[1], X[0], "right");
 						//Collision /<---
 							if(minProjected.x < bounds[0].x) {
@@ -76,13 +76,13 @@ public class CollisionBlock extends GameObject {
 								p.y = bounds[0].y - minProjected.y;
 							}				
 						//End of segment collision
-							if(minShip.y < bounds[0].y) {
+							if (minShip.y < bounds[0].y) {
 								isColliding = false;
 								lineIntersection(bounds[0], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[0], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(minShip.y > bounds[1].y) {
+							if (minShip.y > bounds[1].y) {
 								isColliding = false;
 								lineIntersection(bounds[1], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[1], shipPoints[2], shipPoints[4]);
@@ -90,22 +90,22 @@ public class CollisionBlock extends GameObject {
 						//Collision / -->
 							if (minProjected.x > bounds[0].x) isColliding = false;
 				    //Segment 1-2
-						} else if(shipPoints[j+1].x < bounds[1].x && shipPoints[j+1].y > bounds[1].y && shipPoints[j+1].x > bounds[2].x) {
+						} else if (shipPoints[j+1].x < bounds[1].x && shipPoints[j+1].y > bounds[1].y && shipPoints[j+1].x > bounds[2].x) {
 							getProjectionPoints(bounds[1], bounds[2], X[1], "right");
 						//Collision |<---
-							if(minProjected.y < bounds[1].y) {
+							if (minProjected.y < bounds[1].y) {
 								isColliding = true;
 								p.x = bounds[1].x - minProjected.x;
 								p.y = bounds[1].y - minProjected.y;
 							}
 						//End of segment collision
-							if(maxShip.x > bounds[1].x) {
+							if (maxShip.x > bounds[1].x) {
 								isColliding = false;
 								lineIntersection(bounds[1], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[1], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(maxShip.x < bounds[2].x) {
+							if (maxShip.x < bounds[2].x) {
 								isColliding = false;
 								lineIntersection(bounds[2], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[2], shipPoints[2], shipPoints[4]);
@@ -113,7 +113,7 @@ public class CollisionBlock extends GameObject {
 						//Collision | -->
 							if (minProjected.y > bounds[1].y) isColliding = false;
 					//Segment 2-3
-						} else if(shipPoints[j+1].x < bounds[2].x && shipPoints[j+1].y < bounds[2].y && shipPoints[j+1].y > bounds[3].y) {
+						} else if (shipPoints[j+1].x < bounds[2].x && shipPoints[j+1].y < bounds[2].y && shipPoints[j+1].y > bounds[3].y) {
 							getProjectionPoints(bounds[2], bounds[3], X[2], "reverse");
 						//Collision -->\
 							if (maxProjected.x > bounds[2].x) {
@@ -122,21 +122,21 @@ public class CollisionBlock extends GameObject {
 								p.y = bounds[2].y - maxProjected.y;
 							}
 						//End of segment collision
-							if(maxShip.y > bounds[2].y) {
+							if (maxShip.y > bounds[2].y) {
 								isColliding = false;
 								lineIntersection(bounds[2], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[2], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(maxShip.y < bounds[3].y) {
+							if (maxShip.y < bounds[3].y) {
 								isColliding = false;
 								lineIntersection(bounds[3], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[3], shipPoints[2], shipPoints[4]);
 							}
 						//Collision <--\
-							if(maxProjected.x < bounds[2].x) isColliding = false;
+							if (maxProjected.x < bounds[2].x) isColliding = false;
 					//Segment 3-4
-						} else if(shipPoints[j+1].x < bounds[4].x && shipPoints[j+1].y < bounds[3].y && shipPoints[j+1].y > bounds[4].y) {	
+						} else if (shipPoints[j+1].x < bounds[4].x && shipPoints[j+1].y < bounds[3].y && shipPoints[j+1].y > bounds[4].y) {	
 							getProjectionPoints(bounds[3], bounds[4], X[3], "right");					
 						//Collision -->/
 							if (maxProjected.x > bounds[3].x) {
@@ -145,21 +145,21 @@ public class CollisionBlock extends GameObject {
 								p.y = bounds[3].y - maxProjected.y;
 							}
 						//End of segment collision
-							if(maxShip.y > bounds[3].y) {
+							if (maxShip.y > bounds[3].y) {
 								isColliding = false;
 								lineIntersection(bounds[3], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[3], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(maxShip.y < bounds[4].y) {
+							if (maxShip.y < bounds[4].y) {
 								isColliding = false;
 								lineIntersection(bounds[4], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[4], shipPoints[2], shipPoints[4]);
 							}
 						//Collision <--/
-							if(maxProjected.x < bounds[3].x ) isColliding = false;
+							if (maxProjected.x < bounds[3].x ) isColliding = false;
 					//Segment 4-5
-						} else if(shipPoints[j+1].y < bounds[4].y && shipPoints[j+1].x < bounds[5].x && shipPoints[j+1].x > bounds[4].x) {				
+						} else if (shipPoints[j+1].y < bounds[4].y && shipPoints[j+1].x < bounds[5].x && shipPoints[j+1].x > bounds[4].x) {				
 							getProjectionPoints(bounds[4], bounds[5], X[4], "reverse");
 						//Collision -->|
 							if (minProjected.y > bounds[4].y) {
@@ -168,36 +168,36 @@ public class CollisionBlock extends GameObject {
 								p.y = bounds[4].y - minProjected.y;	
 							}
 						//End of segment collision
-							if(minShip.x < bounds[4].x ) {
+							if (minShip.x < bounds[4].x ) {
 								isColliding = false;
 								lineIntersection(bounds[4], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[4], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(minShip.x > bounds[5].x) {
+							if (minShip.x > bounds[5].x) {
 								isColliding = false;
 								lineIntersection(bounds[5], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[5], shipPoints[2], shipPoints[4]);
 							}
 						//Collision <--|
-							if(minProjected.y < bounds[4].y) isColliding = false;
+							if (minProjected.y < bounds[4].y) isColliding = false;
 					//Segment 5-0
-						} else if(shipPoints[j+1].x > bounds[5].x && shipPoints[j+1].y > bounds[5].y && shipPoints[j+1].y < bounds[0].y) {						
+						} else if (shipPoints[j+1].x > bounds[5].x && shipPoints[j+1].y > bounds[5].y && shipPoints[j+1].y < bounds[0].y) {						
 							getProjectionPoints(bounds[5], bounds[0], X[5], "reverse");
 						//Collision \<--
-							if(minProjected.x < bounds[5].x) {
+							if (minProjected.x < bounds[5].x) {
 								isColliding = true;
 								p.x = bounds[5].x - minProjected.x; 
 								p.y = bounds[5].y - minProjected.y;
 							}
 						//End of segment collision
-							if(minShip.y < bounds[5].y) {
+							if (minShip.y < bounds[5].y) {
 								isColliding = false;
 								lineIntersection(bounds[5], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[5], shipPoints[2], shipPoints[4]);
 							}
 						//End of segment collision
-							if(minShip.y > bounds[0].y) {
+							if (minShip.y > bounds[0].y) {
 								isColliding = false;
 								lineIntersection(bounds[0], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[0], shipPoints[2], shipPoints[4]);
@@ -218,7 +218,7 @@ public class CollisionBlock extends GameObject {
 		float s, t;
 		s = (-s1_y * (pointA.x - shipA.x) + s1_x * (pointA.y - shipA.y)) / (-s2_x * s1_y + s1_x * s2_y);
 		t = (s2_x * (pointA.y - shipA.y) - s2_y * (pointA.x - shipA.x)) / (-s2_x * s1_y + s1_x * s2_y);		
-		if(s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
 			//collision
 			isColliding = true;
 			ipx = pointA.x + (t * s1_x);
@@ -239,7 +239,7 @@ public class CollisionBlock extends GameObject {
 			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6);
 		}
 		polygon.moveTo(xpoints[0], ypoints[0]);
-		for(int i = 1; i < xpoints.length; ++i) {
+		for (int i = 1; i < xpoints.length; ++i) {
 			polygon.lineTo(xpoints[i], ypoints[i]);
 		}
 		polygon.closePath();
@@ -254,17 +254,17 @@ public class CollisionBlock extends GameObject {
 		//for drawing purposes
 		float len = 0.5f;
 		
-		for(PathIterator path = tile().getPathIterator(null); !path.isDone(); path.next()) {	
+		for (PathIterator path = tile().getPathIterator(null); !path.isDone(); path.next()) {	
 			path.currentSegment(coords);
 			float[] pathpoints = {coords[0], coords[1]};
 			points.add(pathpoints);		
 		}	
-		for(int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			bounds[i] = new Point2D.Float(points.get(i)[0],points.get(i)[1]);
 		}
-		for(int i = 0; i < bounds.length; i++) {
-			if(i < 5) X[i] = getPerpendicular(bounds[i], bounds[i+1], len); 
-			if(i == 5) X[i] = getPerpendicular(bounds[i], bounds[0], len);
+		for (int i = 0; i < bounds.length; i++) {
+			if (i < 5) X[i] = getPerpendicular(bounds[i], bounds[i+1], len); 
+			if (i == 5) X[i] = getPerpendicular(bounds[i], bounds[0], len);
 		}	
 	}
 	
@@ -274,7 +274,7 @@ public class CollisionBlock extends GameObject {
 		float px[] = new float[4];  float py[] = new float[4];
 		float sx[] = new float[4];  float sy[] = new float[4];
 		
-		for(int j = 0; j < shipPoints.length-1; j++) {
+		for (int j = 0; j < shipPoints.length-1; j++) {
 			shipPointsC.x = shipPoints[j+1].x;
 			shipPointsC.y = shipPoints[j+1].y;
 			
@@ -300,7 +300,7 @@ public class CollisionBlock extends GameObject {
 		MaxValue[0] = new Point2D.Float(points_x[0],points_y[0]); 
 		MaxValue[1] = new Point2D.Float(shipPoints_x[0],shipPoints_y[0]);;
 
-		for(int i = 0; i < points_x.length; i++) {	
+		for (int i = 0; i < points_x.length; i++) {	
 			switch(dir) {
 				case "right":
 					if (points_x[i] > MaxValue[0].x) {
@@ -333,7 +333,7 @@ public class CollisionBlock extends GameObject {
 		MinValue[0] = new Point2D.Float(points_x[0],points_y[0]); 
 		MinValue[1] = new Point2D.Float(shipPoints_x[0],shipPoints_y[0]);
 
-		for(int i = 0; i < points_x.length; i++) {
+		for (int i = 0; i < points_x.length; i++) {
 			switch(dir) {
 				case "right":
 					if (points_x[i] < MinValue[0].x) {
@@ -350,7 +350,7 @@ public class CollisionBlock extends GameObject {
 						MinValue[0].x = points_x[i];
 						MinValue[1].x = shipPoints_x[i];
 					}
-					if(points_y[i] > MinValue[0].y) {
+					if (points_y[i] > MinValue[0].y) {
 						MinValue[0].y = points_y[i];
 						MinValue[1].y = shipPoints_y[i];
 					}
@@ -385,4 +385,6 @@ public class CollisionBlock extends GameObject {
 	}	
 	public Point2D.Float getP(){return p;}
 	public boolean getCollision() {return isColliding;}
+
+	public String getType() {return null;}
 }

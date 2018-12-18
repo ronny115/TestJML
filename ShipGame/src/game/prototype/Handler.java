@@ -13,22 +13,22 @@ public class Handler {
 	private GameObject tempObject;
 
 	public void update() {
-		for(int i =0; i < player.size(); i++) {
+		for (int i =0; i < player.size(); i++) {
 			tempPlayer = player.get(i);
 			tempPlayer.updatePlayer(player);
 		}
-		for(int i =0; i < object.size(); i++) {
+		for (int i =0; i < object.size(); i++) {
 			tempObject = object.get(i);
 			tempObject.update(object);
 		}
 	}
 	
 	public void render(Graphics2D g2) {
-		for(int i =0; i < player.size(); i++) {
+		for (int i =0; i < player.size(); i++) {
 			tempPlayer = player.get(i);
 			tempPlayer.renderPlayer(g2);
 		}
-		for(int i =0; i < object.size(); i++) {
+		for (int i =0; i < object.size(); i++) {
 			tempObject = object.get(i);
 			tempObject.render(g2);
 		}

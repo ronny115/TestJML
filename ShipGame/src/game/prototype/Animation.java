@@ -5,22 +5,16 @@ import java.awt.image.BufferedImage;
 
 public class Animation {
 	
-	private int speed;
-	private int frames;
-	
-	private int index = 0;
-	private int count = 0;
-	
-	private int playCount = 0;
-	public static boolean isDone = false;
-	
+	private int speed, frames;
+	private int index = 0, count = 0, playCount = 0;
+	public  boolean isDone = false, hasStarted = false;
 	private BufferedImage[] images;
 	private BufferedImage currentImg;
 	
 	public Animation(int speed, BufferedImage[] args) {
 		this.speed = speed;
 		images = args;
-		for(int i = 0 ; i < args.length; i++) 
+		for (int i = 0 ; i < args.length; i++) 
 			images[i] = args[i];
 		
 		frames = args.length;
@@ -28,7 +22,7 @@ public class Animation {
 	
 	public void runAnimation() {
 		index++;
-		if(index > speed) {
+		if (index > speed) {
 			index = 0;
 			nextFrame();
 		}
@@ -36,14 +30,16 @@ public class Animation {
 	
 	public void runAnimationOnce() {	
 		if (playCount < frames) {
+			hasStarted = true;
 			index++;
-			if(index > speed) {
+			if (index > speed) {
 				index = 0;
 				nextFrame();
 				playCount++;
 			}		
 		} else {
 			isDone = true;
+			hasStarted = false;
 		}
 	}
 

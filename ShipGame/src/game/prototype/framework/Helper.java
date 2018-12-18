@@ -3,7 +3,7 @@ package game.prototype.framework;
 import java.awt.geom.Point2D;
 
 public class Helper {
-	
+		
 	public static Point2D.Float vectorize(Point2D.Float pointA, Point2D.Float pointB) {
 		Point2D.Float vector = new Point2D.Float();
 		vector.x = (pointB.x - pointA.x);
@@ -17,7 +17,7 @@ public class Helper {
 	}
 	
 	public static int clamp(int var, int min, int max) {
-		if(var >= max) {
+		if (var >= max) {
 			return var = max;
 		} else if (var <= min) {
 			return var = min;
@@ -47,5 +47,9 @@ public class Helper {
 	    float angle = (float) Math.toDegrees(Math.atan2(target.y - center.y, target.x - center.x));
 	    if (angle < 0) angle += 360;
 	    return angle;
+	}
+	
+	public static float projectileAngle(Point2D.Float[] points) {
+		return (float) Math.toRadians((Helper.getAngle(points[1], points[0]))-90);
 	}
 }

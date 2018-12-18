@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Float;
 import java.util.LinkedList;
 
 import game.prototype.framework.GameObject;
@@ -38,7 +37,7 @@ public class Block extends GameObject {
 			ypoints[i] = center.y + radius.y * Math.sin(i*2*Math.PI/6D);
 		}
 		polygon.moveTo(xpoints[0], ypoints[0]);
-		for(int i = 1; i < xpoints.length; ++i) {
+		for (int i = 1; i < xpoints.length; ++i) {
 			polygon.lineTo(xpoints[i], ypoints[i]);
 		}
 		polygon.closePath();
@@ -47,4 +46,5 @@ public class Block extends GameObject {
 
 	public Point2D.Float getP() {return null;}
 	public boolean getCollision() {return false;}
+	public String getType() {return null;}
 }

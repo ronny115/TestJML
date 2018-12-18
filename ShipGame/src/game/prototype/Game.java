@@ -13,7 +13,7 @@ import game.prototype.framework.KeyInput;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
 import game.prototype.framework.TextureManager;
-import game.prototype.objects.ExplosiveMine;
+import game.prototype.objects.Ghost;
 import game.prototype.objects.PlayerShip;
 
 public class Game extends Canvas implements Runnable{
@@ -26,7 +26,6 @@ public class Game extends Canvas implements Runnable{
 	public static int WIDTH = 1280, HEIGHT = WIDTH / 16 * 9;
 	private boolean isRunning = false;
 	private int fpsCounter;
-	private BufferedImage level = null;
 	//Objects
 	private Handler handler;
 	private Camera camera;
@@ -38,30 +37,35 @@ public class Game extends Canvas implements Runnable{
 	private ArrayList<int[]> colorRGB = new ArrayList<int[]>();
 	private ArrayList<float[]> coords = new ArrayList<float[]>();
 	private float size;
-	private Point2D.Float playerPos = new Point2D.Float();
+	private Point2D.Float cameraPos = new Point2D.Float();
 	private Point2D.Float initPlayerPos = new Point2D.Float();
 		
-	private void init() {	
-		camera = new Camera(0, 0);
-		handler = new Handler();	
-		keyinput = new KeyInput(handler);
-		this.addKeyListener(keyinput);
+	private void init() {    
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
-		keyinput.setSpeed(3.5f, 0.1f);//Max speed, speed increments
+		
+		ResourceLoader loader = new ResourceLoader();	
+	
+		handler = new Handler();
 		hud = new HUD();
 		tex = new TextureManager();
-		
-		BufferedImageLoader loader = new BufferedImageLoader();	
-		level = loader.loadImage("/lvl_full.png"); //Load level
-		loadData(level, 50);//Level, block size
 		dynamicLoading = new DynamicLoading(handler);
+		keyinput = new KeyInput(handler);
 		
-		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 30, 40, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)		
+		keyinput.setSpeed(4.5f, 0.15f);//Max speed, speed increments
+		this.addKeyListener(keyinput);
+			
+		hud.setFont(loader.loadFont("/PressStart2P.ttf"));
+						
+		loadData(loader.loadImage("/lvl_full.png"), 50);//Level, block size
+			
+		camera = new Camera(initPlayerPos.x - WIDTH/2, initPlayerPos.y - HEIGHT/2);	
+		handler.addObject(new Ghost(initPlayerPos.x, initPlayerPos.y, 150, 150, handler, ObjectId.Ghost));
+		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)		
 	}
 		
 	public synchronized void start() {
-		if(isRunning) {
+		if (isRunning) {
 			return;
 		}
 		isRunning = true;
@@ -77,7 +81,7 @@ public class Game extends Canvas implements Runnable{
 		final double optimal_time_frame = 1000000000 / target_ticks;	
 		int ticks = 0, frames = 0;
 		
-		while(isRunning) {
+		while (isRunning) {
 			long currentTime = System.nanoTime();
 			double frameTime = currentTime - initialTime;
 			deltaT += frameTime / optimal_time_frame;
@@ -101,7 +105,7 @@ public class Game extends Canvas implements Runnable{
 	
 	private void render() {
 		BufferStrategy bStrategy = this.getBufferStrategy();
-		if(bStrategy == null)
+		if (bStrategy == null)
 		{
 			this.createBufferStrategy(3);
 			return;
@@ -114,9 +118,10 @@ public class Game extends Canvas implements Runnable{
 		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		//Draw Here
-		g2.translate(camera.getX(), camera.getY());
+	
+		g2.translate(-camera.getX(), -camera.getY());
 		handler.render(g2);
-		g2.translate(-camera.getX(), -camera.getY());			
+		g2.translate(camera.getX(), camera.getY());			
 		hud.render(g2);	
 		//Show
 		g2.dispose();
@@ -127,14 +132,11 @@ public class Game extends Canvas implements Runnable{
 		handler.update();
 		keyinput.updateInput();
 		hud.update();
-		for (int i = 0 ; i < handler.player.size(); i++) {
-			if(handler.player.get(i).getId() == PlayerId.PlayerShip) {
-				camera.update(handler.player.get(i));
-				playerPos.x = handler.player.get(i).getX();
-				playerPos.y = handler.player.get(i).getY();
-			}
-		}
-		dynamicLoading.update(playerPos, coords, colorRGB, size);		
+		camera.update(handler.player.get(0));
+		cameraPos.x = camera.getX();
+		cameraPos.y = camera.getY();
+
+		dynamicLoading.update(cameraPos, coords, colorRGB, size);		
 	}
 
 	private void loadData(BufferedImage image, float size) {
@@ -169,10 +171,8 @@ public class Game extends Canvas implements Runnable{
 				if (red == 0 && green == 0 && blue == 255) {
 					initPlayerPos.x = (xx*scale.x); initPlayerPos.y = (yy*scale.y*2)+scale.y;
 				}
-
 			}
 		}
-
 	}
 	
 	public static TextureManager getTexInstance(){

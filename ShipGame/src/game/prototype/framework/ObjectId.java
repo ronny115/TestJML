@@ -5,7 +5,8 @@ public enum ObjectId {
 	Block(),
 	CollisionBlock(),
 	TrailFx(),
-	EnemyType1(),
+	ExplosiveMine(),
+	Ghost(),
 	Projectile();
 
 }

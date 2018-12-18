@@ -8,7 +8,7 @@ public abstract class GameObject {
 	
 	protected float x,y;
 	protected ObjectId id;
-	//protected float velX = 0, velY = 0;
+	protected float velX = 0, velY = 0;
 	protected float w = 0, h = 0;
 	
 	public GameObject(float x, float y, float w, float h, ObjectId id) {
@@ -24,6 +24,7 @@ public abstract class GameObject {
 
 	public abstract Point2D.Float getP();
 	public abstract boolean getCollision();
+	public abstract String getType();
 	
 	public float getX() {
 		return x;
@@ -37,18 +38,18 @@ public abstract class GameObject {
 	public void setY(float y) {
 		this.y = y;
 	}
-//	public float getVelX() {
-//		return velX;
-//	}
-//	public float getVelY() {
-//		return velY;
-//	}
-//	public void setVelX(float velX) {
-//		this.velX = velX;
-//	}
-//	public void setVelY(float velY) {
-//		this.velY = velY;
-//	}	
+	public float getVelX() {
+		return velX;
+	}
+	public float getVelY() {
+		return velY;
+	}
+	public void setVelX(float velX) {
+		this.velX = velX;
+	}
+	public void setVelY(float velY) {
+		this.velY = velY;
+	}	
 	public float getSizeX() {
 		return w;
 	}

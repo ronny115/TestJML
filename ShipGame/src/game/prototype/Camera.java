@@ -11,8 +11,9 @@ public class Camera {
 	}
 	
 	public void update(PlayerObject player) {
-		x = -player.getX() + Game.WIDTH/2;
-		y = -player.getY() + Game.HEIGHT/2;
+		//Movement easing (interpolation)
+		x += ((player.getX()-x) - Game.WIDTH/2) * 0.05f;
+		y += ((player.getY()-y) - Game.HEIGHT/2) * 0.05f;
 	}
 	
 	public void setX(float x) {

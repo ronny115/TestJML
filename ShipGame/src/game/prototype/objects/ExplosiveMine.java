@@ -1,6 +1,5 @@
 package game.prototype.objects;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Float;
@@ -13,6 +12,7 @@ import game.prototype.HUD;
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
+import game.prototype.framework.PlayerObject;
 import game.prototype.framework.TextureManager;
 
 public class ExplosiveMine extends GameObject{
@@ -21,24 +21,29 @@ public class ExplosiveMine extends GameObject{
 	private TextureManager tex = Game.getTexInstance();
 	private Animation explosion;
 	private boolean isHit = false;
+	private boolean isDamaged = false;
 
 	public ExplosiveMine(float x, float y, float w, float h, Handler handler, ObjectId id) {
 		super(x, y, w, h, id);
 		this.handler = handler;
-		explosion = new Animation(1, tex.explosion);
+		explosion = new Animation(3, tex.explosion);
 	}
 
 	public void update(LinkedList<GameObject> object) {
-		if (isHit == true) explosion.runAnimationOnce();
-		if (Animation.isDone == true) isHit = false;	
+		if (isHit == true) {
+			explosion.runAnimationOnce();
+		}
+		if (explosion.isDone == true) {
+			isHit = false;	
+			isDamaged = false;
+		}
 		projectileCollision();
+		playerCollision();
 	}
 
 	public void render(Graphics2D g2) {
-		g2.setColor(Color.RED);
-		if (isHit == true) explosion.drawAnimation(g2, (int)x, (int)y, (int)w, (int)h);
-		else g2.drawImage(tex.enemyType1[0], (int)x, (int)y, (int)w, (int)h, null);
-		g2.draw(bounds());
+		if (isHit == true) explosion.drawAnimation(g2, (int)x-10, (int)y-10, (int)w+20, (int)h+20);
+		else g2.drawImage(tex.explosiveMine[0], (int)x, (int)y, (int)w, (int)h, null);
 	}
 	
 	public Rectangle2D bounds() {
@@ -52,16 +57,35 @@ public class ExplosiveMine extends GameObject{
 				Point2D.Float projectile = new Point2D.Float(tempObject.getX(), tempObject.getY());	
 				if (bounds().contains(projectile) == true && isHit == false) {
 					isHit = true;
+					HUD.POINTS += 100;
 					handler.removeObject(tempObject);
 				} 
 			}			
-			if (Animation.isDone == true && isHit == false) {
+			if (explosion.isDone == true && isHit == false) {
 				handler.removeObject(this);
-				Animation.isDone = false;
+				explosion.isDone = false;
 			}		
 		}
-	}	
+	}
+	
+	private void playerCollision() {
+		PlayerObject player = handler.player.get(0);
+		for (int i = 0; i < player.getPoints().length; i++) {
+			if (bounds().contains(player.getPoints()[i]) && explosion.hasStarted == false) {
+				isHit = true;
+				isDamaged = true;
+			}
+		}
+	}
 	
 	public Float getP() {return null;}
-	public boolean getCollision() {return false;}
+	
+	public boolean getCollision() {
+		if(explosion.hasStarted == true) {
+			return false;
+		}
+		return isDamaged;
+	}
+
+	public String getType() {return null;}
 }
