@@ -44,7 +44,7 @@ public class Block extends GameObject {
 		return polygon;
 	}
 
-	public Point2D.Float getP() {return null;}
-	public boolean getCollision() {return false;}
-	public String getType() {return null;}
+	public Point2D.Float deltaPoints() {return null;}
+	public boolean collision() {return false;}
+	public String type() {return null;}
 }

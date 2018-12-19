@@ -24,7 +24,8 @@ public class ResourceLoader {
 	
 	public Font loadFont(String path) {
 		try {
-			pixelFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("PressStart2P.ttf"));
+			pixelFont = Font.createFont(Font.TRUETYPE_FONT, 
+										getClass().getClassLoader().getResourceAsStream("PressStart2P.ttf"));
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			ge.registerFont(pixelFont);
 		} catch (IOException e) {

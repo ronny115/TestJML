@@ -22,7 +22,7 @@ public abstract class PlayerObject {
 	
 	public abstract void updatePlayer(LinkedList<PlayerObject> object);
 	public abstract void renderPlayer(Graphics2D g2);
-	public abstract Point2D.Float[] getPoints();
+	public abstract Point2D.Float[] points();
 
 	public float getX() {
 		return x;
@@ -48,16 +48,16 @@ public abstract class PlayerObject {
 	public void setVelY(float velY) {
 		this.velY = velY;
 	}	
-	public float getSizeX() {
+	public float getW() {
 		return w;
 	}
-	public float getSizeY() {
+	public float getH() {
 		return h;
 	}
-	public void setSizeX(float sizeX) {
+	public void setW(float sizeX) {
 		this.w = sizeX;
 	}
-	public void setSizeY(float sizeY) {
+	public void setH(float sizeY) {
 		this.h = sizeY;
 	}
 	public PlayerId getId() {

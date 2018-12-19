@@ -34,12 +34,12 @@ public class HUD {
 	private void healthBar(Graphics2D g2, Point2D.Float position, int health) {
 		float w = 205;
 		float h = 25;
-		float w1 = 15;
-		float h1 = 15;
+		float w1 = 15, h1 = 15;
 		Rectangle2D healthbar = new Rectangle2D.Float(position.x, position.y, w, h);
 		g2.draw(healthbar);
 		for (int i = 0; i < (HEALTH/10); i++) {
-			healthbar = new Rectangle2D.Float(position.x+5 + (i*20), position.y+5, w1, h1);
+			healthbar = new Rectangle2D.Float(position.x+5 + (i*20), 
+											  position.y+5, w1, h1);
 			g2.draw(healthbar);
 		}
 	}

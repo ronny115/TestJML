@@ -56,19 +56,24 @@ public class KeyInput extends KeyAdapter {
 		if (downKeyReleased == true) {
 			move("decelerateDown");		
 		}
-		if (leftKeyReleased == true && leftKeyPressed == false && rightKeyPressed == false) {	
+		if (leftKeyReleased == true && leftKeyPressed == false &&
+			rightKeyPressed == false) 
+		{	
 			move("decelerateLeft");
 		}
-		if (rightKeyReleased == true && rightKeyPressed == false && leftKeyPressed == false) {	
+		if (rightKeyReleased == true && rightKeyPressed == false && 
+			leftKeyPressed == false) 
+		{	
 			move("decelerateRight");
 		}
 	//Shooting
 		if (spaceKeyPressed == true) {
-			handler.addObject(new Projectile(firePos[1].x, firePos[1].y, 5, 20, 20, "player", Helper.projectileAngle(handler.player.get(0).getPoints()), 
-					ObjectId.Projectile));
+			handler.addObject(new Projectile(firePos[1].x, firePos[1].y, 5, 20, 20,
+											"player", Helper.bulletAngle(handler.player.get(0).points()), 
+											ObjectId.Projectile));
+			
 			spaceKeyPressed = false;
-		}
-		
+		}	
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -95,7 +100,7 @@ public class KeyInput extends KeyAdapter {
 					System.exit(1);
 				}
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					firePos = tempPlayer.getPoints();
+					firePos = tempPlayer.points();
 					spaceKeyPressed = true;	
 				}
 			}

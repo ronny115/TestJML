@@ -22,9 +22,9 @@ public abstract class GameObject {
 	public abstract void update(LinkedList<GameObject> object);
 	public abstract void render(Graphics2D g2);
 
-	public abstract Point2D.Float getP();
-	public abstract boolean getCollision();
-	public abstract String getType();
+	public abstract Point2D.Float deltaPoints();
+	public abstract boolean collision();
+	public abstract String type();
 	
 	public float getX() {
 		return x;
@@ -50,16 +50,16 @@ public abstract class GameObject {
 	public void setVelY(float velY) {
 		this.velY = velY;
 	}	
-	public float getSizeX() {
+	public float getW() {
 		return w;
 	}
-	public float getSizeY() {
+	public float getH() {
 		return h;
 	}
-	public void setSizeX(float sizeX) {
+	public void setW(float sizeX) {
 		this.w = sizeX;
 	}
-	public void setSizeY(float sizeY) {
+	public void setH(float sizeY) {
 		this.h = sizeY;
 	}
 	public ObjectId getId() {

@@ -31,7 +31,9 @@ public class CollisionBlock extends GameObject {
 	private Point2D.Float X[];
 	private boolean isColliding = false;
 	
-	public CollisionBlock(float x, float y, float w, float h, Handler handler, ObjectId id) {
+	public CollisionBlock(float x, float y, float w, float h, Handler handler, 
+						  ObjectId id) 
+	{
 		super(x, y, w, h, id);
 		this.handler = handler;
 		buildHexagonBB();
@@ -54,172 +56,190 @@ public class CollisionBlock extends GameObject {
 		for (int i = 0; i < handler.player.size(); i++) {
 			PlayerObject tempObject = handler.player.get(i);			
 			if (tempObject.getId() == PlayerId.PlayerShip) {
-				shipPoints = tempObject.getPoints();
-				
+				shipPoints = tempObject.points();			
 				for (int j = 0; j < shipPoints.length-1; j++) {
-					if (shipPoints[j+1].x > (x-w-(tempObject.getSizeX()/2)) && shipPoints[j+1].x < (x+w+(tempObject.getSizeX()/2)) &&
-							shipPoints[j+1].y > (y-h) && shipPoints[j+1].y < (y+h)) {
+					if (shipPoints[j+1].x > (x-w-(tempObject.getW()/2)) && 
+						shipPoints[j+1].x < (x+w+(tempObject.getW()/2)) &&
+						shipPoints[j+1].y > (y-h) && shipPoints[j+1].y < (y+h)) 
+					{
 						insideBB = true;
 						break;
-					} else insideBB = false;	
+					} else 
+						insideBB = false;	
 				}
 				
 				for (int j = 0; j < shipPoints.length-1; j++) {
 					if (insideBB == true) {
-					//Segment 0-1			
-						if (shipPoints[j+1].y > bounds[0].y && shipPoints[j+1].x > bounds[1].x && shipPoints[j+1].y < bounds[1].y) {
+					    //Segment 0-1			
+						if (shipPoints[j+1].y > bounds[0].y && 
+							shipPoints[j+1].x > bounds[1].x && 
+							shipPoints[j+1].y < bounds[1].y) 
+						{
+							//Collision
 							getProjectionPoints(bounds[0], bounds[1], X[0], "right");
-						//Collision /<---
 							if(minProjected.x < bounds[0].x) {
 								isColliding = true; 
 								p.x = bounds[0].x - minProjected.x;
 								p.y = bounds[0].y - minProjected.y;
 							}				
-						//End of segment collision
 							if (minShip.y < bounds[0].y) {
 								isColliding = false;
 								lineIntersection(bounds[0], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[0], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (minShip.y > bounds[1].y) {
 								isColliding = false;
 								lineIntersection(bounds[1], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[1], shipPoints[2], shipPoints[4]);
 							}		
-						//Collision / -->
-							if (minProjected.x > bounds[0].x) isColliding = false;
-				    //Segment 1-2
-						} else if (shipPoints[j+1].x < bounds[1].x && shipPoints[j+1].y > bounds[1].y && shipPoints[j+1].x > bounds[2].x) {
+							if (minProjected.x > bounds[0].x) 
+								isColliding = false;
+						//Segment 1-2
+						} else if (shipPoints[j+1].x < bounds[1].x && 
+								   shipPoints[j+1].y > bounds[1].y && 
+								   shipPoints[j+1].x > bounds[2].x) 
+						{
+							//Collision
 							getProjectionPoints(bounds[1], bounds[2], X[1], "right");
-						//Collision |<---
 							if (minProjected.y < bounds[1].y) {
 								isColliding = true;
 								p.x = bounds[1].x - minProjected.x;
 								p.y = bounds[1].y - minProjected.y;
 							}
-						//End of segment collision
 							if (maxShip.x > bounds[1].x) {
 								isColliding = false;
 								lineIntersection(bounds[1], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[1], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (maxShip.x < bounds[2].x) {
 								isColliding = false;
 								lineIntersection(bounds[2], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[2], shipPoints[2], shipPoints[4]);
 							}
-						//Collision | -->
-							if (minProjected.y > bounds[1].y) isColliding = false;
-					//Segment 2-3
-						} else if (shipPoints[j+1].x < bounds[2].x && shipPoints[j+1].y < bounds[2].y && shipPoints[j+1].y > bounds[3].y) {
+
+							if (minProjected.y > bounds[1].y) 
+								isColliding = false;
+					    //Segment 2-3
+						} else if (shipPoints[j+1].x < bounds[2].x && 
+								   shipPoints[j+1].y < bounds[2].y && 
+								   shipPoints[j+1].y > bounds[3].y) 
+						{
+							//Collision
 							getProjectionPoints(bounds[2], bounds[3], X[2], "reverse");
-						//Collision -->\
 							if (maxProjected.x > bounds[2].x) {
 								isColliding = true;
 								p.x = bounds[2].x - maxProjected.x;
 								p.y = bounds[2].y - maxProjected.y;
 							}
-						//End of segment collision
 							if (maxShip.y > bounds[2].y) {
 								isColliding = false;
 								lineIntersection(bounds[2], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[2], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (maxShip.y < bounds[3].y) {
 								isColliding = false;
 								lineIntersection(bounds[3], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[3], shipPoints[2], shipPoints[4]);
 							}
-						//Collision <--\
-							if (maxProjected.x < bounds[2].x) isColliding = false;
-					//Segment 3-4
-						} else if (shipPoints[j+1].x < bounds[4].x && shipPoints[j+1].y < bounds[3].y && shipPoints[j+1].y > bounds[4].y) {	
+							if (maxProjected.x < bounds[2].x) 
+								isColliding = false;
+					    //Segment 3-4
+						} else if (shipPoints[j+1].x < bounds[4].x && 
+								   shipPoints[j+1].y < bounds[3].y && 
+								   shipPoints[j+1].y > bounds[4].y) 
+						{	
+							//Collision
 							getProjectionPoints(bounds[3], bounds[4], X[3], "right");					
-						//Collision -->/
 							if (maxProjected.x > bounds[3].x) {
 								isColliding = true;
 								p.x = bounds[3].x - maxProjected.x;
 								p.y = bounds[3].y - maxProjected.y;
 							}
-						//End of segment collision
 							if (maxShip.y > bounds[3].y) {
 								isColliding = false;
 								lineIntersection(bounds[3], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[3], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (maxShip.y < bounds[4].y) {
 								isColliding = false;
 								lineIntersection(bounds[4], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[4], shipPoints[2], shipPoints[4]);
 							}
-						//Collision <--/
-							if (maxProjected.x < bounds[3].x ) isColliding = false;
-					//Segment 4-5
-						} else if (shipPoints[j+1].y < bounds[4].y && shipPoints[j+1].x < bounds[5].x && shipPoints[j+1].x > bounds[4].x) {				
+							if (maxProjected.x < bounds[3].x ) 
+								isColliding = false;
+					    //Segment 4-5
+						} else if (shipPoints[j+1].y < bounds[4].y && 
+								   shipPoints[j+1].x < bounds[5].x && 
+								   shipPoints[j+1].x > bounds[4].x) 
+						{		
+							//Collision
 							getProjectionPoints(bounds[4], bounds[5], X[4], "reverse");
-						//Collision -->|
 							if (minProjected.y > bounds[4].y) {
 							isColliding = true;
 								p.x = bounds[4].x - minProjected.x;
 								p.y = bounds[4].y - minProjected.y;	
 							}
-						//End of segment collision
 							if (minShip.x < bounds[4].x ) {
 								isColliding = false;
 								lineIntersection(bounds[4], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[4], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (minShip.x > bounds[5].x) {
 								isColliding = false;
 								lineIntersection(bounds[5], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[5], shipPoints[2], shipPoints[4]);
 							}
-						//Collision <--|
-							if (minProjected.y < bounds[4].y) isColliding = false;
-					//Segment 5-0
-						} else if (shipPoints[j+1].x > bounds[5].x && shipPoints[j+1].y > bounds[5].y && shipPoints[j+1].y < bounds[0].y) {						
+							if (minProjected.y < bounds[4].y) 
+								isColliding = false;
+					    //Segment 5-0
+						} else if (shipPoints[j+1].x > bounds[5].x && 
+								   shipPoints[j+1].y > bounds[5].y && 
+								   shipPoints[j+1].y < bounds[0].y) 
+						{		
+							//Collision
 							getProjectionPoints(bounds[5], bounds[0], X[5], "reverse");
-						//Collision \<--
 							if (minProjected.x < bounds[5].x) {
 								isColliding = true;
 								p.x = bounds[5].x - minProjected.x; 
 								p.y = bounds[5].y - minProjected.y;
 							}
-						//End of segment collision
 							if (minShip.y < bounds[5].y) {
 								isColliding = false;
 								lineIntersection(bounds[5], shipPoints[1], shipPoints[2]);
 								lineIntersection(bounds[5], shipPoints[2], shipPoints[4]);
 							}
-						//End of segment collision
 							if (minShip.y > bounds[0].y) {
 								isColliding = false;
 								lineIntersection(bounds[0], shipPoints[1], shipPoints[4]);
 								lineIntersection(bounds[0], shipPoints[2], shipPoints[4]);
 							}
-						//Collision \-->
-							if (minProjected.x > bounds[5].x) isColliding = false;						
+							if (minProjected.x > bounds[5].x) 
+								isColliding = false;						
 						}
-					} else isColliding = false;
+					} else 
+						isColliding = false;
 				}
 			}
 		}		
 	}
 		
-	private void lineIntersection(Point2D.Float pointA, Point2D.Float shipA, Point2D.Float shipB) {
-		float s1_x, s1_y, s2_x, s2_y;
-		s1_x = x - pointA.x; s1_y = y - pointA.y;
-		s2_x = shipB.x - shipA.x; s2_y = shipB.y - shipA.y;		
+	private void lineIntersection(Point2D.Float pointA, Point2D.Float shipA, 
+								  Point2D.Float shipB) 
+	{
+		float s1_x, s1_y, s2_x, s2_y;	
 		float s, t;
-		s = (-s1_y * (pointA.x - shipA.x) + s1_x * (pointA.y - shipA.y)) / (-s2_x * s1_y + s1_x * s2_y);
-		t = (s2_x * (pointA.y - shipA.y) - s2_y * (pointA.x - shipA.x)) / (-s2_x * s1_y + s1_x * s2_y);		
+			s1_x = x - pointA.x;
+			s1_y = y - pointA.y;
+			s2_x = shipB.x - shipA.x; 
+			s2_y = shipB.y - shipA.y;		
+			
+		s = (-s1_y * (pointA.x - shipA.x) + s1_x * (pointA.y - shipA.y)) 
+			/ (-s2_x * s1_y + s1_x * s2_y);
+		t = (s2_x * (pointA.y - shipA.y) - s2_y * (pointA.x - shipA.x)) 
+			/ (-s2_x * s1_y + s1_x * s2_y);	
+		
 		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-			//collision
+			//Collision
 			isColliding = true;
 			ipx = pointA.x + (t * s1_x);
 			ipy = pointA.y + (t * s1_y);
@@ -251,28 +271,36 @@ public class CollisionBlock extends GameObject {
 		bounds = new Point2D.Float[6];
 		ArrayList<float[]> points = new ArrayList<float[]>();
 		float[] coords = new float[6];
-		//for drawing purposes
 		float len = 0.5f;
 		
-		for (PathIterator path = tile().getPathIterator(null); !path.isDone(); path.next()) {	
+		for (PathIterator path = tile().getPathIterator(null); 
+			!path.isDone(); path.next()) 
+		{	
 			path.currentSegment(coords);
 			float[] pathpoints = {coords[0], coords[1]};
 			points.add(pathpoints);		
-		}	
+		}
+		
 		for (int i = 0; i < 6; i++) {
 			bounds[i] = new Point2D.Float(points.get(i)[0],points.get(i)[1]);
 		}
+		
 		for (int i = 0; i < bounds.length; i++) {
 			if (i < 5) X[i] = getPerpendicular(bounds[i], bounds[i+1], len); 
 			if (i == 5) X[i] = getPerpendicular(bounds[i], bounds[0], len);
 		}	
 	}
 	
-	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X, String dir) {
+	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X,
+									 String dir) 
+	{
 		Point2D.Float shipPointsC = new Point2D.Float();
 		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();
-		float px[] = new float[4];  float py[] = new float[4];
-		float sx[] = new float[4];  float sy[] = new float[4];
+		
+		float px[] = new float[4];  
+		float py[] = new float[4];
+		float sx[] = new float[4];  
+		float sy[] = new float[4];
 		
 		for (int j = 0; j < shipPoints.length-1; j++) {
 			shipPointsC.x = shipPoints[j+1].x;
@@ -287,14 +315,17 @@ public class CollisionBlock extends GameObject {
 								
 			sx[j] = shipPoints[j+1].x;
 			sy[j] = shipPoints[j+1].y;
-		}		
+		}
+		
 		maxProjected = getMaxValue(px,py,sx,sy,dir)[0];
 		maxShip = getMaxValue(px,py,sx,sy,dir)[1];	
 		minProjected = getMinValue(px,py,sx,sy,dir)[0];
 		minShip = getMinValue(px,py,sx,sy,dir)[1];
 	}
 	
-	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x, float[] shipPoints_y, String dir) {
+	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x, 
+			                    float[] shipPoints_y, String dir) 
+	{
 		Point2D.Float MaxValue[];
 		MaxValue = new Point2D.Float[2];
 		MaxValue[0] = new Point2D.Float(points_x[0],points_y[0]); 
@@ -327,7 +358,9 @@ public class CollisionBlock extends GameObject {
 		return MaxValue;
 	}
 	
-	private Float[] getMinValue(float[] points_x, float[] points_y, float[] shipPoints_x, float[] shipPoints_y, String dir) {
+	private Float[] getMinValue(float[] points_x, float[] points_y, float[] shipPoints_x, 
+			                    float[] shipPoints_y, String dir) 
+	{
 		Point2D.Float MinValue[];
 		MinValue = new Point2D.Float[2];
 		MinValue[0] = new Point2D.Float(points_x[0],points_y[0]); 
@@ -360,31 +393,41 @@ public class CollisionBlock extends GameObject {
 		return MinValue;
 	}
 	
-	private Point2D.Float getPerpendicular(Point2D.Float p1, Point2D.Float p2, float length) {
+	private Point2D.Float getPerpendicular(Point2D.Float p1, Point2D.Float p2, 
+			                               float length) 
+	{
 		Point2D.Float pointA = new Point2D.Float();
 		Point2D.Float pointB = new Point2D.Float();
-		pointA.x = p1.x;     pointA.y = p1.y;
-		pointB.x = p2.x;     pointB.y = p2.y;
+			pointA.x = p1.x;     
+			pointA.y = p1.y;
+			pointB.x = p2.x;     
+			pointB.y = p2.y;
+			
 		Point2D.Float vector = Helper.vectorize(pointB, pointA);
 		Point2D.Float pVector = new Point2D.Float();
-		pVector.x = vector.y;    pVector.y = -vector.x;
+			pVector.x = vector.y;    
+			pVector.y = -vector.x;
+			
 		float x = p1.x - pVector.x * length;
 		float y = p1.y - pVector.y * length;
+		
 		return new Point2D.Float(x,y);
 	}
 	
 	private Float projection(Point2D.Float A, Point2D.Float B, Point2D.Float C) {
 		Point2D.Float vector1 = Helper.vectorize(A,B);
 		Point2D.Float vector2 = Helper.vectorize(A,C);
+		
 		float d = Helper.dotProduct(vector1, vector1);
 		float dp = Helper.dotProduct(vector1, vector2);
 		float multiplier = dp/d;	
 		float Dx = vector1.x * multiplier;
-		float Dy = vector1.y * multiplier;		
+		float Dy = vector1.y * multiplier;
+		
 		return new Point2D.Float(Dx,Dy);		
 	}	
-	public Point2D.Float getP(){return p;}
-	public boolean getCollision() {return isColliding;}
-
-	public String getType() {return null;}
+	
+	public Point2D.Float deltaPoints(){return p;}
+	public boolean collision() {return isColliding;}
+	public String type() {return null;}
 }

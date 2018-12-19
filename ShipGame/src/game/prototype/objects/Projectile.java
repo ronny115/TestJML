@@ -17,7 +17,9 @@ public class Projectile extends GameObject {
 	private float angle;
 	private String type;
 	
-	public Projectile(float x, float y, float w, float h, int speed, String type, float angle, ObjectId id) {
+	public Projectile(float x, float y, float w, float h, int speed, String type, 
+					  float angle, ObjectId id) 
+	{
 		super(x, y, w, h, id);
 		this.speed = speed;
 		this.angle = angle;
@@ -33,20 +35,21 @@ public class Projectile extends GameObject {
 		AffineTransform at = AffineTransform.getTranslateInstance(x, y);
 		at.rotate(angle);
 	    at.translate(-(w/2), -(h/2));
-	    if(type == "player") {
+	    if (type == "player") {
 	    	at.scale((w/tex.bullet[0].getWidth()), (h/tex.bullet[0].getHeight()));
 			g2.drawImage(tex.bullet[0], at, null);
-	    } else {
+	    } 
+        if (type == "enemy") {
 	    	at.scale((w/tex.bullet[1].getWidth()), (h/tex.bullet[1].getHeight()));
 			g2.drawImage(tex.bullet[1], at, null);
 	    }
 	    
 	}
 	
-	public String getType() {
+	public String type() {
 		return type;
 	}
 	
-	public Float getP() {return null;}
-	public boolean getCollision() {return false;}
+	public Float deltaPoints() {return null;}
+	public boolean collision() {return false;}
 }

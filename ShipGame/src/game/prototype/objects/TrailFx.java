@@ -16,26 +16,28 @@ import game.prototype.framework.TextureManager;
 public class TrailFx extends GameObject {
 	private Handler handler;
 	private float alpha = 1;
-	private float lenght;
+	private float length;
 	
 	private TextureManager tex = Game.getTexInstance();
 	private AffineTransform at;
 
-	public TrailFx(float x, float y, float w, float h, float lenght, Handler handler, ObjectId id) {
+	public TrailFx(float x, float y, float w, float h, float length, Handler handler, 
+				   ObjectId id) 
+	{
 		super(x, y, w, h, id);
 		this.handler = handler;
-		this.lenght = lenght;
+		this.length = length;
 	}
 
 	public void update(LinkedList<GameObject> object) {
-		if (alpha > lenght) {
-			alpha -= lenght -0.0001;	
-		} else {
+		if (alpha > length)
+			alpha -= length -0.0001;	
+	    else 
 			handler.removeObject(this);
-		}
-		
+			
 		at = AffineTransform.getTranslateInstance(x, y);
-		at.rotate(Math.toRadians(Helper.getAngle(handler.player.get(0).getPoints()[1],handler.player.get(0).getPoints()[0])-90));
+		at.rotate(Math.toRadians(Helper.angle(handler.player.get(0).points()[1],
+											  handler.player.get(0).points()[0])-90));
 	    at.translate(-(w/2), -(h/2));
 	    at.scale((w/tex.player[0].getWidth()), (h/tex.player[0].getHeight()));
 	    
@@ -43,10 +45,8 @@ public class TrailFx extends GameObject {
 	}
 
 	public void render(Graphics2D g2) {
-		g2.setComposite(makeTransparent(alpha));
-		
-		g2.drawImage(tex.player[0], at, null);
-		
+		g2.setComposite(makeTransparent(alpha));		
+		g2.drawImage(tex.player[0], at, null);		
 		g2.setComposite(makeTransparent(1));	
 	}
 
@@ -55,7 +55,7 @@ public class TrailFx extends GameObject {
 		return (AlphaComposite.getInstance(type, alpha));
 	}
 	
-	public Float getP() {return null;}
-	public boolean getCollision() {return false;}
-	public String getType() {return null;}
+	public Float deltaPoints() {return null;}
+	public boolean collision() {return false;}
+	public String type() {return null;}
 }

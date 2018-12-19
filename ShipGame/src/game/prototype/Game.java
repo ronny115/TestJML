@@ -26,7 +26,7 @@ public class Game extends Canvas implements Runnable{
 	public static int WIDTH = 1280, HEIGHT = WIDTH / 16 * 9;
 	private boolean isRunning = false;
 	private int fpsCounter;
-	//Objects
+
 	private Handler handler;
 	private Camera camera;
 	private KeyInput keyinput;
@@ -51,23 +51,26 @@ public class Game extends Canvas implements Runnable{
 		tex = new TextureManager();
 		dynamicLoading = new DynamicLoading(handler);
 		keyinput = new KeyInput(handler);
-		
-		keyinput.setSpeed(4.5f, 0.15f);//Max speed, speed increments
+		//Max speed, speed increments
+		keyinput.setSpeed(4.5f, 0.15f);
 		this.addKeyListener(keyinput);
 			
-		hud.setFont(loader.loadFont("/PressStart2P.ttf"));
-						
-		loadData(loader.loadImage("/lvl_full.png"), 50);//Level, block size
+		hud.setFont(loader.loadFont("/PressStart2P.ttf"));	
+		loadData(loader.loadImage("/lvl_full.png"), 50);
 			
-		camera = new Camera(initPlayerPos.x - WIDTH/2, initPlayerPos.y - HEIGHT/2);	
-		handler.addObject(new Ghost(initPlayerPos.x, initPlayerPos.y, 150, 150, handler, ObjectId.Ghost));
-		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, handler, PlayerId.PlayerShip));//Position(x,y), size(w,h)		
+		camera = new Camera(initPlayerPos.x - WIDTH/2, 
+							initPlayerPos.y - HEIGHT/2);
+		
+		handler.addObject(new Ghost(initPlayerPos.x, initPlayerPos.y, 
+									150, 150, handler, ObjectId.Ghost));
+
+		handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 
+										35, 45, handler, PlayerId.PlayerShip));	
 	}
 		
 	public synchronized void start() {
-		if (isRunning) {
+		if (isRunning)
 			return;
-		}
 		isRunning = true;
 		thread = new Thread(this);
 		thread.start();
@@ -105,20 +108,16 @@ public class Game extends Canvas implements Runnable{
 	
 	private void render() {
 		BufferStrategy bStrategy = this.getBufferStrategy();
-		if (bStrategy == null)
-		{
+		if (bStrategy == null) {
 			this.createBufferStrategy(3);
 			return;
 		}
 		Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
-		//Clear the screen
 		g2.setColor(new Color(238, 238, 238));
 		g2.fillRect(0,0,getWidth(),getHeight());	
-		//Quality options
-		//g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, 
+							RenderingHints.VALUE_STROKE_PURE);
 		//Draw Here
-	
 		g2.translate(-camera.getX(), -camera.getY());
 		handler.render(g2);
 		g2.translate(camera.getX(), camera.getY());			
@@ -133,9 +132,8 @@ public class Game extends Canvas implements Runnable{
 		keyinput.updateInput();
 		hud.update();
 		camera.update(handler.player.get(0));
-		cameraPos.x = camera.getX();
-		cameraPos.y = camera.getY();
-
+			cameraPos.x = camera.getX();
+			cameraPos.y = camera.getY();
 		dynamicLoading.update(cameraPos, coords, colorRGB, size);		
 	}
 
@@ -158,18 +156,25 @@ public class Game extends Canvas implements Runnable{
 				int[] rgb = {red, green, blue};
 				colorRGB.add(rgb);
 				
-				if ((xx % 2) != 0) {//Odd
-					//Calculate the coords and load state: 0 not loaded 1 loaded
-					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2)+scale.y, 0};
+				if ((xx % 2) != 0) {
+					//coords and load state
+					float[] pixelCoords = {xx*scale.x, 
+										  (yy*scale.y*2)+scale.y, 
+										  0};
+					
 					coords.add(pixelCoords);
-				} else {//Even	
-					//Calculate the coords and load state: 0 not loaded 1 loaded
-					float[] pixelCoords = {xx*scale.x, (yy*scale.y*2), 0};
+				} else {
+					//coords and load state
+					float[] pixelCoords = {xx*scale.x, 
+							              (yy*scale.y*2), 
+							              0};
+					
 					coords.add(pixelCoords);
 				}
 				//Player location coords				
 				if (red == 0 && green == 0 && blue == 255) {
-					initPlayerPos.x = (xx*scale.x); initPlayerPos.y = (yy*scale.y*2)+scale.y;
+					initPlayerPos.x = (xx*scale.x); 
+					initPlayerPos.y = (yy*scale.y*2)+scale.y;
 				}
 			}
 		}

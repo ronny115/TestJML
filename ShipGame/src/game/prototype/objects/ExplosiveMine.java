@@ -23,7 +23,9 @@ public class ExplosiveMine extends GameObject{
 	private boolean isHit = false;
 	private boolean isDamaged = false;
 
-	public ExplosiveMine(float x, float y, float w, float h, Handler handler, ObjectId id) {
+	public ExplosiveMine(float x, float y, float w, float h, Handler handler, 
+						 ObjectId id) 
+	{
 		super(x, y, w, h, id);
 		this.handler = handler;
 		explosion = new Animation(3, tex.explosion);
@@ -42,8 +44,13 @@ public class ExplosiveMine extends GameObject{
 	}
 
 	public void render(Graphics2D g2) {
-		if (isHit == true) explosion.drawAnimation(g2, (int)x-10, (int)y-10, (int)w+20, (int)h+20);
-		else g2.drawImage(tex.explosiveMine[0], (int)x, (int)y, (int)w, (int)h, null);
+		if (isHit == true) 
+			explosion.drawAnimation(g2, (int)x-10, (int)y-10, 
+										(int)w+20, (int)h+20);
+		else 
+			g2.drawImage(tex.explosiveMine[0], 
+						(int)x, (int)y, 
+						(int)w, (int)h, null);
 	}
 	
 	public Rectangle2D bounds() {
@@ -54,8 +61,12 @@ public class ExplosiveMine extends GameObject{
 		for (int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);				
 			if (tempObject.getId() == ObjectId.Projectile) {
-				Point2D.Float projectile = new Point2D.Float(tempObject.getX(), tempObject.getY());	
-				if (bounds().contains(projectile) == true && isHit == false) {
+				Point2D.Float bullet = new Point2D.Float(tempObject.getX(), 
+														tempObject.getY());
+				if (bounds().contains(bullet) == true && 
+					isHit == false && 
+					tempObject.type() == "player") 
+				{
 					isHit = true;
 					HUD.POINTS += 100;
 					handler.removeObject(tempObject);
@@ -70,22 +81,21 @@ public class ExplosiveMine extends GameObject{
 	
 	private void playerCollision() {
 		PlayerObject player = handler.player.get(0);
-		for (int i = 0; i < player.getPoints().length; i++) {
-			if (bounds().contains(player.getPoints()[i]) && explosion.hasStarted == false) {
+		for (int i = 0; i < player.points().length; i++) {
+			if (bounds().contains(player.points()[i]) && 
+				explosion.hasStarted == false) 
+			{
 				isHit = true;
 				isDamaged = true;
 			}
 		}
 	}
 	
-	public Float getP() {return null;}
-	
-	public boolean getCollision() {
-		if(explosion.hasStarted == true) {
+	public Float deltaPoints() {return null;}	
+	public boolean collision() {
+		if(explosion.hasStarted == true) 
 			return false;
-		}
 		return isDamaged;
 	}
-
-	public String getType() {return null;}
+	public String type() {return null;}
 }
