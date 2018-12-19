@@ -130,12 +130,12 @@ public class Ghost extends GameObject {
 		for(int i =0; i< handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);
 			if(tempObject.getId() == ObjectId.Projectile) {		
-				if (tempObject.type() == "player" && 
-					tempObject.getX() > (ex - (w/3)/2) && 
-					tempObject.getX() < (ex + (w/3)/2) && 
-					tempObject.getY() > (ey - (h/3)/2) && 
-					tempObject.getY() < (ey + (h/3)/2) && 
-					explosion.hasStarted == false) 
+				if (tempObject.type() == "player" &&
+				    tempObject.getX() > (ex - (w/3)/2) &&
+				    tempObject.getX() < (ex + (w/3)/2) &&
+				    tempObject.getY() > (ey - (h/3)/2) &&
+				    tempObject.getY() < (ey + (h/3)/2) &&
+				    explosion.hasStarted == false) 
 				{
 					enemyHP -= 50;
 					handler.removeObject(tempObject);
