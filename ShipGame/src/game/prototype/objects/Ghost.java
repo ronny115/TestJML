@@ -61,10 +61,10 @@ public class Ghost extends GameObject {
 	}
 
 	public void render(Graphics2D g2) {
-		if(enemyHP == 0) 
+		if(enemyHP == 0) {
 			explosion.drawAnimation(g2, (int)(ex-(w/3)/2), 
-									(int)(ey-(h/3)/2), 
-									(int)(w/3), (int)(h/3));
+			                       (int)(ey-(h/3)/2), 
+			                       (int)(w/3), (int)(h/3));
 		
 			explosion1.drawAnimation(g2, (int)(ex-(w/3)/2)-10, 
 									(int)(ey-(h/3)/2)-10, 
@@ -73,8 +73,8 @@ public class Ghost extends GameObject {
 			explosion3.drawAnimation(g2, (int)(ex-(w/3)/2)-10, 
 									(int)(ey- (h/3)/2)+10, 
 									(int)(w/3), (int)(h/3));
-			
-		if(explosion1.isDone == true) 
+		}		
+		if(explosion1.isDone == true) {
 			explosion2.drawAnimation(g2, (int)(ex-(w/3)/2)+10, 
 									(int)(ey-(h/3)/2)+10, 
 									(int)(w/3), (int)(h/3));
@@ -82,7 +82,7 @@ public class Ghost extends GameObject {
 			explosion4.drawAnimation(g2, (int)(ex-(w/3)/2)+10, 
 									(int)(ey-(h/3)/2)-10, 
 									(int)(w/3), (int)(h/3));
-		
+		}
 		if(enemyHP > 0) idle.drawAnimation(g2, (int)(ex-(w/3)/2), 
 										  (int)(ey-(h/3)/2), 
 										  (int)(w/3), (int)(h/3));
