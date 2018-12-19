@@ -119,9 +119,9 @@ public class Ghost extends GameObject {
 			points[0] = new Point2D.Float(ex,ey);
 			points[1] = handler.player.get(0).points()[0];
 			
-			handler.addObject(new Projectile(ex, ey, 5, 20, 2, "enemy", 
-											Helper.bulletAngle(points), 
-											ObjectId.Projectile));
+			handler.addObject(new Projectile(ex, ey, 5, 20, 2, "enemy",
+			                                Helper.bulletAngle(points),
+			                                ObjectId.Projectile));
 			firstTime = currentTime;
 		}
 	}

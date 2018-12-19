@@ -31,8 +31,8 @@ public class CollisionBlock extends GameObject {
 	private Point2D.Float X[];
 	private boolean isColliding = false;
 	
-	public CollisionBlock(float x, float y, float w, float h, Handler handler, 
-						  ObjectId id) 
+	public CollisionBlock(float x, float y, float w, float h, Handler handler,
+	                     ObjectId id) 
 	{
 		super(x, y, w, h, id);
 		this.handler = handler;
@@ -58,9 +58,9 @@ public class CollisionBlock extends GameObject {
 			if (tempObject.getId() == PlayerId.PlayerShip) {
 				shipPoints = tempObject.points();			
 				for (int j = 0; j < shipPoints.length-1; j++) {
-					if (shipPoints[j+1].x > (x-w-(tempObject.getW()/2)) && 
-						shipPoints[j+1].x < (x+w+(tempObject.getW()/2)) &&
-						shipPoints[j+1].y > (y-h) && shipPoints[j+1].y < (y+h)) 
+					if (shipPoints[j+1].x > (x-w-(tempObject.getW()/2)) &&
+					    shipPoints[j+1].x < (x+w+(tempObject.getW()/2)) &&
+					    shipPoints[j+1].y > (y-h) && shipPoints[j+1].y < (y+h)) 
 					{
 						insideBB = true;
 						break;
