@@ -67,8 +67,8 @@ public class Ghost extends GameObject {
 			                       (int)(w/3), (int)(h/3));
 		
 			explosion1.drawAnimation(g2, (int)(ex-(w/3)/2)-10,
-			        (int)(ey-(h/3)/2)-10,
-			        (int)(w/3), (int)(h/3));
+			                        (int)(ey-(h/3)/2)-10,
+			                        (int)(w/3), (int)(h/3));
 			
 			explosion3.drawAnimation(g2, (int)(ex-(w/3)/2)-10, 
 								    (int)(ey- (h/3)/2)+10, 
