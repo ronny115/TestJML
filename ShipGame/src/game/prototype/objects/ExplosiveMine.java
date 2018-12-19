@@ -23,8 +23,8 @@ public class ExplosiveMine extends GameObject{
 	private boolean isHit = false;
 	private boolean isDamaged = false;
 
-	public ExplosiveMine(float x, float y, float w, float h, Handler handler, 
-						 ObjectId id) 
+	public ExplosiveMine(float x, float y, float w, float h, Handler handler,
+	                    ObjectId id) 
 	{
 		super(x, y, w, h, id);
 		this.handler = handler;
@@ -45,12 +45,12 @@ public class ExplosiveMine extends GameObject{
 
 	public void render(Graphics2D g2) {
 		if (isHit == true) 
-			explosion.drawAnimation(g2, (int)x-10, (int)y-10, 
-										(int)w+20, (int)h+20);
+			explosion.drawAnimation(g2, (int)x-10, (int)y-10,
+			                        (int)w+20, (int)h+20);
 		else 
-			g2.drawImage(tex.explosiveMine[0], 
-						(int)x, (int)y, 
-						(int)w, (int)h, null);
+			g2.drawImage(tex.explosiveMine[0],
+			            (int)x, (int)y, (int)w,
+			            (int)h, null);
 	}
 	
 	public Rectangle2D bounds() {
@@ -61,11 +61,11 @@ public class ExplosiveMine extends GameObject{
 		for (int i = 0; i < handler.object.size(); i++) {
 			GameObject tempObject = handler.object.get(i);				
 			if (tempObject.getId() == ObjectId.Projectile) {
-				Point2D.Float bullet = new Point2D.Float(tempObject.getX(), 
-														tempObject.getY());
-				if (bounds().contains(bullet) == true && 
-					isHit == false && 
-					tempObject.type() == "player") 
+				Point2D.Float bullet = new Point2D.Float(tempObject.getX(),
+				                                        tempObject.getY());
+				if (bounds().contains(bullet) == true &&
+				    isHit == false &&
+				    tempObject.type() == "player") 
 				{
 					isHit = true;
 					HUD.POINTS += 100;
@@ -82,8 +82,8 @@ public class ExplosiveMine extends GameObject{
 	private void playerCollision() {
 		PlayerObject player = handler.player.get(0);
 		for (int i = 0; i < player.points().length; i++) {
-			if (bounds().contains(player.points()[i]) && 
-				explosion.hasStarted == false) 
+			if (bounds().contains(player.points()[i]) &&
+			    explosion.hasStarted == false) 
 			{
 				isHit = true;
 				isDamaged = true;

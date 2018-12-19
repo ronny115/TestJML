@@ -6,8 +6,8 @@ public class Helper {
 		
 	public static Point2D.Float vectorize(Point2D.Float pointA, Point2D.Float pointB) {
 		Point2D.Float vector = new Point2D.Float();
-			vector.x = (pointB.x - pointA.x);
-			vector.y = (pointB.y - pointA.y);
+		vector.x = (pointB.x - pointA.x);
+		vector.y = (pointB.y - pointA.y);
 		return vector;	
 	}
 	

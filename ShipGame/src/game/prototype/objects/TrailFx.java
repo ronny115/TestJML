@@ -21,8 +21,8 @@ public class TrailFx extends GameObject {
 	private TextureManager tex = Game.getTexInstance();
 	private AffineTransform at;
 
-	public TrailFx(float x, float y, float w, float h, float length, Handler handler, 
-				   ObjectId id) 
+	public TrailFx(float x, float y, float w, float h, float length, Handler handler,
+	               ObjectId id) 
 	{
 		super(x, y, w, h, id);
 		this.handler = handler;
@@ -37,7 +37,7 @@ public class TrailFx extends GameObject {
 			
 		at = AffineTransform.getTranslateInstance(x, y);
 		at.rotate(Math.toRadians(Helper.angle(handler.player.get(0).points()[1],
-											  handler.player.get(0).points()[0])-90));
+		                                      handler.player.get(0).points()[0])-90));
 	    at.translate(-(w/2), -(h/2));
 	    at.scale((w/tex.player[0].getWidth()), (h/tex.player[0].getHeight()));
 	    

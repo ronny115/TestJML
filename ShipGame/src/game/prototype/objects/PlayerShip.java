@@ -24,7 +24,7 @@ public class PlayerShip extends PlayerObject {
 	private Point2D.Float[] shipPoints = new Point2D.Float[5];
 	
 	public PlayerShip(float x, float y, float w, float h, Handler handler,
-					  PlayerId id) 
+	                  PlayerId id) 
 	{
 		super(x, y, w, h, id);
 		this.handler = handler;
@@ -39,23 +39,23 @@ public class PlayerShip extends PlayerObject {
 	public void updatePlayer(LinkedList<PlayerObject> object) {
 		at = AffineTransform.getTranslateInstance(x, y);
 		
-		at.rotate(Math.toRadians(Helper.angle(shipPoints[1], 
-											  shipPoints[0])-90));
+		at.rotate(Math.toRadians(Helper.angle(shipPoints[1],
+		                                      shipPoints[0])-90));
 	    at.translate(-(w/2), -(h/2));
 	    
-	    at.scale((w/tex.player[0].getWidth()), 
-	    		(h/tex.player[0].getHeight()));
+	    at.scale((w/tex.player[0].getWidth()),
+	            (h/tex.player[0].getHeight()));
 	    
 	    playerHealth();
 		shipMovement();	
 	}
 
 	public void renderPlayer(Graphics2D g2) {
-		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
-							RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+		                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 	    g2.drawImage(tex.player[0], at, null);
-	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
-	    					RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+	                        RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 	}
 	
 	private void playerHealth() {
@@ -75,11 +75,11 @@ public class PlayerShip extends PlayerObject {
 			if (tempObject.getId() == ObjectId.Projectile && tempObject.type() == "enemy") {
 				Point2D.Float bullet = new Point2D.Float();
 				if(shipPoints[0].x > tempObject.getX())
-					bullet = new Point2D.Float(tempObject.getX()+tempObject.getW(), 
-							 				   tempObject.getY());
+					bullet = new Point2D.Float(tempObject.getX()+tempObject.getW(),
+					                           tempObject.getY());
 			    else 
-					bullet = new Point2D.Float(tempObject.getX()-tempObject.getW(), 
-			 				   				   tempObject.getY());			
+					bullet = new Point2D.Float(tempObject.getX()-tempObject.getW(),
+					                           tempObject.getY());			
 				if (Helper.inside(bullet, points())== true) {
 					HUD.HEALTH -= 5;
 					handler.removeObject(tempObject);
