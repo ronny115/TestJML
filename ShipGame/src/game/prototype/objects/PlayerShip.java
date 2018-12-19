@@ -39,7 +39,7 @@ public class PlayerShip extends PlayerObject {
 	public void updatePlayer(LinkedList<PlayerObject> object) {
 	    at = AffineTransform.getTranslateInstance(x, y);
 	    at.rotate(Math.toRadians(Helper.angle(shipPoints[1],
-		                                      shipPoints[0])-90));
+	                                          shipPoints[0])-90));
 	    at.translate(-(w/2), -(h/2));
 	    at.scale((w/tex.player[0].getWidth()),
 	            (h/tex.player[0].getHeight()));
@@ -49,7 +49,7 @@ public class PlayerShip extends PlayerObject {
 
 	public void renderPlayer(Graphics2D g2) {
 	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-		                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 	    g2.drawImage(tex.player[0], at, null);
 	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
 	                        RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);

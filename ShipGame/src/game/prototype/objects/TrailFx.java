@@ -30,29 +30,28 @@ public class TrailFx extends GameObject {
 	}
 
 	public void update(LinkedList<GameObject> object) {
-		if (alpha > length)
-			alpha -= length -0.0001;	
+	    if (alpha > length)
+	        alpha -= length -0.0001;	
 	    else 
-			handler.removeObject(this);
-			
+	        handler.removeObject(this);
 		at = AffineTransform.getTranslateInstance(x, y);
 		at.rotate(Math.toRadians(Helper.angle(handler.player.get(0).points()[1],
 		                                      handler.player.get(0).points()[0])-90));
-	    at.translate(-(w/2), -(h/2));
-	    at.scale((w/tex.player[0].getWidth()), (h/tex.player[0].getHeight()));
+		at.translate(-(w/2), -(h/2));
+		at.scale((w/tex.player[0].getWidth()), (h/tex.player[0].getHeight()));
 	    
 	    
 	}
 
 	public void render(Graphics2D g2) {
-		g2.setComposite(makeTransparent(alpha));		
-		g2.drawImage(tex.player[0], at, null);		
-		g2.setComposite(makeTransparent(1));	
+	    g2.setComposite(makeTransparent(alpha));
+	    g2.drawImage(tex.player[0], at, null);
+	    g2.setComposite(makeTransparent(1));	
 	}
 
 	private AlphaComposite makeTransparent(float alpha) {
-		int type = AlphaComposite.SRC_OVER;
-		return (AlphaComposite.getInstance(type, alpha));
+	    int type = AlphaComposite.SRC_OVER;
+	    return (AlphaComposite.getInstance(type, alpha));
 	}
 	
 	public Float deltaPoints() {return null;}
