@@ -1,12 +1,12 @@
 package game.prototype.framework;
 
 public enum ObjectId {
-	
-	Block(),
-	CollisionBlock(),
-	TrailFx(),
-	ExplosiveMine(),
-	Ghost(),
-	Projectile();
+
+    Block(), 
+    CollisionBlock(), 
+    TrailFx(), 
+    ExplosiveMine(), 
+    Ghost(), 
+    Projectile();
 
 }

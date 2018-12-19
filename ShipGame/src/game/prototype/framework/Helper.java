@@ -63,8 +63,8 @@ public class Helper {
         }
     
     public static boolean inside(Point2D.Float point, Point2D.Float[] poly) {
-	    // ray-casting algorithm based on
-	    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+        // ray-casting algorithm based on
+        // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
         float x = point.x, y = point.y;
         boolean inside = false;
         
