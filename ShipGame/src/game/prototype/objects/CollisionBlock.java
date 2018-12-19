@@ -71,9 +71,9 @@ public class CollisionBlock extends GameObject {
 				for (int j = 0; j < shipPoints.length-1; j++) {
 					if (insideBB == true) {
 					    //Segment 0-1			
-						if (shipPoints[j+1].y > bounds[0].y && 
-							shipPoints[j+1].x > bounds[1].x && 
-							shipPoints[j+1].y < bounds[1].y) 
+						if (shipPoints[j+1].y > bounds[0].y &&
+						    shipPoints[j+1].x > bounds[1].x &&
+						    shipPoints[j+1].y < bounds[1].y) 
 						{
 							//Collision
 							getProjectionPoints(bounds[0], bounds[1], X[0], "right");
@@ -95,9 +95,9 @@ public class CollisionBlock extends GameObject {
 							if (minProjected.x > bounds[0].x) 
 								isColliding = false;
 						//Segment 1-2
-						} else if (shipPoints[j+1].x < bounds[1].x && 
-								   shipPoints[j+1].y > bounds[1].y && 
-								   shipPoints[j+1].x > bounds[2].x) 
+						} else if (shipPoints[j+1].x < bounds[1].x &&
+						           shipPoints[j+1].y > bounds[1].y &&
+						           shipPoints[j+1].x > bounds[2].x) 
 						{
 							//Collision
 							getProjectionPoints(bounds[1], bounds[2], X[1], "right");
@@ -120,9 +120,9 @@ public class CollisionBlock extends GameObject {
 							if (minProjected.y > bounds[1].y) 
 								isColliding = false;
 					    //Segment 2-3
-						} else if (shipPoints[j+1].x < bounds[2].x && 
-								   shipPoints[j+1].y < bounds[2].y && 
-								   shipPoints[j+1].y > bounds[3].y) 
+						} else if (shipPoints[j+1].x < bounds[2].x &&
+						           shipPoints[j+1].y < bounds[2].y &&
+						           shipPoints[j+1].y > bounds[3].y) 
 						{
 							//Collision
 							getProjectionPoints(bounds[2], bounds[3], X[2], "reverse");
@@ -144,9 +144,9 @@ public class CollisionBlock extends GameObject {
 							if (maxProjected.x < bounds[2].x) 
 								isColliding = false;
 					    //Segment 3-4
-						} else if (shipPoints[j+1].x < bounds[4].x && 
-								   shipPoints[j+1].y < bounds[3].y && 
-								   shipPoints[j+1].y > bounds[4].y) 
+						} else if (shipPoints[j+1].x < bounds[4].x &&
+						           shipPoints[j+1].y < bounds[3].y &&
+						           shipPoints[j+1].y > bounds[4].y) 
 						{	
 							//Collision
 							getProjectionPoints(bounds[3], bounds[4], X[3], "right");					
@@ -168,9 +168,9 @@ public class CollisionBlock extends GameObject {
 							if (maxProjected.x < bounds[3].x ) 
 								isColliding = false;
 					    //Segment 4-5
-						} else if (shipPoints[j+1].y < bounds[4].y && 
-								   shipPoints[j+1].x < bounds[5].x && 
-								   shipPoints[j+1].x > bounds[4].x) 
+						} else if (shipPoints[j+1].y < bounds[4].y &&
+						           shipPoints[j+1].x < bounds[5].x &&
+						           shipPoints[j+1].x > bounds[4].x) 
 						{		
 							//Collision
 							getProjectionPoints(bounds[4], bounds[5], X[4], "reverse");
@@ -192,9 +192,9 @@ public class CollisionBlock extends GameObject {
 							if (minProjected.y < bounds[4].y) 
 								isColliding = false;
 					    //Segment 5-0
-						} else if (shipPoints[j+1].x > bounds[5].x && 
-								   shipPoints[j+1].y > bounds[5].y && 
-								   shipPoints[j+1].y < bounds[0].y) 
+						} else if (shipPoints[j+1].x > bounds[5].x &&
+						           shipPoints[j+1].y > bounds[5].y &&
+						           shipPoints[j+1].y < bounds[0].y) 
 						{		
 							//Collision
 							getProjectionPoints(bounds[5], bounds[0], X[5], "reverse");
@@ -223,20 +223,21 @@ public class CollisionBlock extends GameObject {
 		}		
 	}
 		
-	private void lineIntersection(Point2D.Float pointA, Point2D.Float shipA, 
-								  Point2D.Float shipB) 
+	private void lineIntersection(Point2D.Float pointA, Point2D.Float shipA,
+	                              Point2D.Float shipB) 
 	{
 		float s1_x, s1_y, s2_x, s2_y;	
 		float s, t;
-			s1_x = x - pointA.x;
-			s1_y = y - pointA.y;
-			s2_x = shipB.x - shipA.x; 
-			s2_y = shipB.y - shipA.y;		
+		
+		s1_x = x - pointA.x;
+		s1_y = y - pointA.y;
+		s2_x = shipB.x - shipA.x; 
+		s2_y = shipB.y - shipA.y;		
 			
-		s = (-s1_y * (pointA.x - shipA.x) + s1_x * (pointA.y - shipA.y)) 
-			/ (-s2_x * s1_y + s1_x * s2_y);
-		t = (s2_x * (pointA.y - shipA.y) - s2_y * (pointA.x - shipA.x)) 
-			/ (-s2_x * s1_y + s1_x * s2_y);	
+		s = (-s1_y * (pointA.x - shipA.x) + s1_x * (pointA.y - shipA.y))
+		    / (-s2_x * s1_y + s1_x * s2_y);
+		t = (s2_x * (pointA.y - shipA.y) - s2_y * (pointA.x - shipA.x))
+		    / (-s2_x * s1_y + s1_x * s2_y);	
 		
 		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
 			//Collision
@@ -292,7 +293,7 @@ public class CollisionBlock extends GameObject {
 	}
 	
 	private void getProjectionPoints(Point2D.Float A, Point2D.Float B, Point2D.Float X,
-									 String dir) 
+	                                String dir) 
 	{
 		Point2D.Float shipPointsC = new Point2D.Float();
 		Point2D.Float projectionOnPerpendicularE = new Point2D.Float();
@@ -323,8 +324,8 @@ public class CollisionBlock extends GameObject {
 		minShip = getMinValue(px,py,sx,sy,dir)[1];
 	}
 	
-	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x, 
-			                    float[] shipPoints_y, String dir) 
+	private Float[] getMaxValue(float[] points_x, float[] points_y, float[] shipPoints_x,
+	                            float[] shipPoints_y, String dir) 
 	{
 		Point2D.Float MaxValue[];
 		MaxValue = new Point2D.Float[2];
@@ -358,8 +359,8 @@ public class CollisionBlock extends GameObject {
 		return MaxValue;
 	}
 	
-	private Float[] getMinValue(float[] points_x, float[] points_y, float[] shipPoints_x, 
-			                    float[] shipPoints_y, String dir) 
+	private Float[] getMinValue(float[] points_x, float[] points_y, float[] shipPoints_x,
+	                            float[] shipPoints_y, String dir) 
 	{
 		Point2D.Float MinValue[];
 		MinValue = new Point2D.Float[2];
@@ -393,8 +394,8 @@ public class CollisionBlock extends GameObject {
 		return MinValue;
 	}
 	
-	private Point2D.Float getPerpendicular(Point2D.Float p1, Point2D.Float p2, 
-			                               float length) 
+	private Point2D.Float getPerpendicular(Point2D.Float p1, Point2D.Float p2,
+	                                       float length) 
 	{
 		Point2D.Float pointA = new Point2D.Float();
 		Point2D.Float pointB = new Point2D.Float();
