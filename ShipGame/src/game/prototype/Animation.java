@@ -1,6 +1,7 @@
 package game.prototype;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Animation {
@@ -40,6 +41,7 @@ public class Animation {
         } else {
             isDone = true;
             hasStarted = false;
+            playCount = 0;
         }
     }
 
@@ -54,5 +56,9 @@ public class Animation {
 
     public void drawAnimation(Graphics2D g2, int x, int y, int scalex, int scaley) {
         g2.drawImage(currentImg, x, y, scalex, scaley, null);
+    }
+    
+    public void drawAnimation(Graphics2D g2, AffineTransform at) {
+        g2.drawImage(currentImg, at, null);
     }
 }

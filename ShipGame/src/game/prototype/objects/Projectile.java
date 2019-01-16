@@ -21,6 +21,7 @@ public class Projectile extends GameObject {
                       float angle, ObjectId id) 
     {
         super(x, y, w, h, id);
+        this.setRenderPriority(3);
         this.speed = speed;
         this.angle = angle;
         this.type = type;

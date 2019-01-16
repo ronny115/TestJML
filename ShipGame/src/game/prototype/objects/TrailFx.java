@@ -25,6 +25,7 @@ public class TrailFx extends GameObject {
                   Handler handler, ObjectId id) 
     {
         super(x, y, w, h, id);
+        this.setRenderPriority(3);
         this.handler = handler;
         this.length = length;
     }
@@ -35,17 +36,16 @@ public class TrailFx extends GameObject {
         else
             handler.removeObject(this);
         at = AffineTransform.getTranslateInstance(x, y);
-        at.rotate(Math.toRadians(Helper.angle(handler.player.get(0).points()[1], 
-                                              handler.player.get(0).points()[0]) - 90));
+        at.rotate(Helper.getAngle(handler.player.get(0).points()));
         at.translate(-(w / 2), -(h / 2));
-        at.scale((w / tex.player[0].getWidth()), 
-                (h / tex.player[0].getHeight()));
+        at.scale((w / tex.player.getWidth()), 
+                (h / tex.player.getHeight()));
 
     }
 
     public void render(Graphics2D g2) {
         g2.setComposite(makeTransparent(alpha));
-        g2.drawImage(tex.player[0], at, null);
+        g2.drawImage(tex.player, at, null);
         g2.setComposite(makeTransparent(1));
     }
 

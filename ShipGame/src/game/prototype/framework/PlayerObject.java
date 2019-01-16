@@ -25,6 +25,8 @@ public abstract class PlayerObject {
     public abstract void renderPlayer(Graphics2D g2);
 
     public abstract Point2D.Float[] points();
+    
+    public abstract boolean state();
 
     public float getX() {
         return x;

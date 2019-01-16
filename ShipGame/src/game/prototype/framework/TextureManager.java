@@ -11,11 +11,14 @@ public class TextureManager {
     private BufferedImage enemy_sheet = null;
     private BufferedImage explosion_sheet = null;
 
-    public BufferedImage[] player = new BufferedImage[1];
+    public BufferedImage player = null;
+    public BufferedImage[] propulsion = new BufferedImage[10];
     public BufferedImage[] explosiveMine = new BufferedImage[1];
     public BufferedImage[] ghostIdle = new BufferedImage[15];
     public BufferedImage[] bullet = new BufferedImage[3];
     public BufferedImage[] explosion = new BufferedImage[8];
+    public BufferedImage[] playerExplosion = new BufferedImage[8];
+    public BufferedImage[] shield = new BufferedImage[7];
 
     public TextureManager() {
         ResourceLoader loader = new ResourceLoader();
@@ -35,20 +38,33 @@ public class TextureManager {
 
     private void getTextures() {
         int count = 0;
-        player[0] = pS.grabImage(1, 1, 30, 40);// player ship
+        
+        player = pS.grabImage(1, 1, 30, 40);
         bullet[0] = pS.grabImage(1, 4, 30, 40);// GreenBullet
         bullet[1] = pS.grabImage(2, 4, 30, 40);// RedBullet
-        // Enemy
+        // Shield
+        for (int i = 0; i < 7; i++) {
+            shield[i] = pS.grabImage(i+2, 1, 30, 40); 
+        } 
         for (int i = 0; i < 10; i++) {
-            ghostIdle[i] = eS.grabImage(i + 1, 2, 50, 50);
+            ghostIdle[i] = eS.grabImage(i+1, 2, 50, 50);
+            propulsion[i] = pS.grabImage(i+1, 2, 30, 40);
         }
         for (int i = 0; i < 5; i++) {
-            ghostIdle[10 + i] = eS.grabImage(i + 1, 3, 50, 50);
+            ghostIdle[10+i] = eS.grabImage(i+1, 3, 50, 50);
         }
         explosiveMine[0] = eS.grabImage(1, 1, 50, 50); // mine
+        
         for (int i = 0; i < 2; i++) { // explosion last frame invisible
             for (int j = 0; j < 4; j++) {
-                explosion[count] = explS.grabImage(j + 1, i + 1, 60, 60);
+                explosion[count] = explS.grabImage(j+1, i+1, 60, 60);
+                count++;
+            }
+        }
+        count = 0;
+        for (int i = 0; i < 2; i++) { // explosion 1 last frame invisible
+            for (int j = 0; j < 4; j++) {
+                playerExplosion[count] = explS.grabImage(j+1, i+3, 60, 60);
                 count++;
             }
         }

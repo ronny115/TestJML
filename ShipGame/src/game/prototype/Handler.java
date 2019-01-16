@@ -13,25 +13,41 @@ public class Handler {
     private GameObject tempObject;
 
     public void update() {
-        for (int i = 0; i < player.size(); i++) {
-            tempPlayer = player.get(i);
+        if (player.size() > 0) {
+            tempPlayer = player.get(0);
             tempPlayer.updatePlayer(player);
         }
         for (int i = 0; i < object.size(); i++) {
             tempObject = object.get(i);
             tempObject.update(object);
-        }
+        } 
     }
 
     public void render(Graphics2D g2) {
-        for (int i = 0; i < player.size(); i++) {
-            tempPlayer = player.get(i);
+        if (player.size() > 0) {
+            tempPlayer = player.get(0);
             tempPlayer.renderPlayer(g2);
         }
         for (int i = 0; i < object.size(); i++) {
             tempObject = object.get(i);
-            tempObject.render(g2);
+            if (tempObject.getRenderPriority() == 1) {
+                tempObject.render(g2);
+            }
         }
+        
+        for (int i = 0; i < object.size(); i++) {
+            tempObject = object.get(i);
+            if (tempObject.getRenderPriority() == 2) {
+                tempObject.render(g2);
+            }
+        }
+        
+        for (int i = 0; i < object.size(); i++) {
+            tempObject = object.get(i);
+            if (tempObject.getRenderPriority() == 3) {
+                tempObject.render(g2);
+            }           
+        }   
     }
 
     public void addPlayer(PlayerObject player) {
@@ -49,5 +65,4 @@ public class Handler {
     public void removeObject(GameObject object) {
         this.object.remove(object);
     }
-
 }

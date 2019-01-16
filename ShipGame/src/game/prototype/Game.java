@@ -13,8 +13,8 @@ import game.prototype.framework.KeyInput;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
 import game.prototype.framework.TextureManager;
-import game.prototype.objects.Ghost;
 import game.prototype.objects.PlayerShip;
+import game.prototype.objects.Shield;
 
 public class Game extends Canvas implements Runnable {
     /**
@@ -31,6 +31,8 @@ public class Game extends Canvas implements Runnable {
     private Camera camera;
     private KeyInput keyinput;
     private HUD hud;
+    private Menu menu;
+    private ResourceLoader loader;
     private DynamicLoading dynamicLoading;
     private static TextureManager tex;
 
@@ -39,15 +41,17 @@ public class Game extends Canvas implements Runnable {
     private float size;
     private Point2D.Float cameraPos = new Point2D.Float();
     private Point2D.Float initPlayerPos = new Point2D.Float();
+    
+    public static boolean Paused, Reseted, GameOver;
 
     private void init() {
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
 
-        ResourceLoader loader = new ResourceLoader();
-
+        loader = new ResourceLoader();
         handler = new Handler();
         hud = new HUD();
+        menu = new Menu();
         tex = new TextureManager();
         dynamicLoading = new DynamicLoading(handler);
         keyinput = new KeyInput(handler);
@@ -56,13 +60,13 @@ public class Game extends Canvas implements Runnable {
         this.addKeyListener(keyinput);
 
         hud.setFont(loader.loadFont("/PressStart2P.ttf"));
+        menu.setFont(loader.loadFont("/PressStart2P.ttf"));
         loadData(loader.loadImage("/lvl_full.png"), 50);
 
         camera = new Camera(initPlayerPos.x - WIDTH / 2, initPlayerPos.y - HEIGHT / 2);
 
-        handler.addObject(new Ghost(initPlayerPos.x, initPlayerPos.y, 150, 150, 
-                                    handler, ObjectId.Ghost));
-
+        handler.addObject(new Shield(initPlayerPos.x-40, initPlayerPos.y-40, 60, 60,
+                                    handler, ObjectId.Shield));
         handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, 
                                          handler, PlayerId.PlayerShip));
     }
@@ -116,24 +120,41 @@ public class Game extends Canvas implements Runnable {
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, 
                             RenderingHints.VALUE_STROKE_PURE);
-        // Draw Here
+        // Draw Here 
         g2.translate(-camera.getX(), -camera.getY());
         handler.render(g2);
         g2.translate(camera.getX(), camera.getY());
         hud.render(g2);
+        if(Paused) {
+            menu.pauseRender(g2);
+        }
+        if(GameOver) {
+            menu.gameOverRender(g2);
+        } 
         // Show
         g2.dispose();
         bStrategy.show();
     }
 
     private void update() {
-        handler.update();
-        keyinput.updateInput();
-        hud.update();
-        camera.update(handler.player.get(0));
+        if (!Paused) {
+            handler.update();
+            keyinput.updateInput();
+            hud.update();
+            if(handler.player.size() > 0)
+                camera.update(handler.player.get(0));      
             cameraPos.x = camera.getX();
             cameraPos.y = camera.getY();
-        dynamicLoading.update(cameraPos, coords, colorRGB, size);
+            dynamicLoading.update(cameraPos, coords, colorRGB, size);
+            if(GameOver)
+                if(Reseted) 
+                    reset();
+        } else {
+            menu.pauseUpdate();   
+            if(Reseted) {
+                reset();
+            }
+        }
     }
 
     private void loadData(BufferedImage image, float size) {
@@ -156,21 +177,21 @@ public class Game extends Canvas implements Runnable {
                 colorRGB.add(rgb);
 
                 if ((xx % 2) != 0) {
-                    // coords and load state
+                    // Coords., load state, life state
                     float[] pixelCoords = { xx * scale.x, 
                                            (yy * scale.y * 2) + scale.y, 
-                                           0 };
+                                           0, 0} ;
 
                     coords.add(pixelCoords);
                 } else {
-                    // coords and load state
+                    // Coords., load state, life state
                     float[] pixelCoords = { xx * scale.x, 
                                            (yy * scale.y * 2), 
-                                           0 };
+                                           0, 0 };
 
                     coords.add(pixelCoords);
                 }
-                // Player location coords
+                // Player location coords.
                 if (red == 0 && green == 0 && blue == 255) {
                     initPlayerPos.x = (xx * scale.x);
                     initPlayerPos.y = (yy * scale.y * 2) + scale.y;
@@ -178,12 +199,37 @@ public class Game extends Canvas implements Runnable {
             }
         }
     }
-
+    
+    private void reset() {
+        //Clear object lists
+        handler.object.clear();
+        handler.player.clear();
+        coords.clear();
+        colorRGB.clear();
+        //Reset HUD
+        HUD.HEALTH = 100;
+        HUD.POINTS = 0;
+        //Reload data and player object
+        loadData(loader.loadImage("/lvl_full.png"), 50);
+        handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, 
+                                         handler, PlayerId.PlayerShip));
+        //Reset camera
+        camera.setX(initPlayerPos.x - WIDTH / 2);
+        camera.setY(initPlayerPos.y - HEIGHT / 2);
+        //Reset done and un-pause
+        Reseted = !Reseted;
+        Paused = !Paused;
+        if(GameOver) {
+            GameOver = !GameOver;
+            Paused = !Paused;
+        }
+    }
+    
     public static TextureManager getTexInstance() {
         return tex;
     }
 
     public static void main(String args[]) {
-        new Window(Game.WIDTH, Game.HEIGHT, "Game Prototype", new Game());
+        new Window(WIDTH, HEIGHT, "Game Prototype", new Game());
     }
 }

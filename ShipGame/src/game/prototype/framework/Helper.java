@@ -57,7 +57,7 @@ public class Helper {
         return angle;
         }
     
-    public static float bulletAngle(Point2D.Float[] points) {
+    public static float getAngle(Point2D.Float[] points) {
         return (float) Math.toRadians((Helper.angle(points[1],
                                                     points[0]))-90);
         }

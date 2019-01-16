@@ -14,6 +14,7 @@ public class Block extends GameObject {
 
     public Block(float x, float y, float w, float h, ObjectId id) {
         super(x, y, w, h, id);
+        this.setRenderPriority(1);
         poly = tile();
     }
 

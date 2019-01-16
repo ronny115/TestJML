@@ -4,13 +4,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 
+import game.prototype.Game;
+import game.prototype.HUD;
 import game.prototype.Handler;
+import game.prototype.Menu;
 import game.prototype.objects.Projectile;
+import game.prototype.objects.PropulsionFX;
 
 public class KeyInput extends KeyAdapter {
 
-    private PlayerObject tempPlayer;
     private Handler handler;
+    private int menuIndex = 0;
     private float topSpeed = 0, deltaSpeed = 0, vely = 0, velx = 0;
     // Movement
     private boolean upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed;
@@ -23,9 +27,8 @@ public class KeyInput extends KeyAdapter {
         this.handler = handler;
     }
 
-    public void updateInput() {
+    public void updateInput() {   
         // Movement
-        // Pressed
         if (upKeyPressed == true) {
             move("up");
             if (upKeyPressed == true && leftKeyPressed == true) {
@@ -52,6 +55,7 @@ public class KeyInput extends KeyAdapter {
         // Released
         if (upKeyReleased == true) {
             move("decelerateUp");
+            if (HUD.HEALTH == 0) velx = vely = 0;
         }
         if (downKeyReleased == true) {
             move("decelerateDown");
@@ -63,70 +67,113 @@ public class KeyInput extends KeyAdapter {
             move("decelerateRight");
         }
         // Shooting
-        if (spaceKeyPressed == true) {
+        if (spaceKeyPressed == true && handler.player.size() > 0 && !handler.player.get(0).state()) {
             handler.addObject(new Projectile(firePos[1].x, firePos[1].y, 5, 20, 20, "player",
-                                            Helper.bulletAngle(handler.player.get(0).points()), 
+                                            Helper.getAngle(handler.player.get(0).points()), 
                                             ObjectId.Projectile));
-
             spaceKeyPressed = false;
         }
     }
-
-    public void keyPressed(KeyEvent e) {
-        for (int i = 0; i < handler.player.size(); i++) {
-            tempPlayer = handler.player.get(i);
-            if (tempPlayer.getId() == PlayerId.PlayerShip) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    upKeyPressed = true;
-                    upKeyReleased = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    downKeyPressed = true;
-                    downKeyReleased = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    leftKeyPressed = true;
-                    leftKeyReleased = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    rightKeyPressed = true;
-                    rightKeyReleased = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    System.exit(1);
-                }
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    firePos = tempPlayer.points();
-                    spaceKeyPressed = true;
-                }
+    
+    public void keyPressed(KeyEvent e) {  
+        int size = Menu.PauseItem.size();
+        int size1 = Menu.GameOverItem.size();
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            upKeyPressed = true;
+            upKeyReleased = false;
+            if (!Game.Paused) PropulsionFX.isPropulsed = true;
+            else {
+                //Pause menu navigation
+                Menu.PauseItem.set(menuIndex, 
+                                  !Menu.PauseItem.get(menuIndex));
+                menuIndex--;
+                if (menuIndex < 0) menuIndex = size - 1;
+                Menu.PauseItem.set(menuIndex, 
+                                  !Menu.PauseItem.get(menuIndex));
+            }
+            if (Game.GameOver) {
+                //GameOver menu navigation
+                Menu.GameOverItem.set(menuIndex, 
+                                     !Menu.GameOverItem.get(menuIndex));
+                menuIndex--;
+                if (menuIndex < 0) menuIndex = size1 - 1;
+                Menu.GameOverItem.set(menuIndex, 
+                                     !Menu.GameOverItem.get(menuIndex));
+            }
+            
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            downKeyPressed = true;
+            downKeyReleased = false;          
+            if (Game.Paused) {
+                //Pause menu navigation
+                Menu.PauseItem.set(menuIndex, 
+                                  !Menu.PauseItem.get(menuIndex));
+                menuIndex++;
+                if (menuIndex == size) menuIndex = 0;            
+                Menu.PauseItem.set(menuIndex, 
+                                  !Menu.PauseItem.get(menuIndex));
+            }
+            if (Game.GameOver) {
+                //GameOver menu navigation
+                Menu.GameOverItem.set(menuIndex, 
+                                     !Menu.GameOverItem.get(menuIndex));
+                menuIndex++;
+                if (menuIndex == size1) menuIndex = 0;
+                Menu.GameOverItem.set(menuIndex, 
+                                     !Menu.GameOverItem.get(menuIndex));
+                }  
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            leftKeyPressed = true;
+            leftKeyReleased = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            rightKeyPressed = true;
+            rightKeyReleased = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (handler.player.size() > 0) {
+                Game.Paused = !Game.Paused;
+            }
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (handler.player.size() > 0) {
+                firePos = handler.player.get(0).points();
+                spaceKeyPressed = true;
+            }            
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (Menu.PauseItem.get(1) || Menu.GameOverItem.get(0)) {
+                Game.Reseted = !Game.Reseted;
+                velx = vely = 0;
+            }
+            if (Menu.PauseItem.get(2) || Menu.GameOverItem.get(1)) {
+                System.exit(1);
             }
         }
     }
 
     public void keyReleased(KeyEvent e) {
-        for (int i = 0; i < handler.player.size(); i++) {
-            tempPlayer = handler.player.get(i);
-            if (tempPlayer.getId() == PlayerId.PlayerShip) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    upKeyPressed = false;
-                    upKeyReleased = true;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    downKeyPressed = false;
-                    downKeyReleased = true;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    leftKeyPressed = false;
-                    leftKeyReleased = true;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    rightKeyPressed = false;
-                    rightKeyReleased = true;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    spaceKeyPressed = false;
-                }
-            }
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            upKeyPressed = false;
+            upKeyReleased = true;
+            PropulsionFX.isPropulsed = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            downKeyPressed = false;
+            downKeyReleased = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            leftKeyPressed = false;
+            leftKeyReleased = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            rightKeyPressed = false;
+            rightKeyReleased = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spaceKeyPressed = false;
         }
     }
 
@@ -136,75 +183,77 @@ public class KeyInput extends KeyAdapter {
     }
 
     private void move(String move) {
-        switch (move) {
-            case "up":
-                vely += deltaSpeed;
-                tempPlayer.setVelY(vely);
-                if (vely >= topSpeed) {
-                    vely = (float) topSpeed;
-                    tempPlayer.setVelY(vely);
-                }
-                break;
-            case "down":
-                vely += -deltaSpeed * 2;
-                tempPlayer.setVelY(vely);
-                if (vely <= -topSpeed / 10) {
-                    vely = (float) -topSpeed / 10;
-                    tempPlayer.setVelY(vely);
-                }
-                break;
-            case "left":
-                velx -= deltaSpeed / 50;
-                tempPlayer.setVelX(velx);
-                if (velx <= -topSpeed / 100) {
-                    velx = (float) (-topSpeed / 100);
-                    tempPlayer.setVelX(velx);
-                }
-                break;
-            case "right":
-                velx += deltaSpeed / 50;
-                tempPlayer.setVelX(velx);
-                if (velx >= topSpeed / 100) {
-                    velx = (float) (topSpeed / 100);
-                    tempPlayer.setVelX(velx);
-                }
-                break;
-            case "decelerateUp":
-                vely -= deltaSpeed / 5;
-                tempPlayer.setVelY(vely);
-                if (vely < 0) {
-                    vely = 0;
-                    tempPlayer.setVelY(vely);
-                    upKeyReleased = false;
-                }
-                break;
-            case "decelerateDown":
-                vely += deltaSpeed / 5;
-                tempPlayer.setVelY(vely);
-                if (vely > 0) {
-                    vely = 0;
-                    tempPlayer.setVelY(vely);
-                    downKeyReleased = false;
-                }
-                break;
-            case "decelerateLeft":
-                velx += deltaSpeed / 50;
-                tempPlayer.setVelX(velx);
-                if (velx > 0) {
-                    velx = 0;
-                    tempPlayer.setVelX(velx);
-                    leftKeyReleased = false;
-                }
-                break;
-            case "decelerateRight":
-                velx -= deltaSpeed / 50;
-                tempPlayer.setVelX(velx);
-                if (velx < 0) {
-                    velx = 0;
-                    tempPlayer.setVelX(velx);
-                    rightKeyReleased = false;
-                }
-                break;
+        if (handler.player.size() > 0) {
+            switch (move) {
+                case "up":
+                    vely += deltaSpeed;
+                    handler.player.get(0).setVelY(vely);
+                    if (vely >= topSpeed) {
+                        vely = (float) topSpeed;
+                        handler.player.get(0).setVelY(vely);
+                    }
+                    break;
+                case "down":
+                    vely += -deltaSpeed * 2;
+                    handler.player.get(0).setVelY(vely);
+                    if (vely <= -topSpeed / 10) {
+                        vely = (float) -topSpeed / 10;
+                        handler.player.get(0).setVelY(vely);
+                    }
+                    break;
+                case "left":
+                    velx -= deltaSpeed / 50;
+                    handler.player.get(0).setVelX(velx);
+                    if (velx <= -topSpeed / 100) {
+                        velx = (float) (-topSpeed / 100);
+                        handler.player.get(0).setVelX(velx);
+                    }
+                    break;
+                case "right":
+                    velx += deltaSpeed / 50;
+                    handler.player.get(0).setVelX(velx);
+                    if (velx >= topSpeed / 100) {
+                        velx = (float) (topSpeed / 100);
+                        handler.player.get(0).setVelX(velx);
+                    }
+                    break;
+                case "decelerateUp":
+                    vely -= deltaSpeed / 5;
+                    handler.player.get(0).setVelY(vely);
+                    if (vely < 0) {
+                        vely = 0;
+                        handler.player.get(0).setVelY(vely);
+                        upKeyReleased = false;
+                    }
+                    break;
+                case "decelerateDown":
+                    vely += deltaSpeed / 5;
+                    handler.player.get(0).setVelY(vely);
+                    if (vely > 0) {
+                        vely = 0;
+                        handler.player.get(0).setVelY(vely);
+                        downKeyReleased = false;
+                    }
+                    break;
+                case "decelerateLeft":
+                    velx += deltaSpeed / 50;
+                    handler.player.get(0).setVelX(velx);
+                    if (velx > 0) {
+                        velx = 0;
+                        handler.player.get(0).setVelX(velx);
+                        leftKeyReleased = false;
+                    }
+                    break;
+                case "decelerateRight":
+                    velx -= deltaSpeed / 50;
+                    handler.player.get(0).setVelX(velx);
+                    if (velx < 0) {
+                        velx = 0;
+                        handler.player.get(0).setVelX(velx);
+                        rightKeyReleased = false;
+                    }
+                    break;
+            }
         }
     }
 }

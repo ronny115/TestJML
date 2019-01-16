@@ -8,9 +8,11 @@ import game.prototype.framework.ObjectId;
 import game.prototype.objects.Block;
 import game.prototype.objects.CollisionBlock;
 import game.prototype.objects.ExplosiveMine;
+import game.prototype.objects.Ghost;
 
 public class DynamicLoading {
     private Handler handler;
+    public static Point2D.Float deleteObj = new Point2D.Float();
 
     public DynamicLoading(Handler handler) {
         this.handler = handler;
@@ -48,14 +50,26 @@ public class DynamicLoading {
                 if (colorRGB.get(i)[0] == 0 && 
                     colorRGB.get(i)[1] == 255 && 
                     colorRGB.get(i)[2] == 0 && 
-                    coords.get(i)[2] == 0) 
+                    coords.get(i)[2] == 0 && coords.get(i)[3] == 0) 
                 {
                     handler.addObject(new ExplosiveMine(coords.get(i)[0], coords.get(i)[1], 
                                                         size, size, handler, 
                                                         ObjectId.ExplosiveMine));
                 }
-
+                if (colorRGB.get(i)[0] == 255 && 
+                    colorRGB.get(i)[1] == 255 && 
+                    colorRGB.get(i)[2] == 0 && 
+                    coords.get(i)[2] == 0 && coords.get(i)[3] == 0) 
+                {
+                    handler.addObject(new Ghost(coords.get(i)[0], coords.get(i)[1], 150, 150, 
+                                                handler, ObjectId.Ghost));
+                }
+                
                 coords.get(i)[2] = 1;
+                if (deleteObj.x == coords.get(i)[0] && deleteObj.y == coords.get(i)[1]) {
+                    coords.get(i)[3] = 1;
+                }
+  
             } else
                 coords.get(i)[2] = 0;
             // Delete off screen objects

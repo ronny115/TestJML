@@ -9,6 +9,7 @@ public abstract class GameObject {
     protected ObjectId id;
     protected float velX = 0, velY = 0;
     protected float w = 0, h = 0;
+    protected int renderLevel;
     
     public GameObject(float x, float y, float w, float h, ObjectId id) {
         this.x = x;
@@ -60,6 +61,12 @@ public abstract class GameObject {
     public void setH(float sizeY) {
         this.h = sizeY;
 	}
+    public int getRenderPriority() {
+        return renderLevel;
+    }
+    public void setRenderPriority(int renderLevel) {
+        this.renderLevel = renderLevel;
+    }
     public ObjectId getId() {
         return id;
 	}

@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
+import game.prototype.Animation;
 import game.prototype.Game;
 import game.prototype.HUD;
 import game.prototype.Handler;
@@ -20,39 +21,74 @@ public class PlayerShip extends PlayerObject {
 
     private Handler handler;
     private TextureManager tex = Game.getTexInstance();
+    private Animation explosion;
     private AffineTransform at;
     private Point2D.Float[] shipPoints = new Point2D.Float[5];
-
+    
+    private long firstTime;
+    private boolean blinking, isDead;
+    private int blinkingTime;
+    
     public PlayerShip(float x, float y, float w, float h, Handler handler, 
                       PlayerId id)
     {
         super(x, y, w, h, id);
         this.handler = handler;
-        // Ship points respect the ship center point.
-        shipPoints[0] = new Point2D.Float(x, y);
-        shipPoints[1] = new Point2D.Float(x, y - (h / 2));
-        shipPoints[2] = new Point2D.Float(x - (w / 2), y + (h / 2));
-        shipPoints[3] = new Point2D.Float(x, y + (h / 3));
-        shipPoints[4] = new Point2D.Float(x + (w / 2), y + (h / 2));
+        shipBounds();
+        firstTime = System.currentTimeMillis();
+        explosion = new Animation(8, tex.playerExplosion);     
+        handler.addObject(new PropulsionFX(shipPoints[3].x, shipPoints[3].y, 15, 20,
+                                           handler, ObjectId.Propulsion));
     }
 
     public void updatePlayer(LinkedList<PlayerObject> object) {
+        //TODO life system
+        if(HUD.HEALTH == 0) {
+            isDead = true;
+            velX = velY = 0;
+            explosion.runAnimationOnce();
+        } else {
+            Game.GameOver = false;
+            isDead = false;
+        }
+        if(explosion.isDone) {
+            handler.player.clear();
+            Game.GameOver = !Game.GameOver;
+        }
         at = AffineTransform.getTranslateInstance(x, y);
-        at.rotate(Math.toRadians(Helper.angle(shipPoints[1], shipPoints[0]) - 90));
-        at.translate(-(w / 2), -(h / 2));
-        at.scale((w / tex.player[0].getWidth()), (h / tex.player[0].getHeight()));
+        at.rotate(Helper.getAngle(points()));
+        at.translate(-(w/2), -(h/2));
+        at.scale((w / tex.player.getWidth()), (h / tex.player.getHeight()));
         playerHealth();
         shipMovement();
+        blinkingTimer();
     }
 
-    public void renderPlayer(Graphics2D g2) {
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
-                            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(tex.player[0], at, null);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
-                            RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+    public void renderPlayer(Graphics2D g2) {       
+        if (HUD.HEALTH == 0 && !explosion.isDone) {
+            explosion.drawAnimation(g2, (int)(x -w), (int)(y-h), (int)(w*2+(h-w)), (int)h*2);
+            
+        } else if(HUD.HEALTH > 0) {                     
+            if(blinking || blinkingTime > 10) {
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+                                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g2.drawImage(tex.player, at, null);
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+                                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            }
+        }
     }
-
+    
+    private void blinkingTimer() {
+        long currentTime = System.currentTimeMillis();
+        final long threshold = 100;
+        if (currentTime - firstTime > threshold && blinkingTime < 11) {
+            blinking = !blinking;
+            firstTime = currentTime;
+            blinkingTime++;
+        }
+    }
+    
     private void playerHealth() {
         for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
@@ -63,8 +99,14 @@ public class PlayerShip extends PlayerObject {
                 }
             }
             if (tempObject.getId() == ObjectId.ExplosiveMine) {
-                if (tempObject.collision() == true) {
-                    HUD.HEALTH -= 10;
+                if (tempObject.collision() == true) {          
+                    if (Shield.SHIELD) {
+                        HUD.SHIELD_HEALTH -= 50;
+                        Shield.HIT = true;
+                    } else {
+                        HUD.HEALTH -= 10;
+                    }
+                    
                 }
             }
             if (tempObject.getId() == ObjectId.Projectile && 
@@ -78,7 +120,12 @@ public class PlayerShip extends PlayerObject {
                     bullet = new Point2D.Float(tempObject.getX()
                                               - tempObject.getW(), tempObject.getY());
                 if (Helper.inside(bullet, points()) == true) {
-                    HUD.HEALTH -= 5;
+                    if (Shield.SHIELD) {
+                        HUD.SHIELD_HEALTH -= 5;
+                        Shield.HIT = true;
+                    } else {
+                        HUD.HEALTH -= 5;
+                    }
                     handler.removeObject(tempObject);
                 }
             }
@@ -103,11 +150,24 @@ public class PlayerShip extends PlayerObject {
         x = shipPoints[0].x;
         y = shipPoints[0].y;
     }
+    
+    private void shipBounds() {
+        // Ship points respect the ship center point.
+        shipPoints[0] = new Point2D.Float(x, y);
+        shipPoints[1] = new Point2D.Float(x, y - (h / 2));
+        shipPoints[2] = new Point2D.Float(x - (w / 2), y + (h / 2));
+        shipPoints[3] = new Point2D.Float(x, y + (h / 3));
+        shipPoints[4] = new Point2D.Float(x + (w / 2), y + (h / 2));
+    }
 
     public Point2D.Float[] points() {
         Point2D.Float[] points = new Point2D.Float[5];
         for (int i = 0; i < points.length; i++)
             points[i] = shipPoints[i];
         return points;
+    }
+    
+    public boolean state() {
+        return isDead;
     }
 }

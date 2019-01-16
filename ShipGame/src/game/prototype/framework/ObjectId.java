@@ -7,6 +7,8 @@ public enum ObjectId {
     TrailFx(), 
     ExplosiveMine(), 
     Ghost(), 
-    Projectile();
+    Projectile(),
+    Propulsion(),
+    Shield();
 
 }
