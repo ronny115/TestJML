@@ -11,8 +11,8 @@ import game.prototype.objects.ExplosiveMine;
 import game.prototype.objects.Ghost;
 
 public class DynamicLoading {
+    
     private Handler handler;
-    public static Point2D.Float deleteObjh = new Point2D.Float(); //object state coords
 
     public DynamicLoading(Handler handler) {
         this.handler = handler;
@@ -93,9 +93,5 @@ public class DynamicLoading {
                 }
             }
         }
-    }
-    
-    public void setObjectState() {
-        
     }
 }
