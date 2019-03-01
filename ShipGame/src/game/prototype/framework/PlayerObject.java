@@ -8,9 +8,8 @@ public abstract class PlayerObject {
 
     protected float x, y;
     protected PlayerId id;
-    protected float velX = 0, velY = 0;
-    protected float w = 0, h = 0;
-    protected boolean isOut = false;
+    protected float velX, velY;
+    protected float w, h;
 
     public PlayerObject(float x, float y, float w, float h, PlayerId id) {
         this.x = x;
@@ -21,12 +20,9 @@ public abstract class PlayerObject {
     }
 
     public abstract void updatePlayer(LinkedList<PlayerObject> object);
-
     public abstract void renderPlayer(Graphics2D g2);
 
     public abstract Point2D.Float[] points();
-    
-    public abstract boolean state();
 
     public float getX() {
         return x;

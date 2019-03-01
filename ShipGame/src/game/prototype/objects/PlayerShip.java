@@ -20,36 +20,35 @@ import game.prototype.framework.TextureManager;
 public class PlayerShip extends PlayerObject {
 
     private Handler handler;
+    private HUD hud;
     private TextureManager tex = Game.getTexInstance();
     private Animation explosion;
     private AffineTransform at;
     private Point2D.Float[] shipPoints = new Point2D.Float[5];
     
     private long firstTime;
-    private boolean blinking, isDead;
+    private boolean blinking;
     private int blinkingTime;
     
     public PlayerShip(float x, float y, float w, float h, Handler handler, 
-                      PlayerId id)
+                      HUD hud, PlayerId id)
     {
         super(x, y, w, h, id);
         this.handler = handler;
+        this.hud = hud;
         shipBounds();
         firstTime = System.currentTimeMillis();
         explosion = new Animation(8, tex.playerExplosion);     
         handler.addObject(new PropulsionFX(shipPoints[3].x, shipPoints[3].y, 15, 20,
-                                           handler, ObjectId.Propulsion));
+                                           handler, hud, ObjectId.Propulsion));
     }
 
     public void updatePlayer(LinkedList<PlayerObject> object) {
-        //TODO life system
-        if(HUD.HEALTH == 0) {
-            isDead = true;
+        if(hud.getHealth() == 0) {
             velX = velY = 0;
             explosion.runAnimationOnce();
         } else {
             Game.GameOver = false;
-            isDead = false;
         }
         if(explosion.isDone) {
             handler.player.clear();
@@ -65,10 +64,10 @@ public class PlayerShip extends PlayerObject {
     }
 
     public void renderPlayer(Graphics2D g2) {       
-        if (HUD.HEALTH == 0 && !explosion.isDone) {
+        if (hud.getHealth() == 0 && !explosion.isDone) {
             explosion.drawAnimation(g2, (int)(x -w), (int)(y-h), (int)(w*2+(h-w)), (int)h*2);
             
-        } else if(HUD.HEALTH > 0) {                     
+        } else if(hud.getHealth() > 0) {                     
             if(blinking || blinkingTime > 10) {
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
                                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -94,17 +93,17 @@ public class PlayerShip extends PlayerObject {
             GameObject tempObject = handler.object.get(i);
             if (tempObject.getId() == ObjectId.CollisionBlock) {
                 if (tempObject.collision() == true) {
-                    HUD.HEALTH -= 1;
+                    hud.setHealth(-1);
                     playerVsTileCollision(tempObject.deltaPoints());
                 }
             }
             if (tempObject.getId() == ObjectId.ExplosiveMine) {
                 if (tempObject.collision() == true) {          
-                    if (Shield.SHIELD) {
-                        HUD.SHIELD_HEALTH -= 50;
-                        Shield.HIT = true;
+                    if (hud.getShieldState()) {
+                        hud.setShieldHealth(-50);
+                        hud.setShieldHit(true);
                     } else {
-                        HUD.HEALTH -= 10;
+                        hud.setHealth(-10);
                     }
                     
                 }
@@ -120,11 +119,11 @@ public class PlayerShip extends PlayerObject {
                     bullet = new Point2D.Float(tempObject.getX()
                                               - tempObject.getW(), tempObject.getY());
                 if (Helper.inside(bullet, points()) == true) {
-                    if (Shield.SHIELD) {
-                        HUD.SHIELD_HEALTH -= 5;
-                        Shield.HIT = true;
+                    if (hud.getShieldState()) {
+                        hud.setShieldHealth(-5);
+                        hud.setShieldHit(true);
                     } else {
-                        HUD.HEALTH -= 5;
+                        hud.setHealth(-5);
                     }
                     handler.removeObject(tempObject);
                 }
@@ -167,7 +166,4 @@ public class PlayerShip extends PlayerObject {
         return points;
     }
     
-    public boolean state() {
-        return isDead;
-    }
 }

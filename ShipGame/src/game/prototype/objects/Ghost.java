@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import game.prototype.Animation;
-import game.prototype.DynamicLoading;
 import game.prototype.Game;
 import game.prototype.HUD;
 import game.prototype.Handler;
@@ -19,17 +18,19 @@ import game.prototype.framework.TextureManager;
 public class Ghost extends GameObject {
 
     private Handler handler;
+    private HUD hud;
     private TextureManager tex = Game.getTexInstance();
     private Animation idle, explosion[] = new Animation[5];
     private Random r = new Random();
-    private int choose = 0, enemyHP = 100;
+    private int choose, runOnce, enemyHP = 100;
     private int ex, ey;
     private long firstTime;
 
-    public Ghost(float x, float y, float w, float h, Handler handler, ObjectId id) {
+    public Ghost(float x, float y, float w, float h, Handler handler, HUD hud, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
+        this.hud = hud;
         ex = (int) x;
         ey = (int) y;
         firstTime = System.currentTimeMillis();
@@ -45,7 +46,10 @@ public class Ghost extends GameObject {
     public void update(LinkedList<GameObject> object) {
         enemyHP = Helper.clamp(enemyHP, 0, 100);
         if (enemyHP == 0) {
-            HUD.POINTS = 250;
+            if(runOnce == 0) {
+                hud.setPoints(250);
+                runOnce = 1;
+            }
             explosion[0].runAnimationOnce();
             explosion[1].runAnimationOnce();
             explosion[3].runAnimationOnce();
@@ -59,7 +63,7 @@ public class Ghost extends GameObject {
             if(handler.player.size() > 0) {
                 shootingTimer(); 
             }
-        }
+        }    
         projectileCollision();
     }
 
@@ -134,14 +138,14 @@ public class Ghost extends GameObject {
                     tempObject.getX() < (ex+(w/3)/2)&& 
                     tempObject.getY() > (ey-(h/3)/2)&& 
                     tempObject.getY() < (ey+(h/3)/2)&& 
-                    explosion[0].hasStarted == false) 
+                    !explosion[0].hasStarted) 
                 {
                     enemyHP -= 50;
                     handler.removeObject(tempObject);
                 }
             }
-            if (enemyHP == 0 && explosion[4].isDone == true) {
-                DynamicLoading.deleteObj = new Point2D.Float(this.x, this.y);
+            if (enemyHP == 0 && explosion[4].isDone) {
+                hud.setObjState(this.x, this.y);
                 handler.removeObject(this);
             }
         }

@@ -7,7 +7,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 import game.prototype.Animation;
-import game.prototype.DynamicLoading;
 import game.prototype.Game;
 import game.prototype.HUD;
 import game.prototype.Handler;
@@ -19,17 +18,19 @@ import game.prototype.framework.TextureManager;
 public class ExplosiveMine extends GameObject {
 
     private Handler handler;
+    private HUD hud;
     private TextureManager tex = Game.getTexInstance();
     private Animation explosion;
-    private boolean isHit = false;
-    private boolean isDamaged = false;
+    private boolean isHit;
+    private boolean isDamaged;
     private int player1;
 
     public ExplosiveMine(float x, float y, float w, float h, Handler handler, 
-                        ObjectId id) {
+                        HUD hud, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
+        this.hud = hud;
         explosion = new Animation(3, tex.explosion);
     }
 
@@ -71,12 +72,12 @@ public class ExplosiveMine extends GameObject {
                     tempObject.type() == "player") 
                 {
                     isHit = true;
-                    HUD.POINTS += 100;
+                    hud.setPoints(100);
                     handler.removeObject(tempObject);
                 }
             }
             if (explosion.isDone == true && isHit == false) {
-                DynamicLoading.deleteObj = new Point2D.Float(this.x, this.y);
+                hud.setObjState(this.x, this.y);
                 handler.removeObject(this);
                 explosion.isDone = false;
             }

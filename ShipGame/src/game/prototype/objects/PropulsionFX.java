@@ -17,21 +17,22 @@ import game.prototype.framework.TextureManager;
 public class PropulsionFX extends GameObject {
     
     private Handler handler;
+    private HUD hud;
     private TextureManager tex = Game.getTexInstance();
     private Animation propulsion;
     private AffineTransform at;
-    public static boolean isPropulsed = false;
     
     private long firstTime;
     private boolean blinking;
     private int blinkingTime;
     
     public PropulsionFX(float x, float y, float w, float h, Handler handler,
-                        ObjectId id) 
+                        HUD hud, ObjectId id) 
     {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
+        this.hud = hud;
         firstTime = System.currentTimeMillis();
         propulsion = new Animation(3, tex.propulsion);     
     }
@@ -53,7 +54,7 @@ public class PropulsionFX extends GameObject {
     }
 
     public void render(Graphics2D g2) {
-        if(isPropulsed == true && HUD.HEALTH > 0) {
+        if(this.getState() && hud.getHealth() > 0) {
             if(blinking || blinkingTime > 10) {
             propulsion.drawAnimation(g2, at);
             }
@@ -81,5 +82,4 @@ public class PropulsionFX extends GameObject {
     public String type() {
         return null;
     }
-
 }

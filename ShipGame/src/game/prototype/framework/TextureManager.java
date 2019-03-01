@@ -6,11 +6,14 @@ import game.prototype.ResourceLoader;
 
 public class TextureManager {
     private SpriteSheet pS, eS, explS;
-
+    
+    
     private BufferedImage player_sheet = null;
     private BufferedImage enemy_sheet = null;
     private BufferedImage explosion_sheet = null;
 
+    public BufferedImage title = null;
+    public BufferedImage cristal = null;
     public BufferedImage player = null;
     public BufferedImage[] propulsion = new BufferedImage[10];
     public BufferedImage[] explosiveMine = new BufferedImage[1];
@@ -26,6 +29,8 @@ public class TextureManager {
             player_sheet = loader.loadImage("/player_sheet.png");
             enemy_sheet = loader.loadImage("/mine.png");
             explosion_sheet = loader.loadImage("/explosion_sheet.png");
+            title = loader.loadImage("/title.png");
+            cristal = loader.loadImage("/cristal.png");
         } catch (Exception e) {
             e.printStackTrace();
         }

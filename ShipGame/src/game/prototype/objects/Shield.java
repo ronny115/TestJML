@@ -18,20 +18,21 @@ import game.prototype.framework.TextureManager;
 public class Shield extends GameObject {
     
     private Handler handler;
+    private HUD hud;
     private TextureManager tex = Game.getTexInstance();
     private Animation shieldAnimation;
     private AffineTransform at;
-    public static boolean HIT, SHIELD;
     
-    public Shield(float x, float y, float w, float h, Handler handler, ObjectId id) {
+    public Shield(float x, float y, float w, float h, Handler handler, HUD hud, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(3);
         this.handler = handler;
+        this.hud = hud;
         shieldAnimation = new Animation(2, tex.shield);
     }
 
     public void update(LinkedList<GameObject> object) {      
-        if (SHIELD == true) {
+        if (hud.getShieldState()) {
             at = AffineTransform.getTranslateInstance(x, y);
             at.rotate(Helper.getAngle(handler.player.get(0).points()));
             at.translate(-(w / 2), -(h / 2));
@@ -39,11 +40,11 @@ public class Shield extends GameObject {
             x = handler.player.get(0).points()[0].x;
             y = handler.player.get(0).points()[0].y;
       
-            if (HIT == true) {
+            if (hud.getShieldHit()) {
                 shieldAnimation.runAnimationOnce();
             }
-            if (HUD.SHIELD_HEALTH > 0 && shieldAnimation.isDone == true) {
-                HIT = false;
+            if (hud.getShieldHealth() > 0 && shieldAnimation.isDone == true) {
+                hud.setShieldHit(false);
                 shieldAnimation.isDone = false;
             }
         }
@@ -51,9 +52,9 @@ public class Shield extends GameObject {
     }
 
     public void render(Graphics2D g2) {
-        if (SHIELD == false) {
+        if (!hud.getShieldState()) {
             g2.draw(shieldItem()); 
-        } else if(SHIELD == true && HIT == true) {
+        } else if(hud.getShieldState() && hud.getShieldHit()) {
             shieldAnimation.drawAnimation(g2, at);
         } 
     }
@@ -62,11 +63,11 @@ public class Shield extends GameObject {
         if(handler.player.size() > 0) {
             for (int i = 0; i < handler.player.get(0).points().length; i++) {
                 if (shieldItem().contains(handler.player.get(0).points()[i])) {
-                    SHIELD = true;
+                    hud.setShieldState(true);
                 }
             }
-            if(HUD.SHIELD_HEALTH == 0 && shieldAnimation.isDone == true) {
-                SHIELD = false;
+            if(hud.getShieldHealth() == 0 && shieldAnimation.isDone == true) {
+                hud.setShieldState(false);
                 handler.removeObject(this);
             } 
         }
@@ -75,7 +76,7 @@ public class Shield extends GameObject {
     private Rectangle2D shieldItem() {
         return new Rectangle2D.Float(x-w/2, y-h/2, w, h);
     }
-    
+  
     public Float deltaPoints() {
         return null;
     }
@@ -87,5 +88,4 @@ public class Shield extends GameObject {
     public String type() {
         return null;
     }
-
 }

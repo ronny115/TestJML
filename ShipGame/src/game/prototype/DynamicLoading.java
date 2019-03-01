@@ -12,14 +12,14 @@ import game.prototype.objects.Ghost;
 
 public class DynamicLoading {
     private Handler handler;
-    public static Point2D.Float deleteObj = new Point2D.Float();
+    public static Point2D.Float deleteObjh = new Point2D.Float(); //object state coords
 
     public DynamicLoading(Handler handler) {
         this.handler = handler;
     }
 
     public void update(Point2D.Float cameraPos, ArrayList<float[]> coords, 
-                       ArrayList<int[]> colorRGB, float size) 
+                       ArrayList<int[]> colorRGB, float size, HUD hud) 
     {
         for (int i = 0; i < coords.size(); i++) {
             // Load on screen objects
@@ -34,7 +34,7 @@ public class DynamicLoading {
                     colorRGB.get(i)[2] == 255 && 
                     coords.get(i)[2] == 0)
 
-                {
+                {       
                     handler.addObject(new Block(coords.get(i)[0], coords.get(i)[1], size, 
                                                 size, ObjectId.Block));
                 }
@@ -53,7 +53,7 @@ public class DynamicLoading {
                     coords.get(i)[2] == 0 && coords.get(i)[3] == 0) 
                 {
                     handler.addObject(new ExplosiveMine(coords.get(i)[0], coords.get(i)[1], 
-                                                        size, size, handler, 
+                                                        size, size, handler, hud,
                                                         ObjectId.ExplosiveMine));
                 }
                 if (colorRGB.get(i)[0] == 255 && 
@@ -62,11 +62,14 @@ public class DynamicLoading {
                     coords.get(i)[2] == 0 && coords.get(i)[3] == 0) 
                 {
                     handler.addObject(new Ghost(coords.get(i)[0], coords.get(i)[1], 150, 150, 
-                                                handler, ObjectId.Ghost));
+                                                handler, hud, ObjectId.Ghost));
                 }
                 
                 coords.get(i)[2] = 1;
-                if (deleteObj.x == coords.get(i)[0] && deleteObj.y == coords.get(i)[1]) {
+
+                if (hud != null && hud.getObjState().x == coords.get(i)[0] 
+                                && hud.getObjState().y == coords.get(i)[1]) 
+                {
                     coords.get(i)[3] = 1;
                 }
   
@@ -90,5 +93,9 @@ public class DynamicLoading {
                 }
             }
         }
+    }
+    
+    public void setObjectState() {
+        
     }
 }

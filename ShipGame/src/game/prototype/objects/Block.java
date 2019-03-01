@@ -56,4 +56,5 @@ public class Block extends GameObject {
     public String type() {
         return null;
     }
+
 }

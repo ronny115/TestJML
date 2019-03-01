@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="res"/>
+	<classpathentry kind="lib" path="savedata"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

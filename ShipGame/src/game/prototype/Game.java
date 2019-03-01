@@ -24,9 +24,9 @@ public class Game extends Canvas implements Runnable {
 
     private Thread thread;
     public static int WIDTH = 1280, HEIGHT = WIDTH / 16 * 9;
-    private boolean isRunning = false;
-    private int fpsCounter;
-
+    private boolean isRunning, gameInit;
+    private int fps, tickRate;
+    
     private Handler handler;
     private Camera camera;
     private KeyInput keyinput;
@@ -34,43 +34,74 @@ public class Game extends Canvas implements Runnable {
     private Menu menu;
     private ResourceLoader loader;
     private DynamicLoading dynamicLoading;
+    private SaveLoad save;
     private static TextureManager tex;
 
     private ArrayList<int[]> colorRGB = new ArrayList<int[]>();
     private ArrayList<float[]> coords = new ArrayList<float[]>();
+    
+    private ArrayList<float[]> color = new ArrayList<float[]>();
+   
     private float size;
     private Point2D.Float cameraPos = new Point2D.Float();
     private Point2D.Float initPlayerPos = new Point2D.Float();
-    
-    public static boolean Paused, Reseted, GameOver;
+    private Point2D.Float lastPlayerPos = new Point2D.Float();
+    //Game states
+    public static boolean Paused, Reseted, Continued, Exited, GameOver, GameOn;
+    //Menu states
+    public static boolean SaveMenu;
 
     private void init() {
         this.setFocusable(true);
         this.setFocusTraversalKeysEnabled(false);
 
         loader = new ResourceLoader();
-        handler = new Handler();
-        hud = new HUD();
+        handler = new Handler();        
         menu = new Menu();
-        tex = new TextureManager();
-        dynamicLoading = new DynamicLoading(handler);
-        keyinput = new KeyInput(handler);
+        save = new SaveLoad();
+        tex = new TextureManager();        
+        keyinput = new KeyInput(handler, menu);
         // Max speed, speed increments
         keyinput.setSpeed(4.5f, 0.15f);
-        this.addKeyListener(keyinput);
-
-        hud.setFont(loader.loadFont("/PressStart2P.ttf"));
-        menu.setFont(loader.loadFont("/PressStart2P.ttf"));
-        loadData(loader.loadImage("/lvl_full.png"), 50);
-
-        camera = new Camera(initPlayerPos.x - WIDTH / 2, initPlayerPos.y - HEIGHT / 2);
-
-        handler.addObject(new Shield(initPlayerPos.x-40, initPlayerPos.y-40, 60, 60,
-                                    handler, ObjectId.Shield));
-        handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, 
-                                         handler, PlayerId.PlayerShip));
+        this.addKeyListener(keyinput);      
+        menu.setFont(loader.loadFont("/PressStart2P.ttf")); 
+        mainMenuBackground();        
     }
-
+    
+    private void gameInit() {  
+        System.out.println("gameInit");
+        handler.object.clear();
+        coords.clear();
+        colorRGB.clear();
+        
+        hud = new HUD();
+        hud.setFont(loader.loadFont("/PressStart2P.ttf"));
+        hud.setHealth(100);
+        hud.setShieldHealth(100);
+        hud.setPoints(0);
+        hud.setLife(3);
+        hud.setShieldState(false);
+        
+        loadData(loader.loadImage("/lvl_full.png"), 50);
+        dynamicLoading = new DynamicLoading(handler);
+        camera = new Camera(initPlayerPos.x - WIDTH / 2, initPlayerPos.y - HEIGHT / 2);
+                    
+        handler.addObject(new Shield(initPlayerPos.x-40, initPlayerPos.y-40, 60, 60,
+                                     handler, hud, ObjectId.Shield));
+        handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, 
+                                         handler, hud, PlayerId.PlayerShip));  
+        gameInit = !gameInit;
+        
+        float[] lol1 = {0.0f,1.0f,2.0f};
+        float[] lol2 = {0.1f,1.1f,2.1f};
+        float[] lol3 = {0.2f,1.2f,2.2f};
+        color.add(lol1);
+        color.add(lol2);
+        color.add(lol3);
+        
+        save.saveFile("test", color);
+        color.clear();
+    }
     public synchronized void start() {
         if (isRunning)
             return;
@@ -85,7 +116,7 @@ public class Game extends Canvas implements Runnable {
         long initialTime = System.nanoTime();
         final int target_ticks = 60;
         final double optimal_time_frame = 1000000000 / target_ticks;
-        int ticks = 0, frames = 0;
+        int fpsCounter = 0, ticks = 0, frames = 0;;
 
         while (isRunning) {
             long currentTime = System.nanoTime();
@@ -101,10 +132,9 @@ public class Game extends Canvas implements Runnable {
             fpsCounter += frameTime;
             frames++;
             if (fpsCounter >= 1000000000) {
-                System.out.println("(ticks: " + ticks + ") FPS: " + frames);
-                fpsCounter = 0;
-                ticks = 0;
-                frames = 0;
+                fps = frames;
+                tickRate = ticks;
+                fpsCounter = ticks = frames = 0;
             }
         }
     }
@@ -116,43 +146,75 @@ public class Game extends Canvas implements Runnable {
             return;
         }
         Graphics2D g2 = (Graphics2D) bStrategy.getDrawGraphics();
+        //Background
         g2.setColor(new Color(238, 238, 238));
         g2.fillRect(0, 0, getWidth(), getHeight());
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, 
                             RenderingHints.VALUE_STROKE_PURE);
-        // Draw Here 
-        g2.translate(-camera.getX(), -camera.getY());
-        handler.render(g2);
-        g2.translate(camera.getX(), camera.getY());
-        hud.render(g2);
-        if(Paused) {
-            menu.pauseRender(g2);
+        //Main Menu
+        if (!GameOn) {
+            handler.render(g2);
+            menu.startMenuRender(g2);
+        } else {
+            if(!gameInit) 
+                gameInit();
+            //Game
+            g2.translate(-camera.getX(), -camera.getY());
+            handler.render(g2);
+            g2.translate(camera.getX(), camera.getY());
+            hud.render(g2);     
+            //In-game Menus
+            if(Paused) {
+                menu.pauseRender(g2);
+            } else if(GameOver && hud.getLife() > 0) {
+                menu.continueRender(g2);
+            } else if(GameOver && hud.getLife() == 0) {
+                menu.gameOverRender(g2);
+            }
         }
-        if(GameOver) {
-            menu.gameOverRender(g2);
-        } 
-        // Show
+        //SysInfo
+        if (menu.getSysInfo()) {
+            menu.sysInfoRender(g2, 100, 100, fps, tickRate, handler.object.size());
+        }
+        //Show
         g2.dispose();
         bStrategy.show();
     }
 
     private void update() {
-        if (!Paused) {
-            handler.update();
-            keyinput.updateInput();
-            hud.update();
-            if(handler.player.size() > 0)
-                camera.update(handler.player.get(0));      
-            cameraPos.x = camera.getX();
-            cameraPos.y = camera.getY();
-            dynamicLoading.update(cameraPos, coords, colorRGB, size);
-            if(GameOver)
-                if(Reseted) 
-                    reset();
-        } else {
-            menu.pauseUpdate();   
-            if(Reseted) {
-                reset();
+        if (!GameOn) {
+            menu.startMenuUpdate();
+            dynamicLoading.update(cameraPos, coords, colorRGB, size, hud);
+            if (Exited)
+                clear(); 
+        } else {            
+            if (!Paused) {
+                handler.update();
+                keyinput.updateInput(hud);
+                hud.update();
+                if (handler.player.size() > 0) {
+                    lastPlayerPos.x = handler.player.get(0).getX();
+                    lastPlayerPos.y = handler.player.get(0).getY();
+                    camera.update(handler.player.get(0));
+                }
+                cameraPos.x = camera.getX();
+                cameraPos.y = camera.getY();
+                dynamicLoading.update(cameraPos, coords, colorRGB, size, hud);
+                //GameOver reset
+                if (Reseted) {
+                    clear();
+                    gameInit();
+                }
+                //Continue
+                if (Continued)
+                    cont();
+            } else {
+                menu.pauseUpdate();
+                //Pause reset
+                if (Reseted) {
+                    clear();
+                    gameInit();
+                }
             }
         }
     }
@@ -172,7 +234,6 @@ public class Game extends Canvas implements Runnable {
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
-
                 int[] rgb = { red, green, blue };
                 colorRGB.add(rgb);
 
@@ -200,29 +261,40 @@ public class Game extends Canvas implements Runnable {
         }
     }
     
-    private void reset() {
-        //Clear object lists
+    private void clear() {
+        System.out.println("clear");
         handler.object.clear();
         handler.player.clear();
         coords.clear();
         colorRGB.clear();
-        //Reset HUD
-        HUD.HEALTH = 100;
-        HUD.POINTS = 0;
-        //Reload data and player object
-        loadData(loader.loadImage("/lvl_full.png"), 50);
-        handler.addPlayer(new PlayerShip(initPlayerPos.x, initPlayerPos.y, 35, 45, 
-                                         handler, PlayerId.PlayerShip));
-        //Reset camera
-        camera.setX(initPlayerPos.x - WIDTH / 2);
-        camera.setY(initPlayerPos.y - HEIGHT / 2);
-        //Reset done and un-pause
-        Reseted = !Reseted;
-        Paused = !Paused;
-        if(GameOver) {
-            GameOver = !GameOver;
-            Paused = !Paused;
-        }
+        hud = null;
+        camera = null;
+        mainMenuBackground();
+        gameInit = !gameInit;
+        if(Exited) Exited =! Exited;
+        if(Paused) Paused = !Paused;
+        if(GameOver) GameOver = !GameOver;
+        if(Reseted) Reseted = !Reseted;
+        System.gc();      
+    }
+        
+    private void cont() {
+        System.out.println("continue");
+        handler.player.clear();
+        hud.setHealth(100);
+        hud.setLife(-1); 
+        handler.addPlayer(new PlayerShip(lastPlayerPos.x, lastPlayerPos.y, 35, 45, 
+                                         handler, hud, PlayerId.PlayerShip));
+        camera.setX(lastPlayerPos.x - WIDTH / 2);
+        camera.setY(lastPlayerPos.y - HEIGHT / 2);
+        Continued = !Continued;        
+        GameOver = !GameOver;      
+    }
+    
+    private void mainMenuBackground() {
+        cameraPos.x = cameraPos.y = 0;
+        loadData(loader.loadImage("/menubg.png"), 50);
+        dynamicLoading = new DynamicLoading(handler);
     }
     
     public static TextureManager getTexInstance() {

@@ -7,9 +7,10 @@ import java.util.LinkedList;
 public abstract class GameObject {
     protected float x,y;
     protected ObjectId id;
-    protected float velX = 0, velY = 0;
-    protected float w = 0, h = 0;
+    protected float velX, velY;
+    protected float w, h;
     protected int renderLevel;
+    protected boolean state;
     
     public GameObject(float x, float y, float w, float h, ObjectId id) {
         this.x = x;
@@ -25,6 +26,12 @@ public abstract class GameObject {
     public abstract boolean collision();
     public abstract String type();
     
+    public void setState(boolean state) {
+        this.state = state;
+    }
+    public boolean getState() {
+        return state;
+    }    
     public float getX() {
         return x;
 	}
