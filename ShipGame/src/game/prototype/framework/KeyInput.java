@@ -94,8 +94,7 @@ public class KeyInput extends KeyAdapter {
             if(!menu.getSaveGameState()) {
                 menuMove(mainMenuSize, pauseSize, gameOverSize, "Up");
             } 
-        }
-        
+        }      
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             downKeyPressed = true;
             downKeyReleased = false;
@@ -154,9 +153,7 @@ public class KeyInput extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             spaceKeyPressed = false;
         }
-    }
-    
-    
+    } 
 
     public void setSpeed(float topSpeed, float deltaSpeed) {
         this.topSpeed = topSpeed;
@@ -190,41 +187,31 @@ public class KeyInput extends KeyAdapter {
         if (Game.GameOver && menu.gameOverItem().get(1)) {
             Game.GameOn = !Game.GameOn;
             Game.Exited = !Game.Exited;
-            menu.gameOverItem().set(0, !menu.gameOverItem().get(0));
-            menu.gameOverItem().set(1, !menu.gameOverItem().get(1));
-            menuIndex = 0;
-            velx = vely = 0;
+            resetPauseMenuItem(1);
         }
         //Pause//
         //Reset
         if (Game.Paused && menu.pauseItem().get(2)) {
             Game.Reseted = !Game.Reseted;
-            menu.pauseItem().set(0, !menu.pauseItem().get(0));
-            menu.pauseItem().set(2, !menu.pauseItem().get(2));
-            menuIndex = 0;
-            velx = vely = 0;
+            resetPauseMenuItem(2);
         }
         //Exit
         if (Game.Paused && menu.pauseItem().get(3)) {
             Game.GameOn = !Game.GameOn;
             Game.Exited = !Game.Exited;
-            menu.pauseItem().set(0, !menu.pauseItem().get(0));
-            menu.pauseItem().set(3, !menu.pauseItem().get(3));
-            menuIndex = 0;
-            velx = vely = 0;
+            resetPauseMenuItem(3);
         }
         //Save Game
         if(Game.Paused && menu.pauseItem().get(1)) {
             saveGameState = !saveGameState;
             menu.setSaveGameState(saveGameState);
-            menu.pauseItem().set(0, !menu.pauseItem().get(0));
-            menu.pauseItem().set(1, !menu.pauseItem().get(1));
-            menuIndex = 0;
-            velx = vely = 0;
-        }
-        //Save Game sub-menu
-        if(menu.getSaveGameState() && menu.saveWindowItem().get(0)) {
+            resetPauseMenuItem(1);
+          //Save Game sub-menu
+        } else if(menu.getSaveGameState() && menu.saveWindowItem().get(0)) {
             System.out.println("Saved");
+            
+            saveGameState = !saveGameState;
+            menu.setSaveGameState(saveGameState);         
             menuIndex = 0;
             velx = vely = 0;
         }
@@ -241,82 +228,71 @@ public class KeyInput extends KeyAdapter {
     private void menuMove(int mMSize, int pSize, int gOSize, String dir) {
         // Main menu navigation
         if (!Game.GameOn) {
-            menu.mainMenuItem().set(menuIndex, !menu.mainMenuItem().get(menuIndex));
-            if (dir == "Up") {
-                menuIndex--;
-                if (menuIndex < 0)
-                    menuIndex = mMSize - 1;
-                menu.mainMenuItem().set(menuIndex, !menu.mainMenuItem().get(menuIndex));
-            } else if (dir == "Down") {
-                menuIndex++;
-                if (menuIndex == mMSize)
-                    menuIndex = 0;
-                menu.mainMenuItem().set(menuIndex, !menu.mainMenuItem().get(menuIndex));
-            }
-
+            menuIndex(mMSize, dir, "Main");
         }
         // Pause menu navigation
         if (Game.Paused && Game.GameOn && !menu.getSaveGameState()) {
-            menu.pauseItem().set(menuIndex, !menu.pauseItem().get(menuIndex));
-            if (dir == "Up") {
-                menuIndex--;
-                if (menuIndex < 0)
-                    menuIndex = pSize - 1;
-                menu.pauseItem().set(menuIndex, !menu.pauseItem().get(menuIndex));
-            } else if (dir == "Down") {
-                menuIndex++;
-                if (menuIndex == pSize)
-                    menuIndex = 0;
-                menu.pauseItem().set(menuIndex, !menu.pauseItem().get(menuIndex));
-
-            }
+            menuIndex(pSize, dir, "Pause");
         } 
         // Save options
         if(Game.Paused && Game.GameOn && menu.getSaveGameState()) {
-            menu.saveWindowItem().set(menuIndex, !menu.saveWindowItem().get(menuIndex));
-            if (dir == "Left") {
-                menuIndex--;
-                if (menuIndex < 0)
-                    menuIndex = gOSize - 1;              
-                menu.saveWindowItem().set(menuIndex, !menu.saveWindowItem().get(menuIndex));
-  
-            } else if (dir == "Right") {
-                menuIndex++;
-                if (menuIndex == gOSize)
-                    menuIndex = 0;
-                menu.saveWindowItem().set(menuIndex, !menu.saveWindowItem().get(menuIndex));
-
-            }
-            
+            menuIndex(gOSize, dir, "Save");         
         }  
         // GameOver menu navigation
         if (Game.GameOver && Game.GameOn) {
-            menu.gameOverItem().set(menuIndex, !menu.gameOverItem().get(menuIndex));
-            if (dir == "Up") {
-                menuIndex--;
-                if (menuIndex < 0)
-                    menuIndex = gOSize - 1;
-                menu.gameOverItem().set(menuIndex, !menu.gameOverItem().get(menuIndex));
-
-            } else if (dir == "Down") {
-                menuIndex++;
-                if (menuIndex == gOSize)
-                    menuIndex = 0;
-                menu.gameOverItem().set(menuIndex, !menu.gameOverItem().get(menuIndex));
-            }
+            menuIndex(gOSize, dir, "GameOver");
         }
         // Propulsion animation
         if (!Game.Paused && dir == "Up") {
             propulsionState(true);
         }
     }
-       
+         
+    private void menuIndex(int size, String dir, String menuType) {
+        menuType(menuType); 
+        if (dir == "Up" || dir == "Left") {
+            menuIndex--;
+            if (menuIndex < 0)
+                menuIndex = size - 1;
+            menuType(menuType);           
+        } else if (dir == "Down" || dir == "Right") {
+            menuIndex++;
+            if (menuIndex == size)
+                menuIndex = 0;
+            menuType(menuType);
+        }     
+    }
+    
+    private void menuType(String mType) {
+        switch (mType) {
+            case "Main":
+                menu.mainMenuItem().set(menuIndex, !menu.mainMenuItem().get(menuIndex));
+                break;
+            case "Pause":
+                menu.pauseItem().set(menuIndex, !menu.pauseItem().get(menuIndex));
+                break;
+            case "Save":
+                menu.saveWindowItem().set(menuIndex, !menu.saveWindowItem().get(menuIndex));
+                break;
+            case "GameOver":
+                menu.gameOverItem().set(menuIndex, !menu.gameOverItem().get(menuIndex));
+                break;
+        }   
+    }
+    
     private void propulsionState(boolean state) {
         for(int i = 0; i<handler.object.size();i++) {
             if(handler.object.get(i).getId() == ObjectId.Propulsion) {
                 handler.object.get(i).setState(state);
             }
         }
+    }
+    
+    private void resetPauseMenuItem(int index) {       
+        menu.pauseItem().set(0, !menu.pauseItem().get(0));
+        menu.pauseItem().set(index, !menu.pauseItem().get(index));
+        menuIndex = 0;
+        velx = vely = 0;        
     }
 
     private void move(String move) {

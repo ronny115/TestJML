@@ -92,13 +92,14 @@ public class PlayerShip extends PlayerObject {
         for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
             if (tempObject.getId() == ObjectId.CollisionBlock) {
-                if (tempObject.collision() == true) {
+                if (tempObject.getCollision() == true) {
                     hud.setHealth(-1);
                     playerVsTileCollision(tempObject.deltaPoints());
+                    tempObject.setCollision(false);
                 }
             }
             if (tempObject.getId() == ObjectId.ExplosiveMine) {
-                if (tempObject.collision() == true) {          
+                if (tempObject.getCollision() == true) {          
                     if (hud.getShieldState()) {
                         hud.setShieldHealth(-50);
                         hud.setShieldHit(true);
@@ -135,7 +136,7 @@ public class PlayerShip extends PlayerObject {
         for (int i = 0; i < shipPoints.length; i++) {
             shipPoints[i].x += p.x;
             shipPoints[i].y += p.y;
-        }
+        }       
     }
 
     private void shipMovement() {

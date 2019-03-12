@@ -100,7 +100,7 @@ public class ExplosiveMine extends GameObject {
         return null;
     }
 
-    public boolean collision() {
+    public boolean getCollision() {
         if (explosion.hasStarted == true)
             return false;
         return isDamaged;

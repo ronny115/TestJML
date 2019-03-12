@@ -11,6 +11,7 @@ public abstract class GameObject {
     protected float w, h;
     protected int renderLevel;
     protected boolean state;
+    protected boolean collision;
     
     public GameObject(float x, float y, float w, float h, ObjectId id) {
         this.x = x;
@@ -23,8 +24,14 @@ public abstract class GameObject {
     public abstract void render(Graphics2D g2);
     
     public abstract Point2D.Float deltaPoints();
-    public abstract boolean collision();
     public abstract String type();
+    
+    public boolean getCollision() {
+        return collision;
+    }
+    public void setCollision(boolean collision) {
+        this.collision = collision;
+    }
     
     public void setState(boolean state) {
         this.state = state;

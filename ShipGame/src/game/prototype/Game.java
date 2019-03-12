@@ -65,7 +65,8 @@ public class Game extends Canvas implements Runnable {
         keyinput.setSpeed(4.5f, 0.15f);
         this.addKeyListener(keyinput);      
         menu.setFont(loader.loadFont("/PressStart2P.ttf")); 
-        mainMenuBackground();        
+        mainMenuBackground();  
+        System.gc(); 
     }
     
     private void gameInit() {  
@@ -92,15 +93,15 @@ public class Game extends Canvas implements Runnable {
                                          handler, hud, PlayerId.PlayerShip));  
         gameInit = !gameInit;
         
-        float[] lol1 = {0.0f,1.0f,2.0f};
-        float[] lol2 = {0.1f,1.1f,2.1f};
-        float[] lol3 = {0.2f,1.2f,2.2f};
-        color.add(lol1);
-        color.add(lol2);
-        color.add(lol3);
-        
-        save.saveFile("test", color);
-        color.clear();
+//        float[] lol1 = {0.0f,1.0f,2.0f};
+//        float[] lol2 = {0.1f,1.1f,2.1f};
+//        float[] lol3 = {0.2f,1.2f,2.2f};
+//        color.add(lol1);
+//        color.add(lol2);
+//        color.add(lol3);
+//        
+//        save.saveFile(color);
+//        color.clear();
     }
     public synchronized void start() {
         if (isRunning)
