@@ -5,19 +5,19 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D.Float;
 import java.util.LinkedList;
 
-import game.prototype.Animation;
 import game.prototype.Game;
-import game.prototype.HUD;
 import game.prototype.Handler;
+import game.prototype.framework.Animation;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.Helper;
 import game.prototype.framework.ObjectId;
+import game.prototype.framework.States;
 import game.prototype.framework.TextureManager;
 
 public class PropulsionFX extends GameObject {
     
     private Handler handler;
-    private HUD hud;
+    private States states;
     private TextureManager tex = Game.getTexInstance();
     private Animation propulsion;
     private AffineTransform at;
@@ -27,14 +27,14 @@ public class PropulsionFX extends GameObject {
     private int blinkingTime;
     
     public PropulsionFX(float x, float y, float w, float h, Handler handler,
-                        HUD hud, ObjectId id) 
+                        States states, ObjectId id) 
     {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
-        this.hud = hud;
+        this.states = states;
         firstTime = System.currentTimeMillis();
-        propulsion = new Animation(3, tex.propulsion);     
+        propulsion = new Animation(tex.propulsion);     
     }
 
     public void update(LinkedList<GameObject> object) {
@@ -46,7 +46,7 @@ public class PropulsionFX extends GameObject {
             at.translate(-(w / 2), +(h / 5));
             at.scale(w / (tex.propulsion[0].getWidth()), 
                      h / (tex.propulsion[0].getHeight() + 20));
-            propulsion.runAnimation();
+            propulsion.runAnimation(3);
             x = handler.player.get(0).points()[3].x;
             y = handler.player.get(0).points()[3].y;
             blinkingTimer();
@@ -54,7 +54,7 @@ public class PropulsionFX extends GameObject {
     }
 
     public void render(Graphics2D g2) {
-        if(this.getState() && hud.getHealth() > 0) {
+        if(states.getPropulsionState() && states.getHealth() > 0) {
             if(blinking || blinkingTime > 10) {
             propulsion.drawAnimation(g2, at);
             }

@@ -6,19 +6,19 @@ import java.awt.geom.Point2D.Float;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
-import game.prototype.Animation;
 import game.prototype.Game;
-import game.prototype.HUD;
 import game.prototype.Handler;
+import game.prototype.framework.Animation;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerObject;
+import game.prototype.framework.States;
 import game.prototype.framework.TextureManager;
 
 public class ExplosiveMine extends GameObject {
 
     private Handler handler;
-    private HUD hud;
+    private States states;
     private TextureManager tex = Game.getTexInstance();
     private Animation explosion;
     private boolean isHit;
@@ -26,18 +26,18 @@ public class ExplosiveMine extends GameObject {
     private int player1;
 
     public ExplosiveMine(float x, float y, float w, float h, Handler handler, 
-                        HUD hud, ObjectId id) {
+                         States states, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
-        this.hud = hud;
-        explosion = new Animation(3, tex.explosion);
+        this.states = states;
+        explosion = new Animation(tex.explosion);
     }
 
     public void update(LinkedList<GameObject> object) {
         player1 = handler.player.size();
         if (isHit == true) {
-            explosion.runAnimationOnce();
+            explosion.runAnimationOnce(3);
         }
         if (explosion.isDone == true) {
             isHit = false;
@@ -72,12 +72,12 @@ public class ExplosiveMine extends GameObject {
                     tempObject.type() == "player") 
                 {
                     isHit = true;
-                    hud.setPoints(100);
+                    states.setPoints(states.getPoints() + 100);
                     handler.removeObject(tempObject);
                 }
             }
             if (explosion.isDone == true && isHit == false) {
-                hud.setObjState(this.x, this.y);
+                states.setObjState(this.x, this.y);
                 handler.removeObject(this);
                 explosion.isDone = false;
             }

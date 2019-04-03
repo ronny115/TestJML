@@ -15,7 +15,9 @@ public class TextureManager {
     public BufferedImage title = null;
     public BufferedImage cristal = null;
     public BufferedImage player = null;
+    
     public BufferedImage[] propulsion = new BufferedImage[10];
+    public BufferedImage[] alert = new BufferedImage[20];
     public BufferedImage[] explosiveMine = new BufferedImage[1];
     public BufferedImage[] ghostIdle = new BufferedImage[15];
     public BufferedImage[] bullet = new BufferedImage[3];
@@ -45,8 +47,8 @@ public class TextureManager {
         int count = 0;
         
         player = pS.grabImage(1, 1, 30, 40);
-        bullet[0] = pS.grabImage(1, 4, 30, 40);// GreenBullet
-        bullet[1] = pS.grabImage(2, 4, 30, 40);// RedBullet
+        bullet[0] = pS.grabImage(1, 5, 30, 40);// GreenBullet
+        bullet[1] = pS.grabImage(2, 5, 30, 40);// RedBullet
         // Shield
         for (int i = 0; i < 7; i++) {
             shield[i] = pS.grabImage(i+2, 1, 30, 40); 
@@ -54,6 +56,8 @@ public class TextureManager {
         for (int i = 0; i < 10; i++) {
             ghostIdle[i] = eS.grabImage(i+1, 2, 50, 50);
             propulsion[i] = pS.grabImage(i+1, 2, 30, 40);
+            alert[i] = pS.grabImage(i+1, 3, 30, 40);
+            alert[i+10] = pS.grabImage(i+1, 4, 30, 40);
         }
         for (int i = 0; i < 5; i++) {
             ghostIdle[10+i] = eS.grabImage(i+1, 3, 50, 50);

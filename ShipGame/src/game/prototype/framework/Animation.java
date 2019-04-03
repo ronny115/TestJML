@@ -1,4 +1,4 @@
-package game.prototype;
+package game.prototype.framework;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -6,14 +6,14 @@ import java.awt.image.BufferedImage;
 
 public class Animation {
 
-    private int speed, frames;
+    private int frames;
     private int index = 0, count = 0, playCount = 0;
     public boolean isDone = false, hasStarted = false;
     private BufferedImage[] images;
     private BufferedImage currentImg;
 
-    public Animation(int speed, BufferedImage[] args) {
-        this.speed = speed;
+    public Animation(BufferedImage[] args) {
+        
         images = args;
         for (int i = 0; i < args.length; i++)
             images[i] = args[i];
@@ -21,7 +21,7 @@ public class Animation {
         frames = args.length;
     }
 
-    public void runAnimation() {
+    public void runAnimation(int speed) {
         index++;
         if (index > speed) {
             index = 0;
@@ -29,7 +29,7 @@ public class Animation {
         }
     }
 
-    public void runAnimationOnce() {
+    public void runAnimationOnce(int speed) {
         if (playCount < frames) {
             hasStarted = true;
             index++;
