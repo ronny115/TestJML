@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 //import java.util.ArrayList;
 import java.util.Arrays;
 
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
 
 public class FileManagement {
     private File location, saveFile;
-    private States states;
+    private GameStates gs;
 
-    public FileManagement(States states) {
-        this.states = states;
+    public FileManagement(GameStates gs) {
+        this.gs = gs;
         location = new File(FileSystems.getDefault().getPath(".").toString() + "/savedata/");
         if (!location.exists()) {
             try {
@@ -30,7 +30,7 @@ public class FileManagement {
         loadFiles();
     }
 
-    public void save(int slotIndex) {
+    public void save() {
         if (location.listFiles().length > 5) {
             Arrays.sort(location.listFiles());
             File delfile = location.listFiles()[0];
@@ -96,12 +96,12 @@ public class FileManagement {
     }
     
     public void loadFiles() {
-        states.saveSlots().clear();       
+        gs.saveSlots().clear();       
         for (int i = 0; i < 6; i++) {
-            states.saveSlots().add("Empty");
+            gs.saveSlots().add("Empty");
         }       
         for (int i = 0; i < location.listFiles().length; i++) {
-            states.saveSlots().set(i, location.listFiles()[i].getName());
+            gs.saveSlots().set(i, location.listFiles()[i].getName());
         }
         
     }

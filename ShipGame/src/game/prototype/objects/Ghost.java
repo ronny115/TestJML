@@ -12,13 +12,13 @@ import game.prototype.framework.Animation;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.Helper;
 import game.prototype.framework.ObjectId;
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
 
 public class Ghost extends GameObject {
 
     private Handler handler;
-    private States states;
+    private GameStates gs;
     private TextureManager tex = Game.getTexInstance();
     private Animation idle, explosion[] = new Animation[5];
     private Random r = new Random();
@@ -26,11 +26,11 @@ public class Ghost extends GameObject {
     private int ex, ey;
     private long firstTime;
 
-    public Ghost(float x, float y, float w, float h, Handler handler, States states, ObjectId id) {
+    public Ghost(float x, float y, float w, float h, Handler handler, GameStates gs, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
-        this.states = states;
+        this.gs = gs;
         ex = (int) x;
         ey = (int) y;
         firstTime = System.currentTimeMillis();
@@ -47,7 +47,7 @@ public class Ghost extends GameObject {
         enemyHP = Helper.clamp(enemyHP, 0, 100);
         if (enemyHP == 0) {
             if(runOnce == 0) {
-                states.setPoints(states.getPoints()+250);
+                gs.setPoints(gs.getPoints()+250);
                 runOnce = 1;
             }
             explosion[0].runAnimationOnce(6);
@@ -145,7 +145,7 @@ public class Ghost extends GameObject {
                 }
             }
             if (enemyHP == 0 && explosion[4].isDone) {
-                states.setObjState(this.x, this.y);
+                gs.setObjState(this.x, this.y);
                 handler.removeObject(this);
             }
         }

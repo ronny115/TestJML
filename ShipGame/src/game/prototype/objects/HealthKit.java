@@ -1,0 +1,87 @@
+package game.prototype.objects;
+
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D.Float;
+import java.util.LinkedList;
+
+import game.prototype.Game;
+import game.prototype.Handler;
+import game.prototype.framework.Animation;
+import game.prototype.framework.GameObject;
+import game.prototype.framework.GameStates;
+import game.prototype.framework.ObjectId;
+import game.prototype.framework.TextureManager;
+
+public class HealthKit extends GameObject{
+    
+    private Handler handler;
+    private GameStates gs;
+    private Animation healthAni;
+    private TextureManager tex = Game.getTexInstance();
+    private AffineTransform at;
+    private boolean isGrab;
+
+    public HealthKit(float x, float y, float w, float h, Handler handler, GameStates gs, ObjectId id) {
+        super(x, y, w, h, id);
+        this.setRenderPriority(3);
+        this.handler = handler;
+        this.gs = gs;
+        healthAni = new Animation(tex.healthUp);
+    }
+
+    public void update(LinkedList<GameObject> object) {
+        if (isGrab) {
+            at = AffineTransform.getTranslateInstance(x - (w/2)*1.5, y - (h/2)*1.5);
+            at.scale(1.5, 1.5);
+            healthAni.runAnimationOnce(5); 
+            x = handler.player.get(0).points()[0].x;
+            y = handler.player.get(0).points()[0].y;
+            gs.setHealth(100);
+        }
+        itemGrab();
+    }
+
+    public void render(Graphics2D g2) {
+        if (isGrab) {
+            healthAni.drawAnimation(g2, at);
+        } else if (!isGrab) {
+            g2.drawImage(tex.healthItem, (int)x, (int)y, (int)w, (int)h, null);
+        }
+    }
+    
+    private void itemGrab() {
+        if (handler.player.size() > 0) {
+            for (int i = 1; i < handler.player.get(0).points().length; i++) {
+                if (healthItem().contains(handler.player.get(0).points()[i]) && !isGrab) {
+                    isGrab = true;
+                    gs.setObjState(this.x, this.y);
+                    if (gs.getHealth() == 100) 
+                        gs.setPoints(50);
+                }
+            }
+        }
+        if (healthAni.isDone) {
+            handler.removeObject(this);
+        }
+    }
+    
+    private Rectangle2D healthItem() {
+        if (isGrab)
+            return new Rectangle2D.Float(handler.player.get(0).points()[0].x - 2,
+                                         handler.player.get(0).points()[0].y - 2, 4, 4);
+        else
+            return new Rectangle2D.Float(x , y+6, 31, 31);
+    }
+
+    public Float deltaPoints() {
+        return null;
+    }
+
+
+    public String type() {
+        return null;
+    }
+
+}

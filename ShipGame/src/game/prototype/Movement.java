@@ -1,15 +1,19 @@
 package game.prototype;
 
+import game.prototype.framework.GameStates;
+
 public class Movement {
     
     private Handler handler;
     private Menu menu;
+    private GameStates gs;
     private float topSpeed = 0, deltaSpeed = 0, vely = 0, velx = 0;
     private boolean upKey, downKey, leftKey, rightKey;
   
-    public Movement(Handler h, Menu m) {
+    public Movement(Handler h, Menu m, GameStates gs) {
         this.handler = h;
         this.menu = m;
+        this.gs = gs;
     }
     
     public void update() {
@@ -69,6 +73,9 @@ public class Movement {
                         vely = (float) topSpeed;
                         handler.player.get(0).setVelY(vely);
                     }
+                    if(gs.getBlockCollision()) {
+                        handler.player.get(0).setVelY(0);
+                    }
                     break;
                 case "down":
                     vely += -deltaSpeed * 2;
@@ -101,6 +108,10 @@ public class Movement {
                     if (vely < 0) {
                         vely = 0;
                         handler.player.get(0).setVelY(vely);
+                    }
+                    if(gs.getBlockCollision()) {
+                        vely = 0;
+                        handler.player.get(0).setVelY(0);
                     }
                     break;
                 case "decelerateDown":

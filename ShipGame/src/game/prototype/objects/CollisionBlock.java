@@ -10,20 +10,23 @@ import java.util.LinkedList;
 
 import game.prototype.Handler;
 import game.prototype.framework.GameObject;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.ObjectId;
 
 public class CollisionBlock extends GameObject {
 
     private Handler handler;
+    private GameStates gs;
     private Path2D poly = new Path2D.Double();
     private float ipx, ipy;
     private Point2D.Float tileBounds[];
+    Point2D.Float shipBounds[] = new Point2D.Float[3];
     private Point2D.Float p = new Point2D.Float();
-    private boolean isColliding = false;
 
-    public CollisionBlock(float x, float y, float w, float h, Handler handler, ObjectId id) {
+    public CollisionBlock(float x, float y, float w, float h, Handler handler, GameStates gs, ObjectId id) {
         super(x, y, w, h, id);
         this.handler = handler;
+        this.gs = gs;
         this.setRenderPriority(1);
         buildHexagonBB();
         poly = tile();
@@ -40,41 +43,38 @@ public class CollisionBlock extends GameObject {
 
     private void shapeOverlap_Diagonals() {
         if(handler.player.size()>0) {
-            Point2D.Float shipBounds[] = new Point2D.Float[3];
             shipBounds[0] = handler.player.get(0).points()[1];
             shipBounds[1] = handler.player.get(0).points()[2];
             shipBounds[2] = handler.player.get(0).points()[4];
             
-            for(int i =0; i<6;i++) {
-                for(int j= 0; j<3;j++) {
-                    
-                    if(j==2) {
-                        lineIntersection(new Point2D.Float(x,y), tileBounds[i], shipBounds[j], shipBounds[0], 1);                    
-                    }else {
-                        lineIntersection(new Point2D.Float(x,y), tileBounds[i], shipBounds[j], shipBounds[j+1], 1); 
-                    }
-                    if(i == 5) {
-                        lineIntersection(handler.player.get(0).points()[0],shipBounds[j],tileBounds[i],tileBounds[0], -1);                  
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (j == 2) {
+                        lineIntersection(new Point2D.Float(x, y), tileBounds[i], shipBounds[j], shipBounds[0], false);
                     } else {
-                        lineIntersection(handler.player.get(0).points()[0],shipBounds[j],tileBounds[i],tileBounds[i+1], -1); 
+                        lineIntersection(new Point2D.Float(x, y), tileBounds[i], shipBounds[j], shipBounds[j + 1], false);
                     }
-                    
-                }          
+                    if (i == 5) {
+                        lineIntersection(handler.player.get(0).points()[0], shipBounds[j], tileBounds[i], tileBounds[0], true);
+                    } else {
+                        lineIntersection(handler.player.get(0).points()[0], shipBounds[j], tileBounds[i], tileBounds[i + 1], true);
+                    }
+                }
             }
-            
-            if(isColliding) {
+            if(gs.getBlockCollision()) {
                 p.x += ipx;
                 p.y += ipy;
             } else {
                 p.x = 0;
                 p.y = 0;
-            }            
+            }
+            
         }   
     }
 
 
     private void lineIntersection(Point2D.Float s1PointA, Point2D.Float s1PointB, 
-                                  Point2D.Float s2PointA, Point2D.Float s2PointB, int dir) 
+                                  Point2D.Float s2PointA, Point2D.Float s2PointB, boolean s_vs_b) 
     {
         float s1_x = s1PointA.x - s1PointB.x;
         float s1_y = s1PointA.y - s1PointB.y;
@@ -86,17 +86,31 @@ public class CollisionBlock extends GameObject {
         float t2 = (-s1_y * (s1PointB.x - s2PointA.x) + s1_x * (s1PointB.y - s2PointA.y)) / h;
         
                
-        if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f)
-        {
-            isColliding = true; 
-            if(dir < 0) {
+        if (t1 >= 0.0f && t1 < 1.0f && t2 >= 0.0f && t2 < 1.0f) {
+            gs.setBlockCollision(true);
+            if (handler.player.get(0).points()[0].x > tileBounds[2].x
+                    && handler.player.get(0).points()[0].x < tileBounds[1].x && s_vs_b == true) {
+                ipx = 0;
+                ipy = s1PointB.y - (s1PointB.y + (t1 * (s1PointB.y - s1PointA.y)));
+            }
+
+            if (handler.player.get(0).points()[0].x > tileBounds[3].x
+                    && handler.player.get(0).points()[0].x < tileBounds[2].x && s_vs_b == true) {
                 ipx = s1PointB.x - (s1PointB.x + (t1 * (s1PointB.x - s1PointA.x)));
-                ipy = s1PointB.y - (s1PointB.y + (t1 * (s1PointB.y - s1PointA.y)));              
-            } else {
-                ipx = s1PointB.x - (s1PointB.x + (t1 * (s1PointA.x - s1PointB.x)));
-                ipy = s1PointB.y - (s1PointB.y + (t1 * (s1PointA.y - s1PointB.y)));           
-            }                      
+                ipy = 0;
+            }
+
+            if (handler.player.get(0).points()[0].x > tileBounds[1].x
+                    && handler.player.get(0).points()[0].x < tileBounds[0].x && s_vs_b == true) {
+                ipx = s1PointB.x - (s1PointB.x + (t1 * (s1PointB.x - s1PointA.x)));
+                ipy = 0;
+            }
+            if (s_vs_b == false) {
+                ipx = s1PointB.x - (s1PointB.x - (t1 * (s1PointB.x - s1PointA.x)));
+                ipy = s1PointB.y - (s1PointB.y - (t1 * (s1PointB.y - s1PointA.y)));
+            }
         }
+        //System.out.println(ipx + " " + ipy);
     }
 
     private Path2D tile() {
@@ -137,14 +151,6 @@ public class CollisionBlock extends GameObject {
     
     public Point2D.Float deltaPoints() {
         return p;
-    }
-    
-    public void setCollision(boolean collisionState) {
-        this.isColliding = collisionState;
-    }
-
-    public boolean getCollision() {
-        return isColliding;
     }
 
     public String type() {

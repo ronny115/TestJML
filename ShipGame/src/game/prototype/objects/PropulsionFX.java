@@ -11,13 +11,13 @@ import game.prototype.framework.Animation;
 import game.prototype.framework.GameObject;
 import game.prototype.framework.Helper;
 import game.prototype.framework.ObjectId;
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
 
 public class PropulsionFX extends GameObject {
     
     private Handler handler;
-    private States states;
+    private GameStates gs;
     private TextureManager tex = Game.getTexInstance();
     private Animation propulsion;
     private AffineTransform at;
@@ -27,12 +27,12 @@ public class PropulsionFX extends GameObject {
     private int blinkingTime;
     
     public PropulsionFX(float x, float y, float w, float h, Handler handler,
-                        States states, ObjectId id) 
+                        GameStates gs, ObjectId id) 
     {
         super(x, y, w, h, id);
         this.setRenderPriority(2);
         this.handler = handler;
-        this.states = states;
+        this.gs = gs;
         firstTime = System.currentTimeMillis();
         propulsion = new Animation(tex.propulsion);     
     }
@@ -54,7 +54,7 @@ public class PropulsionFX extends GameObject {
     }
 
     public void render(Graphics2D g2) {
-        if(states.getPropulsionState() && states.getHealth() > 0) {
+        if(gs.getPropulsionState() && gs.getHealth() > 0) {
             if(blinking || blinkingTime > 10) {
             propulsion.drawAnimation(g2, at);
             }

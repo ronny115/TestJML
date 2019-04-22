@@ -1,0 +1,6 @@
+Red (255,0,0) -- Collision Block
+White (255,255,255) -- Block
+Green(0,255,0) -- Mines
+Yellow(255,255,0) -- GhostEnemy
+Blue(0,0,255) -- Player pos
+Cian(0,255,255)-- Shield

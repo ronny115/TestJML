@@ -9,6 +9,7 @@ public enum ObjectId {
     Ghost(), 
     Projectile(),
     Propulsion(),
-    Shield();
+    Shield(),
+    HealthKit();
 
 }

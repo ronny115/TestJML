@@ -24,15 +24,16 @@ public class Handler {
     }
 
     public void render(Graphics2D g2) {
-        if (player.size() > 0) {
-            tempPlayer = player.get(0);
-            tempPlayer.renderPlayer(g2);
-        }
         for (int i = 0; i < object.size(); i++) {
             tempObject = object.get(i);
             if (tempObject.getRenderPriority() == 1) {
                 tempObject.render(g2);
             }
+        }
+        
+        if (player.size() > 0) {
+            tempPlayer = player.get(0);
+            tempPlayer.renderPlayer(g2);
         }
         
         for (int i = 0; i < object.size(); i++) {

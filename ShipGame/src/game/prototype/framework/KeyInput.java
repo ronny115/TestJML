@@ -13,20 +13,19 @@ public class KeyInput extends KeyAdapter {
 
     private Handler handler;
     private Menu menu;
-    private States st;
+    private GameStates gs;
     private Movement move;
     private Shoot s;
 
-    public KeyInput(Handler h, Menu menu, Movement m, States s, Shoot sh) {
+    public KeyInput(Handler h, Menu menu, Movement m, GameStates gs, Shoot s) {
         this.handler = h;
         this.menu = menu;
         this.move = m;
-        this.st = s;
-        this.s = sh;
+        this.gs = gs;
+        this.s = s;
     }
 
     public void keyPressed(KeyEvent e) {
-
         if (e.getKeyCode() == KeyEvent.VK_F1) {
             menu.setF1Key(!menu.getF1Key());
         }
@@ -34,8 +33,8 @@ public class KeyInput extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             move.setUpKey(true);
             menu.setUpKey(true);
-            if (!Game.Paused) {
-                st.setPropulsionState(true);
+            if (!gs.getGamePaused()) {
+                gs.setPropulsionState(true);
             }
         }
         
@@ -56,7 +55,7 @@ public class KeyInput extends KeyAdapter {
         
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             if (handler.player.size() > 0) {
-                Game.Paused = !Game.Paused;
+                gs.setGamePaused(!gs.getGamePaused());
             }
         }
         
@@ -69,13 +68,12 @@ public class KeyInput extends KeyAdapter {
         }
     }
 
-    public void keyReleased(KeyEvent e) {
-        
+    public void keyReleased(KeyEvent e) {      
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             move.setUpKey(false);
             menu.setUpKey(false);
             if (Game.GameOn) {
-                st.setPropulsionState(false);
+                gs.setPropulsionState(false);
             }
         }
         
@@ -101,6 +99,5 @@ public class KeyInput extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             menu.setEnterKey(false);
         }
-
     }
 }

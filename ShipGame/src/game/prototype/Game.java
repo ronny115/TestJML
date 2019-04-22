@@ -11,41 +11,41 @@ import java.awt.image.BufferedImage;
 import game.prototype.framework.KeyInput;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
+import game.prototype.objects.HealthKit;
 import game.prototype.objects.PlayerShip;
-import game.prototype.objects.Shield;
 
 public class Game extends Canvas implements Runnable {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-
-    private Thread thread;
+    
     public static int WIDTH = 1280, HEIGHT = WIDTH / 16 * 9;
     private boolean isRunning, gameInit;
     private int fps, tickRate;
-    
+    private float size;
+    private Point2D.Float camPos = new Point2D.Float();
+    private Point2D.Float iPlayerPos = new Point2D.Float();
+    private Point2D.Float lPlayerPos = new Point2D.Float();
+
+    private Thread thread; 
     private Handler handler;
     private Camera cam;
     private KeyInput kI;
     private Movement move;
     private Shoot shoot;
     private HUD hud;
-    private States st;
+    private GameStates gs;
     private Menu menu;
     private ResourceLoader loader;
     private DynamicLoading dLoader;
     private FileManagement save;
     private static TextureManager tex;
       
-    private float size;
-    private Point2D.Float camPos = new Point2D.Float();
-    private Point2D.Float iPlayerPos = new Point2D.Float();
-    private Point2D.Float lPlayerPos = new Point2D.Float();
     //Game states
-    public static boolean Paused, Reseted, Continued, Exited, GameOver, GameOn;
+    public static boolean Reseted, Continued, Exited, GameOver, GameOn;
 
     private void init() {
         this.setFocusable(true);
@@ -53,14 +53,13 @@ public class Game extends Canvas implements Runnable {
 
         loader = new ResourceLoader();
         handler = new Handler();
-        st = new States();
-        tex = new TextureManager();
-        
-        save = new FileManagement(st);
-        menu = new Menu(st, save);
-        shoot = new Shoot(handler, st);
-        move = new Movement(handler, menu);
-        kI = new KeyInput(handler, menu, move, st, shoot);
+        gs = new GameStates();
+        tex = new TextureManager();        
+        save = new FileManagement(gs);
+        menu = new Menu(gs, save);
+        shoot = new Shoot(handler, gs);
+        move = new Movement(handler, menu, gs);
+        kI = new KeyInput(handler, menu, move, gs, shoot);
         this.addKeyListener(kI);
         
         menu.setFont(loader.loadFont("/PressStart2P.ttf")); 
@@ -69,33 +68,28 @@ public class Game extends Canvas implements Runnable {
     }
     
     private void gameInit() {  
-        System.out.println("gameInit");
-        
-        move.setSpeed(4.5f, 0.15f);
-        
+        System.out.println("gameInit");        
+        move.setSpeed(4.5f, 0.15f);       
         handler.object.clear();
         
-        st.levelObjCoords().clear();
-        st.levelRGB().clear();              
-        st.setHealth(100);
-        st.setShieldHealth(100);
-        st.setPoints(0);
-        st.setLife(3);
-        st.setShieldState(false);
+        gs.levelObjCoords().clear();
+        gs.levelRGB().clear();              
+        gs.setHealth(100);
+        gs.setShieldHealth(100);
+        gs.setPoints(0);
+        gs.setLife(3);
+        gs.setShieldState(false);
         
-        hud = new HUD(st);
+        hud = new HUD(gs);
         hud.setFont(loader.loadFont("/PressStart2P.ttf"));        
         loadData(loader.loadImage("/lvl_full.png"), 50);    
-        dLoader = new DynamicLoading(handler, st);
-        cam = new Camera(iPlayerPos.x - WIDTH / 2, iPlayerPos.y - HEIGHT / 2);
-                    
-        handler.addObject(new Shield(iPlayerPos.x-40, iPlayerPos.y-40, 60, 60,
-                                     handler, st, ObjectId.Shield));
+        dLoader = new DynamicLoading(handler, gs);
+        cam = new Camera(iPlayerPos.x - WIDTH / 2, iPlayerPos.y - HEIGHT / 2);   
+        
+        handler.addObject(new HealthKit(iPlayerPos.x - 40, iPlayerPos.y - 40, 30, 40, handler, gs, ObjectId.HealthKit));
+        
         handler.addPlayer(new PlayerShip(iPlayerPos.x, iPlayerPos.y, 35, 45, 
-                                         handler, st, PlayerId.PlayerShip)); 
-        
-        save.save(1);
-        
+                                         handler, gs, PlayerId.PlayerShip));        
         gameInit = !gameInit;
     }
     public synchronized void start() {
@@ -160,11 +154,11 @@ public class Game extends Canvas implements Runnable {
             g2.translate(cam.getX(), cam.getY());
             hud.render(g2);     
             //In-game Menus
-            if(Paused) {
+            if(gs.getGamePaused()) {
                 menu.pauseRender(g2);
-            } else if(GameOver && st.getLife() > 0) {
+            } else if(GameOver && gs.getLife() > 0) {
                 menu.continueRender(g2);
-            } else if(GameOver && st.getLife() == 0) {
+            } else if(GameOver && gs.getLife() == 0) {
                 menu.gameOverRender(g2);
             }
         }
@@ -187,11 +181,11 @@ public class Game extends Canvas implements Runnable {
             if (Exited)
                 clear(); 
         } else {            
-            if (!Paused) {
+            if (!gs.getGamePaused()) {
                 handler.update();
                 move.update();
                 shoot.shooting();
-                st.update();
+                gs.update();
                 if (handler.player.size() > 0) {
                     lPlayerPos.x = handler.player.get(0).getX();
                     lPlayerPos.y = handler.player.get(0).getY();
@@ -235,7 +229,7 @@ public class Game extends Canvas implements Runnable {
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
                 int[] rgb = { red, green, blue };
-                st.levelRGB().add(rgb);
+                gs.levelRGB().add(rgb);
 
                 if ((xx % 2) != 0) {
                     // Coords., load state, life state
@@ -243,14 +237,14 @@ public class Game extends Canvas implements Runnable {
                                            (yy * scale.y * 2) + scale.y, 
                                            0, 0} ;
 
-                    st.levelObjCoords().add(pixelCoords);
+                    gs.levelObjCoords().add(pixelCoords);
                 } else {
                     // Coords., load state, life state
                     float[] pixelCoords = { xx * scale.x, 
                                            (yy * scale.y * 2), 
                                            0, 0 };
 
-                    st.levelObjCoords().add(pixelCoords);
+                    gs.levelObjCoords().add(pixelCoords);
                 }
                 // Player location coords.
                 if (red == 0 && green == 0 && blue == 255) {
@@ -259,21 +253,21 @@ public class Game extends Canvas implements Runnable {
                 }
             }
         }
-        st.setLevel(st.levelRGB(), st.levelObjCoords());
+        gs.setLevel(gs.levelRGB(), gs.levelObjCoords());
     }
     
     private void clear() {
         System.out.println("clear");
         handler.object.clear();
         handler.player.clear();
-        st.levelObjCoords().clear();
-        st.levelRGB().clear();
+        gs.levelObjCoords().clear();
+        gs.levelRGB().clear();
         hud = null;
         cam = null;
         mainMenuBackground();
         gameInit = !gameInit;
         if(Exited) Exited =! Exited;
-        if(Paused) Paused = !Paused;
+        if(gs.getGamePaused()) gs.setGamePaused(!gs.getGamePaused());
         if(GameOver) GameOver = !GameOver;
         if(Reseted) Reseted = !Reseted;
         System.gc();      
@@ -282,10 +276,10 @@ public class Game extends Canvas implements Runnable {
     private void cont() {
         System.out.println("continue");
         handler.player.clear();
-        st.setHealth(100);
-        st.setLife(st.getLife() - 1); 
+        gs.setHealth(100);
+        gs.setLife(gs.getLife() - 1); 
         handler.addPlayer(new PlayerShip(lPlayerPos.x, lPlayerPos.y, 35, 45, 
-                                         handler, st, PlayerId.PlayerShip));
+                                         handler, gs, PlayerId.PlayerShip));
         cam.setX(lPlayerPos.x - WIDTH / 2);
         cam.setY(lPlayerPos.y - HEIGHT / 2);
         Continued = !Continued;        
@@ -295,7 +289,7 @@ public class Game extends Canvas implements Runnable {
     private void mainMenuBackground() {
         camPos.x = camPos.y = 0;
         loadData(loader.loadImage("/menubg.png"), 50);
-        dLoader = new DynamicLoading(handler, st);
+        dLoader = new DynamicLoading(handler, gs);
     }
     
     public static TextureManager getTexInstance() {

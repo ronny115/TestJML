@@ -6,16 +6,19 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
+import game.prototype.framework.TextureManager;
 
 public class HUD {
 
-    private States states;
+    private GameStates gs;
     private Font font;
-    private Point2D.Float hBarPos = new Point2D.Float(1025, 660);
+    private TextureManager tex = Game.getTexInstance();
+    private Point2D.Float hBarPos;
     
-    public HUD(States s) {
-        this.states = s;
+    public HUD(GameStates gs) {
+        this.gs = gs;
+        hBarPos = new Point2D.Float(Game.WIDTH-(Game.WIDTH-20), Game.HEIGHT - 50);
     }
     
     public void update() {
@@ -23,15 +26,24 @@ public class HUD {
     }
 
     public void render(Graphics2D g2) {
-        // Health Bar
         g2.setColor(Color.BLACK);
         g2.setFont(font.deriveFont(15f));
-        g2.drawString("Score:" + states.getPoints(), 10, 25);
-        g2.drawString("Lifes:" + states.getLife(), Game.WIDTH/2, 25);
-        if(states.getShieldState()) 
+        if (gs.getPoints() == 0) {
+            g2.drawString("Score:0000", 
+                          Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));
+        } else if (gs.getPoints() < 1000) {
+            g2.drawString("Score:0" + gs.getPoints(), 
+                          Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));
+        } else {
+            g2.drawString("Score:" + gs.getPoints(), 
+                          Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));
+        }
+        g2.drawImage(tex.player, Game.WIDTH - 70, Game.HEIGHT - (Game.HEIGHT - 10), 19, 25, null);
+        g2.drawString("x" + gs.getLife(), Game.WIDTH - 50, Game.HEIGHT - (Game.HEIGHT - 30));
+        if (gs.getShieldState())
             healthBar(g2, hBarPos);
         else
-            healthBar(g2, hBarPos);        
+            healthBar(g2, hBarPos);
     }
 
     public void setFont(Font font) {
@@ -45,16 +57,16 @@ public class HUD {
         float w1 = 15, h1 = 15;
         Rectangle2D healthbox = new Rectangle2D.Float(position.x, position.y, w, h);
         g2.draw(healthbox);
-        for (int i = 0; i < (states.getHealth() / 10); i++) {
+        for (int i = 0; i < (gs.getHealth() / 10); i++) {
             Rectangle2D healthbar = new Rectangle2D.Float(position.x + 5 + (i * 20), 
                                                           position.y + 5, w1, h1);
             g2.draw(healthbar);
           
         }
-        for (int i = 0; i < (states.getShieldHealth() / 10); i++) {
+        for (int i = 0; i < (gs.getShieldHealth() / 10); i++) {
             Rectangle2D shieldbar = new Rectangle2D.Float(position.x + 5 + (i * 20), 
                                                           position.y + 5, w1, h1);
-            if (states.getShieldState()) {
+            if (gs.getShieldState()) {
                 g2.fill(shieldbar);
             }
         }

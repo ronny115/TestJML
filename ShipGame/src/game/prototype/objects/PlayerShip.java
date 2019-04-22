@@ -14,13 +14,13 @@ import game.prototype.framework.Helper;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
 import game.prototype.framework.PlayerObject;
-import game.prototype.framework.States;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
 
 public class PlayerShip extends PlayerObject {
 
     private Handler handler;
-    private States states;
+    private GameStates gs;
     private TextureManager tex = Game.getTexInstance();
     private Animation exp, alert;
     private AffineTransform at;
@@ -31,33 +31,33 @@ public class PlayerShip extends PlayerObject {
     private int blinkingTime;
     
     public PlayerShip(float x, float y, float w, float h, Handler hand, 
-                      States s, PlayerId id)
+                      GameStates gs, PlayerId id)
     {
         super(x, y, w, h, id);
         this.handler = hand;
-        this.states = s;
+        this.gs = gs;
         shipBounds();
         firstTime = System.currentTimeMillis();
         exp = new Animation(tex.playerExplosion);
         alert = new Animation(tex.alert);
         handler.addObject(new PropulsionFX(sPoints[3].x, sPoints[3].y, 15, 20,
-                                           handler, states, ObjectId.Propulsion));
+                                           handler, gs, ObjectId.Propulsion));
     }
 
     public void updatePlayer(LinkedList<PlayerObject> object) {
-        if(states.getHealth() > 35 && states.getHealth() <= 45 ) {
+        if(gs.getHealth() > 35 && gs.getHealth() <= 45 ) {
             alert.runAnimation(5);           
         } 
-        else if(states.getHealth() > 25 && states.getHealth() <= 35 ) {
+        else if(gs.getHealth() > 25 && gs.getHealth() <= 35 ) {
             alert.runAnimation(4);
         } 
-        else if(states.getHealth() > 10 && states.getHealth() <= 25 ) {
+        else if(gs.getHealth() > 10 && gs.getHealth() <= 25 ) {
             alert.runAnimation(2);
         }
-        else if(states.getHealth() > 0 && states.getHealth() <= 10 ) {
+        else if(gs.getHealth() > 0 && gs.getHealth() <= 10 ) {
             alert.runAnimation(1);
         }
-        else if(states.getHealth() == 0) {
+        else if(gs.getHealth() == 0) {
             velX = velY = 0;
             exp.runAnimationOnce(8);
         } 
@@ -78,10 +78,10 @@ public class PlayerShip extends PlayerObject {
     }
 
     public void renderPlayer(Graphics2D g2) {       
-        if (states.getHealth() == 0 && !exp.isDone) {
+        if (gs.getHealth() == 0 && !exp.isDone) {
             exp.drawAnimation(g2, (int)(x -w), (int)(y-h), (int)(w*2+(h-w)), (int)h*2);
             
-        } else if(states.getHealth() > 45) {                     
+        } else if(gs.getHealth() > 45) {                     
             if(blinking) {
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
                                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -89,7 +89,7 @@ public class PlayerShip extends PlayerObject {
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
                                     RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             }
-        } else if(states.getHealth() <= 45) {
+        } else if(gs.getHealth() <= 45) {
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
                     RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.drawImage(tex.player, at, null);
@@ -114,21 +114,22 @@ public class PlayerShip extends PlayerObject {
         for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
             if (tempObject.getId() == ObjectId.CollisionBlock) {
-                if (tempObject.getCollision() == true) {
-                    states.setHealth(-1);
+                if (gs.getBlockCollision()) {
+                    //gs.setHealth(-1);
                     playerVsTileCollision(tempObject.deltaPoints());
-                    tempObject.setCollision(false);
+                    
+
                 }
             }
             if (tempObject.getId() == ObjectId.ExplosiveMine) {
-                if (tempObject.getCollision() == true) {          
-                    if (states.getShieldState()) {
-                        states.setShieldHealth(-50);
-                        states.setShieldHit(true);
+                if (gs.getMineCollision()) {          
+                    if (gs.getShieldState()) {
+                        gs.setShieldHealth(-50);
+                        gs.setShieldHit(true);                    
                     } else {
-                        states.setHealth(-10);
+                        gs.setHealth(-10);
                     }
-                    
+                    gs.setMineCollision(false);
                 }
             }
             if (tempObject.getId() == ObjectId.Projectile && 
@@ -142,11 +143,11 @@ public class PlayerShip extends PlayerObject {
                     bullet = new Point2D.Float(tempObject.getX()
                                               - tempObject.getW(), tempObject.getY());
                 if (Helper.inside(bullet, points()) == true) {
-                    if (states.getShieldState()) {
-                        states.setShieldHealth(-5);
-                        states.setShieldHit(true);
+                    if (gs.getShieldState()) {
+                        gs.setShieldHealth(-5);
+                        gs.setShieldHit(true);
                     } else {
-                        states.setHealth(-5);
+                        gs.setHealth(-5);
                     }
                     handler.removeObject(tempObject);
                 }
@@ -158,7 +159,8 @@ public class PlayerShip extends PlayerObject {
         for (int i = 0; i < sPoints.length; i++) {
             sPoints[i].x += p.x;
             sPoints[i].y += p.y;
-        }       
+        }    
+        
     }
 
     private void shipMovement() {
@@ -171,6 +173,7 @@ public class PlayerShip extends PlayerObject {
         // Update object ship position
         x = sPoints[0].x;
         y = sPoints[0].y;
+        gs.setBlockCollision(false);
     }
     
     private void shipBounds() {

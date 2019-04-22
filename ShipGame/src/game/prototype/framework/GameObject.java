@@ -21,17 +21,12 @@ public abstract class GameObject {
         this.id = id;
     }
     public abstract void update(LinkedList<GameObject> object);
+    
     public abstract void render(Graphics2D g2);
     
     public abstract Point2D.Float deltaPoints();
-    public abstract String type();
     
-    public boolean getCollision() {
-        return collision;
-    }
-    public void setCollision(boolean collision) {
-        this.collision = collision;
-    }
+    public abstract String type();
     
     public void setState(boolean state) {
         this.state = state;
