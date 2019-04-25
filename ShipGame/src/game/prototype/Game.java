@@ -9,11 +9,9 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import game.prototype.framework.KeyInput;
-import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
 import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
-import game.prototype.objects.HealthKit;
 import game.prototype.objects.PlayerShip;
 
 public class Game extends Canvas implements Runnable {
