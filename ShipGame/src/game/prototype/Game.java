@@ -86,8 +86,6 @@ public class Game extends Canvas implements Runnable {
         dLoader = new DynamicLoading(handler, gs);
         cam = new Camera(iPlayerPos.x - WIDTH / 2, iPlayerPos.y - HEIGHT / 2);   
         
-        handler.addObject(new HealthKit(iPlayerPos.x - 40, iPlayerPos.y - 40, 30, 40, handler, gs, ObjectId.HealthKit));
-        
         handler.addPlayer(new PlayerShip(iPlayerPos.x, iPlayerPos.y, 35, 45, 
                                          handler, gs, PlayerId.PlayerShip));        
         gameInit = !gameInit;

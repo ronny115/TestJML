@@ -31,6 +31,9 @@ public class HUD {
         if (gs.getPoints() == 0) {
             g2.drawString("Score:0000", 
                           Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));
+        } else if(gs.getPoints() < 100) {
+            g2.drawString("Score:00" + gs.getPoints(), 
+                          Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));       
         } else if (gs.getPoints() < 1000) {
             g2.drawString("Score:0" + gs.getPoints(), 
                           Game.WIDTH - (Game.WIDTH - 20), Game.HEIGHT - (Game.HEIGHT - 30));

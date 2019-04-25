@@ -66,6 +66,9 @@ public class Shield extends GameObject {
             for (int i = 1; i < handler.player.get(0).points().length; i++) {
                 if (shieldItem().contains(handler.player.get(0).points()[i]) && !isGrab) {
                     if (gs.getShieldState()) {
+                        if(gs.getShieldHealth() == 100) {
+                            gs.setPoints(gs.getPoints() + 50);
+                        }
                         gs.setShieldHealth(100);
                         handler.removeObject(this);
                     }

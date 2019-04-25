@@ -23,7 +23,8 @@ public class HealthKit extends GameObject{
     private AffineTransform at;
     private boolean isGrab;
 
-    public HealthKit(float x, float y, float w, float h, Handler handler, GameStates gs, ObjectId id) {
+    public HealthKit(float x, float y, float w, float h, Handler handler, 
+                    GameStates gs, ObjectId id) {
         super(x, y, w, h, id);
         this.setRenderPriority(3);
         this.handler = handler;
@@ -47,18 +48,19 @@ public class HealthKit extends GameObject{
         if (isGrab) {
             healthAni.drawAnimation(g2, at);
         } else if (!isGrab) {
-            g2.drawImage(tex.healthItem, (int)x, (int)y, (int)w, (int)h, null);
+            g2.drawImage(tex.healthItem, (int)healthItem().getMinX(), 
+                        (int)healthItem().getMinY()-6, (int)w, (int)h, null);
         }
     }
     
-    private void itemGrab() {
+    private void itemGrab() {       
         if (handler.player.size() > 0) {
             for (int i = 1; i < handler.player.get(0).points().length; i++) {
-                if (healthItem().contains(handler.player.get(0).points()[i]) && !isGrab) {
+                if (healthItem().contains(handler.player.get(0).points()[i])) {
                     isGrab = true;
                     gs.setObjState(this.x, this.y);
                     if (gs.getHealth() == 100) 
-                        gs.setPoints(50);
+                        gs.setPoints(gs.getPoints() + 50);
                 }
             }
         }
@@ -72,7 +74,7 @@ public class HealthKit extends GameObject{
             return new Rectangle2D.Float(handler.player.get(0).points()[0].x - 2,
                                          handler.player.get(0).points()[0].y - 2, 4, 4);
         else
-            return new Rectangle2D.Float(x , y+6, 31, 31);
+            return new Rectangle2D.Float(x - w, (y - h / 2)-5, 31, 31);
     }
 
     public Float deltaPoints() {

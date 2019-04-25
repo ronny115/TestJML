@@ -10,6 +10,7 @@ import game.prototype.objects.CollisionBlock;
 import game.prototype.objects.ExplosiveMine;
 import game.prototype.objects.Ghost;
 import game.prototype.objects.Shield;
+import game.prototype.objects.HealthKit;
 
 public class DynamicLoading {
     
@@ -77,6 +78,15 @@ public class DynamicLoading {
                     handler.addObject(new Shield(gs.levelObjCoords().get(i)[0], 
                                                  gs.levelObjCoords().get(i)[1], 
                                                  60, 60, handler, gs, ObjectId.Shield));
+                }
+                if (gs.levelRGB().get(i)[0] == 255 && 
+                    gs.levelRGB().get(i)[1] == 0 && 
+                    gs.levelRGB().get(i)[2] == 255 && 
+                    gs.levelObjCoords().get(i)[2] == 0 && gs.levelObjCoords().get(i)[3] == 0) 
+                {
+                    handler.addObject(new HealthKit(gs.levelObjCoords().get(i)[0], 
+                                                    gs.levelObjCoords().get(i)[1], 
+                                                    30, 40, handler, gs, ObjectId.HealthKit));
                 }
                 
                 gs.levelObjCoords().get(i)[2] = 1;

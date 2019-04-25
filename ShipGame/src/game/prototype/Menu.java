@@ -460,7 +460,7 @@ public class Menu {
         g2.setFont(new Font("Arial", Font.PLAIN, 10));
         g2.drawString("Fps: " + String.valueOf(fps), x, y);
         g2.drawString("Ticks: " + String.valueOf(tickrate), x, y + 10);
-        g2.drawString("Nº obj: " + String.valueOf(objSize), x, y + 20);
+        g2.drawString("NÂº obj: " + String.valueOf(objSize), x, y + 20);
         g2.drawString("X: " + String.valueOf(posX), x, y + 30);
         g2.drawString("Y: " + String.valueOf(posY), x, y + 40);
         g2.drawString("Velocity: " + String.valueOf(velY), x, y + 50);
