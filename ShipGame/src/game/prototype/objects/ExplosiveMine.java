@@ -21,7 +21,7 @@ public class ExplosiveMine extends GameObject {
     private GameStates gs;
     private TextureManager tex = Game.getTexInstance();
     private Animation explosion;
-    private boolean isHit, runOnce;
+    private boolean isHit;
     private int player1;
 
     public ExplosiveMine(float x, float y, float w, float h, Handler handler, 
@@ -35,34 +35,28 @@ public class ExplosiveMine extends GameObject {
 
     public void update(LinkedList<GameObject> object) {
         player1 = handler.player.size();
-        if (isHit) {
-            explosion.runAnimationOnce(3);
-        }
-        if (explosion.isDone) {
-            isHit = false;
-
-        }
-        if (explosion.hasStarted) {
-            gs.setMineCollision(false);
-        }
         projectileCollision();
-        if (player1 > 0) {
+        if (player1 > 0) 
             playerCollision();
+        if (isHit) 
+            explosion.runAnimationOnce(3);
+        if (explosion.isDone) {
+            gs.setObjState(this.x, this.y);
+            handler.removeObject(this);
         }
-
     }
 
     public void render(Graphics2D g2) {
-        if (isHit == true)
-            explosion.drawAnimation(g2, (int) x - 10, (int) y - 10, 
+        if (isHit)
+            explosion.drawAnimation(g2, (int) (x - w/2) - 10, (int) (y - h/2) - 10, 
                                     (int) w + 20, (int) h + 20);
         else
-            g2.drawImage(tex.explosiveMine[0], (int) x, (int) y, 
+            g2.drawImage(tex.mine, (int) (x - w/2), (int) (y- h/2), 
                          (int) w, (int) h, null);
     }
 
     public Rectangle2D bounds() {
-        return new Rectangle2D.Float(x, y, w, h);
+        return new Rectangle2D.Float(x - w/2, y - h/2, w, h);
     }
 
     private void projectileCollision() {
@@ -71,18 +65,12 @@ public class ExplosiveMine extends GameObject {
             if (tempObject.getId() == ObjectId.Projectile) {
                 Point2D.Float bullet = new Point2D.Float(tempObject.getX(),
                                                         tempObject.getY());
-                if (bounds().contains(bullet) == true && isHit == false && 
-                    tempObject.type() == "player") 
-                {
+                if (bounds().contains(bullet) && !isHit && 
+                    tempObject.type() == "player") {
                     isHit = true;
                     gs.setPoints(gs.getPoints() + 100);
                     handler.removeObject(tempObject);
                 }
-            }
-            if (explosion.isDone == true && isHit == false) {
-                gs.setObjState(this.x, this.y);
-                handler.removeObject(this);
-                explosion.isDone = false;
             }
         }
     }
@@ -90,12 +78,16 @@ public class ExplosiveMine extends GameObject {
     private void playerCollision() {
         PlayerObject player = handler.player.get(0);
         for (int i = 0; i < player.points().length; i++) {
-            if (bounds().contains(player.points()[i]) && 
-                    runOnce == false) 
+            if (bounds().contains(player.points()[i])) 
             {
-                runOnce = true;
                 isHit = true;
-                gs.setMineCollision(true);
+                if (gs.getShieldState() && !explosion.hasStarted) {
+                    gs.setShieldHealth(-50);
+                    gs.setShieldHit(true);
+                } else if (!explosion.hasStarted) {
+                    gs.setHealth(-10);
+                    gs.setPlayerHit(true);
+                }
             }
         }
     }

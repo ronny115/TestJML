@@ -10,6 +10,9 @@ public enum ObjectId {
     Projectile(),
     Propulsion(),
     Shield(),
-    HealthKit();
+    HealthKit(),
+    LaserUp(),
+    Chain(),
+    Missile();
 
 }

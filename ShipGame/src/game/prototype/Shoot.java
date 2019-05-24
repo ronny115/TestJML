@@ -17,13 +17,63 @@ public class Shoot {
     }
     
     public void shooting() {
-        if (spaceKey && gs.getHealth() > 0) {
-            handler.addObject(new Projectile(handler.player.get(0).points()[1].x, 
-                                             handler.player.get(0).points()[1].y, 
-                                             5, 20, 20, "player",
-                                             Helper.getAngle(handler.player.get(0).points()), 
-                                             ObjectId.Projectile));
-            spaceKey = !spaceKey;
+        if (gs.getShootMode() == 0) {
+            if (spaceKey && gs.getHealth() > 0) {
+                handler.addObject(new Projectile(handler.player.get(0).points()[1].x, 
+                                                 handler.player.get(0).points()[1].y, 
+                                                 5, 20, 20, "player", gs,
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)), 
+                                                 ObjectId.Projectile));
+                spaceKey = !spaceKey;
+            }
+        } else if (gs.getShootMode() == 1) {
+            if (spaceKey && gs.getHealth() > 0) {
+                handler.addObject(new Projectile(handler.player.get(0).points()[2].x, 
+                                                 handler.player.get(0).points()[2].y, 
+                                                 5, 20, 20, "player", gs, 
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)),
+                                                 ObjectId.Projectile));
+
+                handler.addObject(new Projectile(handler.player.get(0).points()[4].x, 
+                                                 handler.player.get(0).points()[4].y, 
+                                                 5, 20, 20, "player", gs, 
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)),
+                                                 ObjectId.Projectile));
+                spaceKey = !spaceKey;
+            }
+        } else if (gs.getShootMode() == 2) {
+            if (spaceKey && gs.getHealth() > 0) {
+                handler.addObject(new Projectile(handler.player.get(0).points()[1].x, 
+                                                 handler.player.get(0).points()[1].y, 
+                                                 5, 20, 20, "player", gs,
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)), 
+                                                 ObjectId.Projectile));
+                                                 
+                handler.addObject(new Projectile(handler.player.get(0).points()[2].x, 
+                                                 handler.player.get(0).points()[2].y, 
+                                                 5, 20, 20, "player", gs, 
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)),
+                                                 ObjectId.Projectile));
+
+                handler.addObject(new Projectile(handler.player.get(0).points()[4].x, 
+                                                 handler.player.get(0).points()[4].y, 
+                                                 5, 20, 20, "player", gs, 
+                                                 (float)(Helper.angle(handler.player.get(0).points()[0],
+                                                                      handler.player.get(0).points()[1]) 
+                                                 + Math.toRadians(90)),
+                                                 ObjectId.Projectile));
+                spaceKey = !spaceKey;
+            }
         }
     }
     

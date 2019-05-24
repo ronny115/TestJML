@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 public class GameStates {
 
-    private int health, shield_health, points, life;
-    private boolean shield_state, hit_state, prop_state, blockCollision, mineCollision;
+    private int health, shield_health, points, life, shootMode;
+    private float angle;
+    private boolean shield_state, shield_hit, prop_state, blockCollision, shield_pickup,
+                    player_hit;
     private boolean gamePaused, gameReseted, gameContinued, 
                     gameExited, gameGameOver, gameGameOn;
     private Point2D.Float objectCoords = new Point2D.Float();
@@ -66,7 +68,11 @@ public class GameStates {
     }
 
     public void setShieldHit(boolean state) {
-        this.hit_state = state;
+        this.shield_hit = state;
+    }
+
+    public void setShieldPickUp(boolean state) {
+        this.shield_pickup = state;
     }
 
     public void setPropulsionState(boolean state) {
@@ -86,7 +92,7 @@ public class GameStates {
     }
 
     public boolean getShieldHit() {
-        return hit_state;
+        return shield_hit;
     }
 
     public int getHealth() {
@@ -95,6 +101,10 @@ public class GameStates {
 
     public int getShieldHealth() {
         return shield_health;
+    }
+
+    public boolean getShieldPickUp() {
+        return shield_pickup;
     }
 
     public int getPoints() {
@@ -112,14 +122,30 @@ public class GameStates {
     public boolean getBlockCollision() {
         return blockCollision;
     }
-    
-    public void setMineCollision(boolean value) {
-        this.mineCollision = value; 
-     }
-     
-     public boolean getMineCollision() {
-         return mineCollision;
-     }
+
+    public void setShootMode(int n) {
+        this.shootMode = n;
+    }
+
+    public int getShootMode() {
+        return shootMode;
+    }
+
+    public void setAngle(float angle){
+        this.angle = angle;
+    }
+
+    public float getAngle(){
+        return angle;
+    }
+
+    public void setPlayerHit(boolean value){
+        this.player_hit = value;
+    }
+
+    public boolean getPlayerHit(){
+        return player_hit;
+    }
     ////////////////
     // Game States//
     ////////////////

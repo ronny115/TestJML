@@ -8,7 +8,7 @@ public class Animation {
 
     private int frames;
     private int index = 0, count = 0, playCount = 0;
-    public boolean isDone = false, hasStarted = false;
+    public boolean isDone, hasStarted;
     private BufferedImage[] images;
     private BufferedImage currentImg;
 

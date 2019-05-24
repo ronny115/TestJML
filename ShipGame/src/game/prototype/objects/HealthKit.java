@@ -18,7 +18,7 @@ public class HealthKit extends GameObject{
     
     private Handler handler;
     private GameStates gs;
-    private Animation healthAni;
+    private Animation healthUp;
     private TextureManager tex = Game.getTexInstance();
     private AffineTransform at;
     private boolean isGrab;
@@ -29,14 +29,14 @@ public class HealthKit extends GameObject{
         this.setRenderPriority(3);
         this.handler = handler;
         this.gs = gs;
-        healthAni = new Animation(tex.healthUp);
+        healthUp = new Animation(tex.healthUp);
     }
 
     public void update(LinkedList<GameObject> object) {
         if (isGrab) {
             at = AffineTransform.getTranslateInstance(x - (w/2)*1.5, y - (h/2)*1.5);
             at.scale(1.5, 1.5);
-            healthAni.runAnimationOnce(5); 
+            healthUp.runAnimationOnce(5); 
             x = handler.player.get(0).points()[0].x;
             y = handler.player.get(0).points()[0].y;
             gs.setHealth(100);
@@ -45,12 +45,11 @@ public class HealthKit extends GameObject{
     }
 
     public void render(Graphics2D g2) {
-        if (isGrab) {
-            healthAni.drawAnimation(g2, at);
-        } else if (!isGrab) {
+        if (isGrab) 
+            healthUp.drawAnimation(g2, at);
+        else
             g2.drawImage(tex.healthItem, (int)healthItem().getMinX(), 
-                        (int)healthItem().getMinY()-6, (int)w, (int)h, null);
-        }
+                        (int)healthItem().getMinY()-5, (int)w, (int)h, null);
     }
     
     private void itemGrab() {       
@@ -64,9 +63,8 @@ public class HealthKit extends GameObject{
                 }
             }
         }
-        if (healthAni.isDone) {
+        if (healthUp.isDone) 
             handler.removeObject(this);
-        }
     }
     
     private Rectangle2D healthItem() {
@@ -74,7 +72,7 @@ public class HealthKit extends GameObject{
             return new Rectangle2D.Float(handler.player.get(0).points()[0].x - 2,
                                          handler.player.get(0).points()[0].y - 2, 4, 4);
         else
-            return new Rectangle2D.Float(x - w, (y - h / 2)-5, 31, 31);
+            return new Rectangle2D.Float(x - w/2, (y - h / 2)+5, 31, 31);
     }
 
     public Float deltaPoints() {

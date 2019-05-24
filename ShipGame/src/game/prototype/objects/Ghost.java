@@ -46,7 +46,7 @@ public class Ghost extends GameObject {
     public void update(LinkedList<GameObject> object) {
         enemyHP = Helper.clamp(enemyHP, 0, 100);
         if (enemyHP == 0) {
-            if(runOnce == 0) {
+            if (runOnce == 0) {
                 gs.setPoints(gs.getPoints()+250);
                 runOnce = 1;
             }
@@ -60,9 +60,8 @@ public class Ghost extends GameObject {
         } else {
             idle.runAnimation(4);
             randomMovement();
-            if(handler.player.size() > 0) {
-                shootingTimer(); 
-            }
+            if (handler.player.size() > 0)
+                shootingTimer();
         }    
         projectileCollision();
     }
@@ -119,12 +118,12 @@ public class Ghost extends GameObject {
         long currentTime = System.currentTimeMillis();
         final long threshold = 1000;
         if (currentTime - firstTime > threshold) {
-            Point2D.Float[] points = new Point2D.Float[2];
-            points[0] = new Point2D.Float(ex, ey);
-            points[1] = handler.player.get(0).points()[0];
-            handler.addObject(new Projectile(ex, ey, 5, 20, 2, "enemy",
-                                            Helper.getAngle(points), 
-                                            ObjectId.Projectile));
+            handler.addObject(
+                new Projectile(ex, ey, 5, 20, 2, "enemy", gs,
+                              (float)(Helper.angle(new Point2D.Float(ex, ey), 
+                                                   handler.player.get(0).points()[0]) 
+                                                   + Math.toRadians(90)), 
+                              ObjectId.Projectile));
             firstTime = currentTime;
         }
     }
@@ -144,7 +143,7 @@ public class Ghost extends GameObject {
                     handler.removeObject(tempObject);
                 }
             }
-            if (enemyHP == 0 && explosion[4].isDone) {
+            if (explosion[4].isDone) {
                 gs.setObjState(this.x, this.y);
                 handler.removeObject(this);
             }

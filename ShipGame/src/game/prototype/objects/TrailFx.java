@@ -36,7 +36,9 @@ public class TrailFx extends GameObject {
         else
             handler.removeObject(this);
         at = AffineTransform.getTranslateInstance(x, y);
-        at.rotate(Helper.getAngle(handler.player.get(0).points()));
+        at.rotate(Helper.angle(handler.player.get(0).points()[0], 
+                               handler.player.get(0).points()[1]) 
+                               + Math.toRadians(90));
         at.translate(-(w / 2), -(h / 2));
         at.scale((w / tex.player.getWidth()), 
                 (h / tex.player.getHeight()));

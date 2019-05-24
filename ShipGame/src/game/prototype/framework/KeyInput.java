@@ -4,21 +4,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import game.prototype.Game;
-import game.prototype.Handler;
 import game.prototype.Menu;
 import game.prototype.Movement;
 import game.prototype.Shoot;
 
 public class KeyInput extends KeyAdapter {
 
-    private Handler handler;
     private Menu menu;
     private GameStates gs;
     private Movement move;
     private Shoot s;
 
-    public KeyInput(Handler h, Menu menu, Movement m, GameStates gs, Shoot s) {
-        this.handler = h;
+    public KeyInput(Menu menu, Movement m, GameStates gs, Shoot s) {
         this.menu = menu;
         this.move = m;
         this.gs = gs;
@@ -33,7 +30,7 @@ public class KeyInput extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             move.setUpKey(true);
             menu.setUpKey(true);
-            if (!gs.getGamePaused()) {
+            if (Game.GameOn && !gs.getGamePaused()) {
                 gs.setPropulsionState(true);
             }
         }
@@ -54,9 +51,7 @@ public class KeyInput extends KeyAdapter {
         }
         
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            if (handler.player.size() > 0) {
-                gs.setGamePaused(!gs.getGamePaused());
-            }
+            menu.setEscapeKey(true);
         }
         
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -90,6 +85,10 @@ public class KeyInput extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             move.setRightKey(false);
             menu.setRightKey(false);
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            menu.setEscapeKey(false);
         }
         
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {

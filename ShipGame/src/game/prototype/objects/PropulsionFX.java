@@ -42,7 +42,9 @@ public class PropulsionFX extends GameObject {
             handler.object.remove(this);
         } else {
             at = AffineTransform.getTranslateInstance(x, y);
-            at.rotate(Helper.getAngle(handler.player.get(0).points()));
+            at.rotate(Helper.angle(handler.player.get(0).points()[0], 
+                                   handler.player.get(0).points()[1]) 
+                                   + Math.toRadians(90));
             at.translate(-(w / 2), +(h / 5));
             at.scale(w / (tex.propulsion[0].getWidth()), 
                      h / (tex.propulsion[0].getHeight() + 20));

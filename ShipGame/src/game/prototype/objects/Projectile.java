@@ -7,24 +7,27 @@ import java.util.LinkedList;
 
 import game.prototype.Game;
 import game.prototype.framework.GameObject;
+import game.prototype.framework.GameStates;
 import game.prototype.framework.ObjectId;
 import game.prototype.framework.TextureManager;
 
 public class Projectile extends GameObject {
 
     private TextureManager tex = Game.getTexInstance();
+    private GameStates gs;
     private int speed;
     private float angle;
     private String type;
 
     public Projectile(float x, float y, float w, float h, int speed, String type, 
-                      float angle, ObjectId id) 
+                      GameStates gs, float angle, ObjectId id) 
     {
         super(x, y, w, h, id);
         this.setRenderPriority(3);
         this.speed = speed;
         this.angle = angle;
         this.type = type;
+        this.gs = gs;
     }
 
     public void update(LinkedList<GameObject> object) {
@@ -35,10 +38,18 @@ public class Projectile extends GameObject {
     public void render(Graphics2D g2) {
         AffineTransform at = AffineTransform.getTranslateInstance(x, y);
         at.rotate(angle);
-        at.translate(-(w / 2), -(h / 2));
+        at.translate(-(w / 2), -h);
         if (type == "player") {
-            at.scale((w / tex.bullet[0].getWidth()), (h / tex.bullet[0].getHeight()));
-            g2.drawImage(tex.bullet[0], at, null);
+            if (gs.getShootMode() == 0) {
+                at.scale((w / tex.bullet[0].getWidth()), (h / tex.bullet[0].getHeight()));
+                g2.drawImage(tex.bullet[0], at, null);
+            } else if (gs.getShootMode() == 1) {
+                at.scale((w / tex.bullet[2].getWidth()), (h / tex.bullet[2].getHeight()));
+                g2.drawImage(tex.bullet[2], at, null);
+            } else if (gs.getShootMode() == 2) {
+                at.scale((w / tex.bullet[3].getWidth()), (h / tex.bullet[2].getHeight()));
+                g2.drawImage(tex.bullet[3], at, null);
+            }     
         }
         if (type == "enemy") {
             at.scale((w / tex.bullet[1].getWidth()), (h / tex.bullet[1].getHeight()));

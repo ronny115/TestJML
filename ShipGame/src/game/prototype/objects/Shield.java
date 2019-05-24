@@ -20,8 +20,8 @@ public class Shield extends GameObject {
     private Handler handler;
     private GameStates gs;
     private TextureManager tex = Game.getTexInstance();
-    private Animation shieldAni;
-    private AffineTransform at;
+    private Animation shieldHit, shieldUp;
+    private AffineTransform at, at2;
     private boolean isGrab;
 
     public Shield(float x, float y, float w, float h, Handler handler, GameStates gs, ObjectId id) {
@@ -29,36 +29,56 @@ public class Shield extends GameObject {
         this.setRenderPriority(3);
         this.handler = handler;
         this.gs = gs;
-        shieldAni = new Animation(tex.playerShield);
+        shieldHit = new Animation(tex.playerShield);
+        shieldUp = new Animation(tex.shieldUp);
     }
 
     public void update(LinkedList<GameObject> object) {
+        itemGrab();
+
         if (isGrab) {
-            at = AffineTransform.getTranslateInstance(x, y);
-            at.rotate(Helper.getAngle(handler.player.get(0).points()));
-            at.translate(-(w / 2), -(h / 2));
-            at.scale(w / tex.playerShield[0].getWidth(), h / (tex.playerShield[0].getHeight()));
             x = handler.player.get(0).points()[0].x;
             y = handler.player.get(0).points()[0].y;
+            
+            at2 = AffineTransform.getTranslateInstance(x - tex.shieldUp[0].getWidth() / 2 * 1.5, 
+                                                       y - tex.shieldUp[0].getHeight() / 2 * 1.5);
+            at2.scale(1.5, 1.5);
 
-            if (gs.getShieldHit()) {
-                shieldAni.runAnimationOnce(2);
-            }
-            if (gs.getShieldHealth() > 0 && shieldAni.isDone == true) {
+            at = AffineTransform.getTranslateInstance(x, y);
+            at.rotate(Helper.angle(handler.player.get(0).points()[0], 
+                                   handler.player.get(0).points()[1]));
+            at.translate(-(w / 2), -(h / 2));
+            at.scale(w / tex.playerShield[0].getWidth(), h / (tex.playerShield[0].getHeight()));
+
+            
+
+            if (gs.getShieldHit()) 
+                shieldHit.runAnimationOnce(2);
+
+            if (gs.getShieldHealth() > 0 && shieldHit.isDone) {
                 gs.setShieldHit(false);
-                shieldAni.isDone = false;
+                shieldHit.isDone = false;
+            }
+            if(gs.getShieldPickUp()){
+                shieldUp.runAnimationOnce(5);
+            }
+            if (gs.getShieldHealth() > 0 && shieldUp.isDone) {
+                gs.setShieldPickUp(false);
+                shieldUp.isDone = false;
             }
         }
-        itemGrab();
+        
     }
 
     public void render(Graphics2D g2) {
-        if (isGrab && gs.getShieldHit()) {
-            shieldAni.drawAnimation(g2, at);
-        } else if (!isGrab) {
+        if (gs.getShieldPickUp())
+            shieldUp.drawAnimation(g2, at2);
+        if (isGrab && gs.getShieldHit()) 
+            shieldHit.drawAnimation(g2, at);
+        else if (!isGrab) 
             g2.drawImage(tex.shieldItem, (int) shieldItem().getMinX(), (int) shieldItem().getMinY(),
                         (int) shieldItem().getWidth(), (int) shieldItem().getHeight(), null);
-        }
+        
     }
 
     private void itemGrab() {
@@ -66,22 +86,24 @@ public class Shield extends GameObject {
             for (int i = 1; i < handler.player.get(0).points().length; i++) {
                 if (shieldItem().contains(handler.player.get(0).points()[i]) && !isGrab) {
                     if (gs.getShieldState()) {
-                        if(gs.getShieldHealth() == 100) {
+                        if(gs.getShieldHealth() == 100) 
                             gs.setPoints(gs.getPoints() + 50);
-                        }
-                        gs.setShieldHealth(100);
+                        else
+                            gs.setShieldHealth(100);
                         handler.removeObject(this);
+                        
                     }
                     isGrab = true;
+                    gs.setShieldPickUp(true);
                     gs.setShieldState(true);
                     gs.setObjState(this.x, this.y);
                 }
             }
-            if (gs.getShieldHealth() == 0 && shieldAni.isDone == true) {
+
+            if (gs.getShieldHealth() == 0 && shieldHit.isDone == true) {
                 gs.setShieldState(false);
                 gs.setShieldHit(false);
                 gs.setShieldHealth(100);
-                isGrab = false;
                 handler.removeObject(this);
             }
         }
@@ -92,7 +114,7 @@ public class Shield extends GameObject {
             return new Rectangle2D.Float(handler.player.get(0).points()[0].x - 2,
                                          handler.player.get(0).points()[0].y - 2, 4, 4);
         else
-            return new Rectangle2D.Float(x - w / 2, y - h / 2, 30, 40);
+            return new Rectangle2D.Float(x - 15, y - 20 , 30, 40);
     }
 
     public Float deltaPoints() {

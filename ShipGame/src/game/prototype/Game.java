@@ -9,9 +9,12 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import game.prototype.framework.KeyInput;
+import game.prototype.framework.ObjectId;
 import game.prototype.framework.PlayerId;
 import game.prototype.framework.GameStates;
 import game.prototype.framework.TextureManager;
+import game.prototype.objects.Chain;
+import game.prototype.objects.Missile;
 import game.prototype.objects.PlayerShip;
 
 public class Game extends Canvas implements Runnable {
@@ -39,7 +42,7 @@ public class Game extends Canvas implements Runnable {
     private Menu menu;
     private ResourceLoader loader;
     private DynamicLoading dLoader;
-    private FileManagement save;
+    private FileManagement fileMgmt;
     private static TextureManager tex;
       
     //Game states
@@ -53,14 +56,13 @@ public class Game extends Canvas implements Runnable {
         handler = new Handler();
         gs = new GameStates();
         tex = new TextureManager();        
-        save = new FileManagement(gs);
-        menu = new Menu(gs, save);
+        fileMgmt = new FileManagement(gs);
+        menu = new Menu(gs, fileMgmt);
         shoot = new Shoot(handler, gs);
         move = new Movement(handler, menu, gs);
-        kI = new KeyInput(handler, menu, move, gs, shoot);
+        kI = new KeyInput(menu, move, gs, shoot);
         this.addKeyListener(kI);
         
-        menu.setFont(loader.loadFont("/PressStart2P.ttf")); 
         mainMenuBackground();  
         System.gc(); 
     }
@@ -77,6 +79,7 @@ public class Game extends Canvas implements Runnable {
         gs.setPoints(0);
         gs.setLife(3);
         gs.setShieldState(false);
+        gs.setShootMode(0);
         
         hud = new HUD(gs);
         hud.setFont(loader.loadFont("/PressStart2P.ttf"));        
@@ -84,8 +87,14 @@ public class Game extends Canvas implements Runnable {
         dLoader = new DynamicLoading(handler, gs);
         cam = new Camera(iPlayerPos.x - WIDTH / 2, iPlayerPos.y - HEIGHT / 2);   
         
+        //handler.addObject(new Chain(iPlayerPos.x -200, iPlayerPos.y -40, 30, 30, 5, 5, 5, 0.02f, handler, gs, ObjectId.Chain));
+        
         handler.addPlayer(new PlayerShip(iPlayerPos.x, iPlayerPos.y, 35, 45, 
-                                         handler, gs, PlayerId.PlayerShip));        
+                                        (float)Math.toRadians(-90),
+                                        handler, gs, PlayerId.PlayerShip));  
+                                        
+        handler.addObject(new Missile(iPlayerPos.x -200, iPlayerPos.y -40, 30, 30, handler, ObjectId.Missile));
+ 
         gameInit = !gameInit;
     }
     public synchronized void start() {
@@ -140,32 +149,18 @@ public class Game extends Canvas implements Runnable {
         //Main Menu
         if (!GameOn) {
             handler.render(g2);
-            menu.startMenuRender(g2);
+
         } else {
-            if(!gameInit) 
+            if (!gameInit) 
                 gameInit();
             //Game
             g2.translate(-cam.getX(), -cam.getY());
             handler.render(g2);
             g2.translate(cam.getX(), cam.getY());
             hud.render(g2);     
-            //In-game Menus
-            if(gs.getGamePaused()) {
-                menu.pauseRender(g2);
-            } else if(GameOver && gs.getLife() > 0) {
-                menu.continueRender(g2);
-            } else if(GameOver && gs.getLife() == 0) {
-                menu.gameOverRender(g2);
-            }
+
         }
-        //SysInfo
-        if (menu.getF1Key() && handler.player.size() > 0) {
-            menu.statsDisplay(g2, 100, 100, fps, tickRate, handler.object.size(),
-                              handler.player.get(0).getX(), handler.player.get(0).getY(),
-                              handler.player.get(0).getVelY(), handler.player.get(0).getVelX());
-        } else if (menu.getF1Key()) {
-            menu.statsDisplay(g2, 100, 100, fps, tickRate, handler.object.size(), 0, 0,0, 0);
-        }
+        menu.render(g2);  
         //Show
         g2.dispose();
         bStrategy.show();
@@ -207,6 +202,12 @@ public class Game extends Canvas implements Runnable {
             }
         }
         menu.update();
+        if (handler.player.size() > 0) 
+            menu.statsDisplay(100, 100, fps, tickRate, handler.object.size(),
+                              handler.player.get(0).getX(), handler.player.get(0).getY(),
+                              handler.player.get(0).getVelY(), handler.player.get(0).getVelX());
+        else
+            menu.statsDisplay(100, 100, fps, tickRate, handler.object.size(), 0, 0,0, 0);
     }
 
     private void loadData(BufferedImage image, float size) {
@@ -258,6 +259,7 @@ public class Game extends Canvas implements Runnable {
         handler.player.clear();
         gs.levelObjCoords().clear();
         gs.levelRGB().clear();
+ 
         hud = null;
         cam = null;
         mainMenuBackground();
@@ -273,8 +275,8 @@ public class Game extends Canvas implements Runnable {
         System.out.println("continue");
         handler.player.clear();
         gs.setHealth(100);
-        gs.setLife(gs.getLife() - 1); 
-        handler.addPlayer(new PlayerShip(lPlayerPos.x, lPlayerPos.y, 35, 45, 
+        gs.setLife(gs.getLife() - 1);
+        handler.addPlayer(new PlayerShip(lPlayerPos.x, lPlayerPos.y, 35, 45, gs.getAngle(), 
                                          handler, gs, PlayerId.PlayerShip));
         cam.setX(lPlayerPos.x - WIDTH / 2);
         cam.setY(lPlayerPos.y - HEIGHT / 2);

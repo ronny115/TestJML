@@ -3,6 +3,10 @@ package game.prototype.framework;
 import java.awt.geom.Point2D;
 
 public class Helper {
+    public static float distance(Point2D.Float A, Point2D.Float B) {
+        return (float) Math.sqrt((B.x-A.x)*(B.x-A.x)+(B.y-A.y)*(B.y-A.y));
+    }
+
     public static Point2D.Float vectorize(Point2D.Float pointA, Point2D.Float pointB) {
         Point2D.Float vector = new Point2D.Float();
         vector.x = (pointB.x - pointA.x);
@@ -54,13 +58,8 @@ public class Helper {
                                                         target.x - center.x));
         if (angle < 0)
             angle += 360;
-        return angle;
-        }
-    
-    public static float getAngle(Point2D.Float[] points) {
-        return (float) Math.toRadians((Helper.angle(points[1],
-                                                    points[0]))-90);
-        }
+        return (float) Math.toRadians(angle);
+    }
     
     public static boolean inside(Point2D.Float point, Point2D.Float[] poly) {
         // ray-casting algorithm based on

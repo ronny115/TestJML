@@ -11,14 +11,15 @@ import game.prototype.objects.ExplosiveMine;
 import game.prototype.objects.Ghost;
 import game.prototype.objects.Shield;
 import game.prototype.objects.HealthKit;
+import game.prototype.objects.LaserUp;
 
 public class DynamicLoading {
     
     private Handler handler;
     private GameStates gs;
 
-    public DynamicLoading(Handler h, GameStates gs) {
-        this.handler = h;
+    public DynamicLoading(Handler handler, GameStates gs) {
+        this.handler = handler;
         this.gs = gs;
     }
 
@@ -88,15 +89,21 @@ public class DynamicLoading {
                                                     gs.levelObjCoords().get(i)[1], 
                                                     30, 40, handler, gs, ObjectId.HealthKit));
                 }
-                
+                if (gs.levelRGB().get(i)[0] == 0 && 
+                    gs.levelRGB().get(i)[1] == 100 && 
+                    gs.levelRGB().get(i)[2] == 100 && 
+                    gs.levelObjCoords().get(i)[2] == 0 && gs.levelObjCoords().get(i)[3] == 0) 
+                {
+                    handler.addObject(new LaserUp(gs.levelObjCoords().get(i)[0], 
+                                                  gs.levelObjCoords().get(i)[1], 
+                                                  30, 40, handler, gs, ObjectId.LaserUp));
+                }
+
                 gs.levelObjCoords().get(i)[2] = 1;
 
                 if (gs != null && gs.getObjState().x == gs.levelObjCoords().get(i)[0] 
                                 && gs.getObjState().y == gs.levelObjCoords().get(i)[1]) 
-                {
                     gs.levelObjCoords().get(i)[3] = 1;
-                }
-  
             } else
                 gs.levelObjCoords().get(i)[2] = 0;
             // Delete off screen objects
@@ -106,14 +113,11 @@ public class DynamicLoading {
 
                     if (tempObject.getX() < camPos.x || 
                         tempObject.getX() > camPos.x + Game.WIDTH) 
-                    {
-                        handler.removeObject(tempObject);
-                    }
+                            handler.removeObject(tempObject);
+                    
                     if (tempObject.getY() < camPos.y || 
-                        tempObject.getY() > camPos.y + Game.HEIGHT) 
-                    {
-                        handler.removeObject(tempObject);
-                    }
+                        tempObject.getY() > camPos.y + Game.HEIGHT)  
+                            handler.removeObject(tempObject);
                 }
             }
         }
