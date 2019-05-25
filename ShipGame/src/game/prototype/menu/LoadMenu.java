@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import game.prototype.FileManagement;
 import game.prototype.Game;
 import game.prototype.Menu;
 import game.prototype.framework.GameStates;
@@ -15,20 +16,23 @@ public class LoadMenu {
     private Menu menu;
     private Font font;
     private GameStates gs;
+    private FileManagement fileMgmt;
     private float menu_position, increment, font_size;
     private int index, index_2, h_dist[] = {-100, 0, 110};
+    private int slotIndex;
     private List<String> menu_item;
     private List<Boolean> menu_switch = new ArrayList<Boolean>();
     private List<Boolean> confirm_switch = new ArrayList<Boolean>();
 
     public LoadMenu(Menu menu, GameStates gs, List<String> menu_item, 
-                    float position, float increment, float size) {
+                    float position, float increment, float size, FileManagement fm) {
         this.menu = menu;
         this.gs = gs;
         this.menu_item = menu_item;
         this.font_size = size;
         this.menu_position = position;
         this.increment = increment;
+        this.fileMgmt = fm;
 
         for (int i = 0; i < gs.saveSlots().size(); i++)
             menu_switch.add(false);
@@ -55,6 +59,7 @@ public class LoadMenu {
             }
             // Slots
             if (menu.getEnterKey() && gs.saveSlots().get(index) != "Empty") {
+                slotIndex = index;
                 menu.loadConfirm = true;
                 resetLoadMenu();
                 menu.resetIndex();
@@ -73,13 +78,29 @@ public class LoadMenu {
                 confirm_switch.set(index_2, !confirm_switch.get(index_2));
                 menu.setRightKey(false);
             }
-            // TODO implement
             // Load func.
-            if (confirm_switch.get(0)) {}
+            if (menu.getEnterKey() && confirm_switch.get(0)) {
+                fileMgmt.load(gs.saveSlots().get(slotIndex));
+                menu.resetIndex();
+                menu.loadGame = false;
+                menu.loadConfirm = false;
+                menu.setEnterKey(false);
+                slotIndex = 0;
+            }
             // Delete func.
-            if (confirm_switch.get(1)) {}
+            if (menu.getEnterKey() && confirm_switch.get(1)) {
+                fileMgmt.deleteFile(slotIndex);;
+                menu.resetIndex();
+                menu.loadConfirm = false;
+                menu.setEnterKey(false);
+                slotIndex = 0;
+            }
             // Cancel
-            if (confirm_switch.get(2)) {}
+            if (menu.getEnterKey() && confirm_switch.get(2)) {
+                menu.resetIndex();
+                menu.loadConfirm = false;
+                menu.setEnterKey(false);
+            }
         }
     }
 

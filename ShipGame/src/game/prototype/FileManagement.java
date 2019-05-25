@@ -31,12 +31,6 @@ public class FileManagement {
     }
 
     public void save() {
-        if (location.listFiles().length > 5) {
-            Arrays.sort(location.listFiles());
-            File delfile = location.listFiles()[0];
-            delfile.delete();
-        }
-
         String filename = LocalDateTime.now().toString();
         filename = filename.replace('.', '_');
         filename = filename.replace(':', '_');
@@ -63,10 +57,10 @@ public class FileManagement {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        loadFiles();
     }
 
     public void load(String filename) {
-
         File saveFile = new File(location.getPath() + "/" + filename);
         Object o = null;
         //Object o1 = null;

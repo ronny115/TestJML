@@ -49,11 +49,11 @@ public class Movement {
         else if (!rightKey && velx > 0)
             move("decelerateRight");
         
-        if(menu.getRsetV() && handler.player.size() > 0) {
+        if(menu.getResetVelocity() && handler.player.size() > 0) {
             handler.player.get(0).setVelY(0);
             handler.player.get(0).setVelX(0);
             vely = velx = 0;
-            menu.setRsetV(false);          
+            menu.setResetVelocity(false);          
         }
 
     }

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import game.prototype.FileManagement;
 import game.prototype.Game;
 import game.prototype.Menu;
 import game.prototype.framework.GameStates;
@@ -15,21 +16,24 @@ public class SaveMenu {
     private Menu menu;
     private Font font;
     private GameStates gs;
+    private FileManagement fileMgmt;
     private float menu_position, increment, font_size;
     private int index, index_2, index_3, h_dist[] = {-100, 0, 110, -50, 60};
+    private int slotIndex;
     private List<String> menu_item;
     private List<Boolean> menu_switch = new ArrayList<Boolean>();
     private List<Boolean> confirm_switch = new ArrayList<Boolean>();
     private List<Boolean> overwrite_switch = new ArrayList<Boolean>();
 
     public SaveMenu(Menu menu, GameStates gs, List<String> menu_item, 
-                    float position, float increment, float size) {
+                    float position, float increment, float size, FileManagement fm) {
         this.menu = menu;
         this.gs = gs;
         this.menu_item = menu_item;
         this.font_size = size;
         this.menu_position = position;
         this.increment = increment;
+        this.fileMgmt = fm;
                 
         for (int i = 0; i < gs.saveSlots().size(); i++)
             menu_switch.add(false);
@@ -60,6 +64,7 @@ public class SaveMenu {
             }
             // Slots
             if (menu.getEnterKey() && gs.saveSlots().get(index) != "Empty") {
+                slotIndex = index;
                 menu.saveOverWrite = true;
                 resetSaveMenu();
                 menu.resetIndex();
@@ -83,11 +88,22 @@ public class SaveMenu {
                 confirm_switch.set(index_2, !confirm_switch.get(index_2));
                 menu.setRightKey(false);
             }
-            // TODO implement
             // Save func.
-            if (confirm_switch.get(0)) {}
+            if (menu.getEnterKey() && confirm_switch.get(0)) {
+                fileMgmt.save();
+                menu.resetIndex();
+                menu.saveConfirm = false;
+                menu.saveOverWrite = false;
+                menu.setEnterKey(false);
+            }
             // No
-            if (confirm_switch.get(1)) {}
+            if (menu.getEnterKey() && confirm_switch.get(1)) {
+                resetSaveMenu();
+                menu.saveConfirm = false;
+                menu.saveOverWrite = false;
+                menu.resetIndex();
+                menu.setEnterKey(false);
+            }
 
         } else if (menu.saveOverWrite) {
             if (menu.getLeftKey()) {
@@ -102,13 +118,31 @@ public class SaveMenu {
                 overwrite_switch.set(index_3, !overwrite_switch.get(index_3));
                 menu.setRightKey(false);
             }
-            // TODO implement
             // Overwrite yes.
-            if (overwrite_switch.get(0)) {}
+            if (menu.getEnterKey() && overwrite_switch.get(0)) {
+                fileMgmt.deleteFile(slotIndex);
+                fileMgmt.save();
+                menu.resetIndex();
+                menu.saveOverWrite = false;
+                menu.setEnterKey(false);
+                slotIndex = 0;
+            }
             // No.
-            if (overwrite_switch.get(1)) {}
+            if (menu.getEnterKey() && overwrite_switch.get(1)) {
+                resetSaveMenu();
+                menu.saveOverWrite = false;
+                menu.resetIndex();
+                menu.setEnterKey(false);
+            }
             // Delete file
-            if (overwrite_switch.get(2)) {}
+            if (menu.getEnterKey() && overwrite_switch.get(2)) {
+                fileMgmt.deleteFile(slotIndex);
+                resetSaveMenu();
+                menu.saveOverWrite = false;
+                menu.resetIndex();
+                menu.setEnterKey(false);
+                slotIndex = 0;
+            }
         }
     }
 

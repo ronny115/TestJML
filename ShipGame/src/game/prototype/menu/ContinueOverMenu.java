@@ -52,6 +52,7 @@ public class ContinueOverMenu {
             if (menu.getEnterKey() && continue_switch.get(0)) {
                 Game.Continued = !Game.Continued;
                 resetContinueOverMenu();
+                menu.setResetVelocity(true);
                 menu.setEnterKey(false);
             }
         }
@@ -60,6 +61,7 @@ public class ContinueOverMenu {
             if (menu.getEnterKey() && continue_switch.get(0)) {
                 Game.Reseted = !Game.Reseted;
                 resetContinueOverMenu();
+                menu.setResetVelocity(true);
                 menu.setEnterKey(false);
             }
         }

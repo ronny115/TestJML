@@ -16,12 +16,12 @@ public class Menu {
 
     private Font font;
     private GameStates gs;
-    private FileManagement fileM;
+    private FileManagement fileMgmt;
     private ResourceLoader loader;
     private int mIndex, xStats, yStats, fps, tick, objSize;
     private float fPosX, fPosY, fVelY, fVelX;
-    private boolean upKey, downKey, leftKey, rightKey, enterKey, escKey, f1Key;
-    public boolean saveGame, saveConfirm, saveOverWrite, resetV;
+    private boolean upKey, downKey, leftKey, rightKey, enterKey, escKey, f1Key, resetVelocity;;
+    public boolean saveGame, saveConfirm, saveOverWrite;
     public boolean loadGame, loadConfirm;
 
     private MainMenu mm;
@@ -38,11 +38,11 @@ public class Menu {
 
     public Menu(GameStates gs, FileManagement fm) {
         this.gs = gs;
-        this.fileM = fm;
+        this.fileMgmt = fm;
         loader = new ResourceLoader();
         this.font = loader.loadFont("/PressStart2P.ttf");
-        this.lm = new LoadMenu(this, gs, lmItem, 0.55f, 0.05f, 10f);
-        this.sm = new SaveMenu(this, gs, smItem, 0.55f, 0.05f, 10f);
+        this.lm = new LoadMenu(this, gs, lmItem, 0.55f, 0.05f, 10f, fileMgmt);
+        this.sm = new SaveMenu(this, gs, smItem, 0.55f, 0.05f, 10f, fileMgmt);
         this.mm = new MainMenu(this, gs, mmItem, 0.55f, 0.10f, 15f);
         this.pm = new PauseMenu(this, gs, pmItem, 0.55f, 0.10f, 15f);
         this.cm = new ContinueOverMenu(this, gs, coItem, 0.65f, 0.10f, 15f);
@@ -208,12 +208,12 @@ public class Menu {
         g2.setColor(Color.BLACK);
     }
 
-    public boolean getRsetV() {
-        return resetV;
+    public boolean getResetVelocity() {
+        return resetVelocity;
     }
 
-    public void setRsetV(boolean value) {
-        this.resetV = value;
+    public void setResetVelocity(boolean value) {
+        this.resetVelocity = value;
     }
     // Key handle
     public boolean getF1Key() {
