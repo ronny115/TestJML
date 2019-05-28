@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import game.prototype.framework.GameStates;
-
+// TODO Make it proper
 public class FileManagement {
     private File location, saveFile;
     private GameStates gs;

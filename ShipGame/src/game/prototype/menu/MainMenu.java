@@ -52,15 +52,19 @@ public class MainMenu {
         if (menu.getEnterKey() && menu_switch.get(0)) {
             Game.GameOn = !Game.GameOn;
             resetMainMenu();
+            menu.resetIndex();
             menu.setEnterKey(false);
         }
         // Load
         if (menu.getEnterKey() && menu_switch.get(1)) {
+            menu.loadGame = true;
+            resetMainMenu();
+            menu.resetIndex();
             menu.setEnterKey(false);
         }
         // TODO add options 
         // Exit 
-        if (menu.getEnterKey() && menu_switch.get(2)) 
+        if (menu.getEnterKey() && menu_switch.get(3)) 
             System.exit(1);
     }
 
@@ -76,11 +80,10 @@ public class MainMenu {
                                 menu_switch.get(i));       
     }
 
-    private void resetMainMenu() {
+    public void resetMainMenu() {
         menu_switch.set(index, !menu_switch.get(index));
         menu_switch.set(0, !menu_switch.get(0));
         index = 0;
-        menu.resetIndex();
     }
 
     public void setFont(Font font) {

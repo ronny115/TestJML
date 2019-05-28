@@ -66,6 +66,7 @@ public class PauseMenu {
         if (menu.getEnterKey() && menu_switch.get(2)) {
             Game.Reseted = !Game.Reseted;
             resetPauseMenu();
+            menu.resetIndex();
             menu.setResetVelocity(true);
             menu.setEnterKey(false);
         }
@@ -74,6 +75,7 @@ public class PauseMenu {
             Game.GameOn = !Game.GameOn;
             Game.Exited = !Game.Exited;
             resetPauseMenu();
+            menu.resetIndex();
             menu.setResetVelocity(true);
             menu.setEnterKey(false);
         }

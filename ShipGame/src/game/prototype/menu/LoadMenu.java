@@ -105,11 +105,20 @@ public class LoadMenu {
     }
 
     public void render(Graphics2D g2) {
-        g2.drawImage(Game.getTexInstance().cristal, 0, 0, Game.WIDTH, Game.HEIGHT, null);
-        g2.setColor(Color.BLACK);
+        if (!Game.GameOn) {
+            g2.drawImage(Game.getTexInstance().title, 
+                        Game.getTexInstance().title.getWidth() + 100,
+                        Game.getTexInstance().title.getHeight() + 50, 400, 175, null);
+            g2.setColor(Color.BLACK);
+            menu.items_arrange_v(g2, menu_item.get(1), 0.50f, font.deriveFont(25f), false);
+        } else {
+            g2.drawImage(Game.getTexInstance().cristal, 0, 0, Game.WIDTH, Game.HEIGHT, null);
+            g2.setColor(Color.BLACK);
 
-        menu.items_arrange_v(g2, menu_item.get(0), 0.25f, font.deriveFont(100f), false);
-        menu.items_arrange_v(g2, menu_item.get(1), 0.45f, font.deriveFont(25f), false);
+            menu.items_arrange_v(g2, menu_item.get(0), 0.25f, font.deriveFont(100f), false);
+            menu.items_arrange_v(g2, menu_item.get(1), 0.45f, font.deriveFont(25f), false);
+        }
+
         if (menu.loadGame)
             for (int i = 0; i < menu_switch.size(); i++) 
                 menu.items_arrange_v(g2, gs.saveSlots().get(i), menu_position + (i * increment), 

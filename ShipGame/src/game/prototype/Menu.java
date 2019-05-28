@@ -20,7 +20,7 @@ public class Menu {
     private ResourceLoader loader;
     private int mIndex, xStats, yStats, fps, tick, objSize;
     private float fPosX, fPosY, fVelY, fVelX;
-    private boolean upKey, downKey, leftKey, rightKey, enterKey, escKey, f1Key, resetVelocity;;
+    private boolean upKey, downKey, leftKey, rightKey, enterKey, escKey, f1Key, resetVelocity;
     public boolean saveGame, saveConfirm, saveOverWrite;
     public boolean loadGame, loadConfirm;
 
@@ -30,10 +30,12 @@ public class Menu {
     private SaveMenu sm;
     private ContinueOverMenu cm;
 
-    private List<String> mmItem = List.of("New Game", "Load Game", "Quit Game");
+    private List<String> mmItem = List.of("New Game", "Load Game", "Race Mode", "Quit Game");
     private List<String> pmItem = List.of("PAUSE", "Load Game", "Save Game", "Restart", "Exit");
-    private List<String> lmItem = List.of("PAUSE", "Select File", "Load this File?", "Load", "Delete", "Cancel");
-    private List<String> smItem = List.of("PAUSE", "Save File", "Do you want to save?", "Overwrite File?", "Yes", "No", "Delete");
+    private List<String> lmItem = List.of("PAUSE", "Select File", "Load this File?", "Load", 
+                                        "Delete", "Cancel");
+    private List<String> smItem = List.of("PAUSE", "Save File", "Do you want to save?",
+                                        "Overwrite File?", "Yes", "No", "Delete");
     private List<String> coItem = List.of("CONTINUE?", "GAME OVER", "Continue", "Restart", "Exit");
 
     public Menu(GameStates gs, FileManagement fm) {
@@ -43,7 +45,7 @@ public class Menu {
         this.font = loader.loadFont("/PressStart2P.ttf");
         this.lm = new LoadMenu(this, gs, lmItem, 0.55f, 0.05f, 10f, fileMgmt);
         this.sm = new SaveMenu(this, gs, smItem, 0.55f, 0.05f, 10f, fileMgmt);
-        this.mm = new MainMenu(this, gs, mmItem, 0.55f, 0.10f, 15f);
+        this.mm = new MainMenu(this, gs, mmItem, 0.55f, 0.05f, 15f);
         this.pm = new PauseMenu(this, gs, pmItem, 0.55f, 0.10f, 15f);
         this.cm = new ContinueOverMenu(this, gs, coItem, 0.65f, 0.10f, 15f);
 
@@ -56,47 +58,52 @@ public class Menu {
 
     public void update() {
         // Escape handle
-        if (escKey && Game.GameOn && !Game.GameOver 
-            && !loadGame && !loadConfirm
-            && !saveGame && !saveConfirm) {
+        if (escKey && Game.GameOn && !Game.GameOver && 
+            !loadGame && !loadConfirm && !saveGame && !saveConfirm) {
             gs.setGamePaused(!gs.getGamePaused());
             pm.resetPauseMenu();
             resetIndex();
             escKey = false;
         } else if (escKey && loadGame && !loadConfirm) {
             pm.resetPauseMenu();
-            resetIndex();   
+            mm.resetMainMenu();
+            resetIndex();
             loadGame = false;
             escKey = false;
-        } else if (escKey && saveGame && !saveConfirm && !saveOverWrite) {    
+        } else if (escKey && saveGame && !saveConfirm && !saveOverWrite) {
             pm.resetPauseMenu();
-            resetIndex();   
+            resetIndex();
             saveGame = false;
-            escKey = false;   
+            escKey = false;
         } else if (escKey && loadConfirm) {
             lm.resetLoadMenu();
             resetIndex();
             loadConfirm = false;
-            loadGame = true;    
+            loadGame = true;
             escKey = false;
         } else if (escKey && saveConfirm) {
             sm.resetSaveMenu();
             resetIndex();
             saveConfirm = false;
-            saveGame = true;    
+            saveGame = true;
             escKey = false;
         } else if (escKey && saveOverWrite) {
             sm.resetSaveMenu();
             resetIndex();
             saveOverWrite = false;
-            saveConfirm = false;   
+            saveConfirm = false;
             escKey = false;
         }
         // Update handle
-        if (!Game.GameOn)
-            mm.update();
-        else if (gs.getGamePaused())
-            if (loadGame) 
+        if (!Game.GameOn) {
+            if (loadGame) {
+                lm.update();
+            } else {
+                lm.resetLoadMenu();
+                mm.update();
+            }
+        } else if (gs.getGamePaused()) {
+            if (loadGame)
                 lm.update();
             else
                 lm.resetLoadMenu();
@@ -106,25 +113,28 @@ public class Menu {
                 sm.resetSaveMenu();
             if (!loadGame && !saveGame)
                 pm.update();
-        else {
+        } else {
             if (Game.GameOver)
-                cm.update();        
+                cm.update();
             pm.resetPauseMenu();
         }
     }
 
     public void render(Graphics2D g2) {
-        if (!Game.GameOn)
-            mm.render(g2);
-        else if (gs.getGamePaused()) {
-            if (loadGame) 
-                lm.render(g2);       
-            else if (saveGame)            
+        if (!Game.GameOn) {
+            if (loadGame) {
+                lm.render(g2);
+            } else {
+                mm.render(g2);
+            }
+        } else if (gs.getGamePaused()) {
+            if (loadGame)
+                lm.render(g2);
+            else if (saveGame)
                 sm.render(g2);
             else
                 pm.render(g2);
-        } 
-        else if (Game.GameOver)
+        } else if (Game.GameOver)
             cm.render(g2);
         if (f1Key) {
             g2.setFont(new Font("Arial", Font.PLAIN, 10));
@@ -182,14 +192,15 @@ public class Menu {
                                 Font font, boolean active) {
         int x = (Game.WIDTH - g2.getFontMetrics(font).stringWidth(label)) / 2;
         int y = (int) (Game.HEIGHT * height);
-
-        if (active)
-            g2.setColor(Color.GRAY);
-        else
-            g2.setColor(Color.BLACK);
-
+        int x1 = g2.getFontMetrics(font).charWidth('>');
         g2.setFont(font);
-        g2.drawString(label, x, y);
+        if (active) {
+            g2.setColor(Color.GRAY);
+            g2.drawString(">" + label, x - x1, y);
+        } else {
+            g2.setColor(Color.BLACK);
+            g2.drawString(label, x, y);
+        }
         g2.setColor(Color.BLACK);
     }
 
@@ -197,14 +208,15 @@ public class Menu {
                                 int dist, Font font, boolean active) {
         int x = (Game.WIDTH - g2.getFontMetrics(font).stringWidth(label)) / 2 + dist;
         int y = (int) (Game.HEIGHT * height);
-
-        if (active)
-            g2.setColor(Color.GRAY);
-        else
-            g2.setColor(Color.BLACK);
-
+        int x1 = g2.getFontMetrics(font).charWidth('>');
         g2.setFont(font);
-        g2.drawString(label, x, y);
+        if (active) {
+            g2.setColor(Color.GRAY);
+            g2.drawString(">" + label, x - x1, y);
+        } else {
+            g2.setColor(Color.BLACK);
+            g2.drawString(label, x, y);
+        }
         g2.setColor(Color.BLACK);
     }
 
